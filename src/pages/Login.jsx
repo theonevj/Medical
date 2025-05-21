@@ -81,24 +81,28 @@ export default function Login() {
 
   return (
     <div className="relative w-full md:h-screen flex md:flex-row flex-col items-center">
-      {/* first section */}
-      <div className="md:w-1/2 w-full flex md:absolute top-0 left-0 pentagon h-2/3 md:h-full overflow-hidden py-8 md:py-24 px-4 flex-col bg-white gap-10 md:gap-24">
-        <div className="flex flex-col gap-2 md:gap-6 items-center md:items-start md:pl-36">
+      <div className="z-10 absolute  top-0 left-0 py-8 md:py-24 px-4 md:w-full flex justify-center items-center ">
+        <div className="space-y-5">
           <div className="flex justify-center pl-4 items-center gap-2">
             <img className="md:w-[200px] w-12 " src={LOGO} alt="logo" />
           </div>
           <div className="flex flex-col gap-1 md:gap-2 items-center">
-            <h1 className="text-purple text-xl md:text-2xl font-medium">
+            <h1 className="text-purple text-xl md:text-2xl font-bold">
               Welcome Black
             </h1>
-            <p className="text-sm md:text-base text-gray-600 text-center">
+            <p className="text-sm md:text-base text-gray-600 text-center font-semibold">
               User Experience & Interface Design <br />
               Strategy SaaS Solutions
             </p>
           </div>
         </div>
+      </div>
+      {/* first section */}
+
+      <div className="md:w-1/2 w-full flex md:absolute top-0 left-0 pentagon h-2/3 md:h-full overflow-hidden py-8 md:py-24 px-4 flex-col bg-white gap-10 md:gap-24">
+        <div className="flex flex-col gap-2 md:gap-6 items-center md:items-start md:pl-36"></div>
         <div className="md:pl-16 flex items-center md:place-content-start place-content-center">
-          <img className="w-72 md:w-96" src={IMG} alt="login-image"></img>
+          <img className="w-92 md:w-[700px]" src={IMG} alt="login-image"></img>
         </div>
       </div>
 

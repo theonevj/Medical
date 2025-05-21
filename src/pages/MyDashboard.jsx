@@ -36,7 +36,6 @@ export default function MyDashboard() {
   const localizer = momentLocalizer(moment);
   const views = ["month", "agenda"];
   const [events, setEvents] = useState([]);
-  console.log(events);
 
   const getMonthYear = (date) => {
     let month = date.getMonth() + 1;
@@ -44,12 +43,6 @@ export default function MyDashboard() {
 
     return { month, year };
   };
-
-  const minTime = new Date();
-  minTime.setHours(10, 0, 0);
-
-  const maxTime = new Date();
-  maxTime.setHours(18, 0, 0);
 
   const fetchCalenderData = async (currentDate) => {
     const dateData = getMonthYear(currentDate);
@@ -72,6 +65,8 @@ export default function MyDashboard() {
       setEvents(
         data.map((item) => ({
           title: item.daystatus,
+          stpname: item.stpname ?? "Null",
+          stptype: item.stptype ?? "Null",
           start: new Date(item.daydt),
           end: new Date(item.daydt),
           color: item.color,
@@ -292,22 +287,8 @@ export default function MyDashboard() {
           onSelectEvent={handleSelectSlot}
           onNavigate={handleNavigate}
           date={currentDate}
-          // min={minTime}
-          // max={maxTime}
           eventPropGetter={(event) => {
             let backgroundColor = "transparent";
-
-            // switch (event.title) {
-            //   case "Present":
-            //     backgroundColor = "#E6F7FF";
-
-            //     break;
-            //   case "Absent":
-            //     backgroundColor = "#FFF1F0";
-            //     break;
-            //   default:
-            //     backgroundColor = "transparent";
-            // }
 
             return {
               style: {
@@ -354,6 +335,18 @@ export default function MyDashboard() {
                 backgroundColor,
               },
             };
+          }}
+          components={{
+            event: ({ event }) => (
+              <div className="truncate">
+                <div className="font-bold">{event.title}</div>
+                {event.stpname || event.stptype ? (
+                  <div className="text-xs">
+                    ({event.stpname} - {event.stptype})
+                  </div>
+                ) : null}
+              </div>
+            ),
           }}
         />
 

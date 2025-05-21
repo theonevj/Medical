@@ -100,7 +100,7 @@ function AddMtp() {
       }
     };
     fetchDoctorsChemists();
-  }, []);
+  }, [users]);
 
   useEffect(() => {
     const fetchSecondaryData = async () => {
@@ -126,7 +126,7 @@ function AddMtp() {
       }
     };
     fetchSecondaryData();
-  }, []);
+  }, [users]);
 
   // const fetchData = async () => {
   //   let stpObj = {

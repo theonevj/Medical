@@ -91,10 +91,7 @@
 
 /* Enforce consistent column sizing */
 .rbc-agenda-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; /* Ensure equal width distribution */
-  font-family: Arial, sans-serif;
+  table-layout: auto; /* Let browser calculate widths */
 }
 
 /* Ensure header and cell widths match */
@@ -113,17 +110,17 @@
 /* Optionally define explicit widths for consistency */
 .rbc-agenda-table th:nth-child(1),
 .rbc-agenda-table td:nth-child(1) {
-  width: 25%;
+  width: 30%;
 }
 
 .rbc-agenda-table th:nth-child(2),
 .rbc-agenda-table td:nth-child(2) {
-  width: 25%;
+  display: none !important;
 }
 
 .rbc-agenda-table th:nth-child(3),
 .rbc-agenda-table td:nth-child(3) {
-  width: 50%;
+  width: 70%;
 }
 
 /* Header styling */

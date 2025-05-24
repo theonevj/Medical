@@ -36,6 +36,7 @@ export default function MyDashboard() {
   const localizer = momentLocalizer(moment);
   const views = ["month", "agenda"];
   const [events, setEvents] = useState([]);
+  const [showStp, setShowStp] = useState(false);
 
   const getMonthYear = (date) => {
     let month = date.getMonth() + 1;
@@ -214,6 +215,14 @@ export default function MyDashboard() {
     },
   ];
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowStp(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="h-full overflow-y-scroll ">
       <div className="grid gap-6 mb-4  grid-cols-1 md:grid-cols-5">
@@ -270,7 +279,7 @@ export default function MyDashboard() {
         ))}
       </div>
 
-      <div className="w-full relative mb-4 h-[700px]">
+      <div className="w-full relative mb-4 h-[800px]">
         <Calendar
           selectable
           localizer={localizer}
@@ -338,13 +347,29 @@ export default function MyDashboard() {
           }}
           components={{
             event: ({ event }) => (
-              <div className="truncate">
-                <div className="font-bold">{event.title}</div>
-                {event.stpname || event.stptype ? (
-                  <div className="text-xs">
-                    ({event.stpname} - {event.stptype})
+              <div className="">
+                <div className="flex justify-between items-center font-bold">
+                  {event.title}
+                </div>
+
+                {(event.stpname || event.stptype) && (
+                  <div className="text-[12px] font-normal  whitespace-normal break-words">
+                    <p className="flex  break-words">{event.stpname}</p>
+                    <p>
+                      {event.stptype === "0" ||
+                        event.stptype === "1" ||
+                        (event.stptype === "2" && "Tour Type: ")}
+                      {event.title === "Present" &&
+                        (event.stptype === "0"
+                          ? "Local"
+                          : event.stptype === "1"
+                          ? "Outstation"
+                          : event.stptype === "2"
+                          ? "Ex - Station"
+                          : "")}
+                    </p>
                   </div>
-                ) : null}
+                )}
               </div>
             ),
           }}
@@ -353,7 +378,7 @@ export default function MyDashboard() {
         {showPopUp && selectedEvent && (
           <div className="fixed z-50 inset-0 flex justify-center items-center bg-black bg-opacity-40">
             <div className="w-5/6 max-h-[90vh] z-50 rounded-md overflow-hidden shadow-sm bg-white border flex flex-col">
-              <div className="flex bg-themeblue text-white p-4 border-b border-neutral-200 justify-between items-center">
+              <div className="flex bg-neutral-400 text-black p-4 border-b border-neutral-200 justify-between items-center">
                 <h1 className="font-medium text-lg">MTP Details</h1>
                 <button
                   className="text-red-500 hover:text-red-600"
@@ -362,40 +387,49 @@ export default function MyDashboard() {
                   <X />
                 </button>
               </div>
-              <div className="p-4  bg-gray-100 flex justify-between items-center">
-                <p className="font-semibold text-md ml-4">
-                  Date:- {formattedDate}
-                </p>
+              <div className="p-4  bg-neutral-100 flex justify-between items-center">
+                <div className="leading-7 flex justify-content-between items-center">
+                  <p className="font-semibold text-md ml-4">
+                    Date:- {formattedDate}
+                  </p>
+                  <p className="font-semibold text-md ml-4">
+                    <span className="">STP:-</span>{" "}
+                    {filteredDetails.length > 0 && filteredDetails[0].stp}
+                  </p>
+                </div>
                 <input
                   type="text"
                   placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-[300px] mr-4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-none  placeholder-gray-400 shadow-sm "
+                  className="w-[300px] mr-4 px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400 shadow-sm "
                 />
               </div>
-              <div className="flex-1 overflow-auto bg-neutral-100 p-2">
+              <div className="flex-1 overflow-auto bg-neutral-100 py-2">
                 {mtpLoader ? (
                   <div className="flex justify-center items-center w-full h-full">
                     <LoaderCircle className="animate-spin" />
                   </div>
                 ) : filteredDetails.length > 0 ? (
-                  <table className="w-full border border-gray-300 shadow-lg rounded-lg mb-4">
-                    <thead className="bg-gray-400 text-white">
+                  <table className="w-full border border-neutral-300 shadow-lg rounded-lg mb-4">
+                    <thead className="bg-neutral-400 text-black">
                       <tr>
-                        <th className="border border-gray-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                          Id
+                        </th>
+                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
                           Doctor
                         </th>
-                        <th className="border border-gray-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
                           Speciality
                         </th>
-                        <th className="border border-gray-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
                           Qualification
                         </th>
-                        <th className="border border-gray-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
                           Doctor Area
                         </th>
-                        <th className="border border-gray-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
                           Products
                         </th>
                       </tr>
@@ -404,28 +438,29 @@ export default function MyDashboard() {
                       {filteredDetails.map((item, index) => (
                         <tr
                           key={index}
-                          className="hover:bg-indigo-100 odd:bg-gray-100 even:bg-white transition duration-200 ease-in-out"
+                          className="hover:bg-indigo-100 odd:bg-neutral-100 even:bg-white transition duration-200 ease-in-out text-start"
                         >
-                          <td className="border border-gray-300 p-3 text-gray-700">
+                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
+                            {index + 1}
+                          </td>
+                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
                             {item?.drName || "N/A"}
                           </td>
-                          <td className="border border-gray-300 p-3 text-gray-700">
+                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
                             {item?.speciality || "N/A"}
                           </td>
-                          <td className="border border-gray-300 p-3 text-gray-700">
+                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
                             {item?.qualification || "N/A"}
                           </td>
-                          <td className="border border-gray-300 p-3 text-gray-700">
+                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
                             {item?.doctorArea || "N/A"}
                           </td>
-                          <td className="border border-gray-300 p-3 text-gray-700">
-                            <ul className="list-disc pl-4">
-                              {item?.products.split(",").map((product, idx) => (
-                                <li key={idx} className="mb-1">
-                                  {product.trim()}
-                                </li>
-                              ))}
-                            </ul>
+                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
+                            {item?.products.split(",").map((p, index) => (
+                              <span key={index} className="mr-4">
+                                {p.trim()},
+                              </span>
+                            ))}
                           </td>
                         </tr>
                       ))}
@@ -433,7 +468,7 @@ export default function MyDashboard() {
                   </table>
                 ) : (
                   <div className="flex justify-center items-center w-full h-full">
-                    <p className="text-gray-500">No records found</p>
+                    <p className="text-neutral-500">No records found</p>
                   </div>
                 )}
               </div>

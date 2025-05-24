@@ -1,6 +1,7 @@
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import api from "../api";
 
 const formateDate = (dateString) => {
@@ -13,7 +14,8 @@ const formateDate = (dateString) => {
 export const columns = (
   handleNavigateToEdit,
   handleOpenConfirmPopUp,
-  handleNavigateToPreview
+  handleNavigateToPreview,
+  handleChangePassword
 ) => [
   {
     field: "username",
@@ -29,7 +31,7 @@ export const columns = (
     flex: 0.5, // Proportional width
     minWidth: 150, // Minimum width to prevent shrinking
     renderCell: (params) => (
-      <div className="w-full h-full flex items-center">
+      <div className="w-full h-full flex items-center ">
         <span>
           {params.row.firstName} {params.row.lastName}
         </span>
@@ -120,6 +122,12 @@ export const columns = (
             style={{ fontSize: "1.2rem" }}
           ></RemoveRedEyeOutlinedIcon>
         </button>
+        <button
+          onClick={() => handleChangePassword(params.row)}
+          className="bg-yellow-500 md:text-base text-sm hover:bg-yellow-600 flex justify-center items-center rounded-md text-white md:w-10 w-12 h-6 md:h-7"
+        >
+          <LockResetOutlinedIcon style={{ fontSize: "1.2rem" }} />
+        </button>
       </div>
     ),
   },
@@ -128,7 +136,8 @@ export const columns = (
 export const empColumns = (
   handleNavigateToEdit,
   handleOpenConfirmPopUp,
-  handleNavigateToPreview
+  handleNavigateToPreview,
+  handleChangePassword
 ) => [
   {
     field: "username",

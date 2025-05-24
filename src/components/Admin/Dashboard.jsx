@@ -160,11 +160,15 @@ export default function Dashboard() {
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="relative flex cursor-pointer items-center gap-3"
               >
-                <img
+                {/* <img
                   className="w-12 h-12 rounded-full"
                   src={PERSON}
                   alt="profile"
-                ></img>
+                ></img> */}
+                <div className="w-12 h-12 rounded-full flex justify-center items-center  bg-blue-600 text-gray-200 font-bold">
+                  {user.firstName[0].toUpperCase()}
+                  {user.lastName[0].toUpperCase()}
+                </div>
                 <div className="md:flex hidden flex-col">
                   <h4 className="text-base leading-4 font-bold">
                     {getName(user?.firstName)}

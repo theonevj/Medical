@@ -28,7 +28,7 @@ function DoctorMapping() {
   const [doctor, setDoctor] = useState([]);
   const [filterDoctor, setFilterDoctor] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState([]);
   const [selectedEmpIdx, setSelectedEmpIdx] = useState([]);
   const [selctedDocIdx, setSelectedDocIdx] = useState([]);
   const [userSearch, setUserSearch] = useState("");

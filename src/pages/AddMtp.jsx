@@ -22,6 +22,8 @@ function AddMtp() {
   const [users, setUsers] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [chemist, setChemist] = useState([]);
+  const [initialHeadQuarterId, setInitialHeadQuarterId] = useState(null);
+  const [headQuarterId, setHeadQuarterId] = useState("");
   const [stp, setStp] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -30,6 +32,9 @@ function AddMtp() {
 
   const [selectedStp, setSelectedStp] = useState(null);
   const [mtpDate, setSelectedMtpDate] = useState(null);
+
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [pendingStpChange, setPendingStpChange] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [openUser, setOpenUser] = useState(false);
@@ -67,43 +72,13 @@ function AddMtp() {
     user: [],
     doctor: null,
     description: "",
+    headQuarterId: "",
     modeOfWork: "",
     product: [],
   });
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await api.get("/User/GetReportingToMtp");
-        setUsers(response.data.data);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch users.");
-      }
-    };
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    const fetchDoctorsChemists = async () => {
-      try {
-        const [doctors, chemists] = await Promise.all([
-          api.get("/Doctor/GetAllDoctor"),
-          api.get("/Chemist/GetAllChemist"),
-        ]);
-
-        setDoctors(doctors.data.data);
-        setChemist(chemists.data.data);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch doctors/chemists.");
-      }
-    };
-    fetchDoctorsChemists();
-  }, [users]);
-
-  useEffect(() => {
-    const fetchSecondaryData = async () => {
+    const fetchStps = async () => {
       const stpObj = {
         pageNumber: 0,
         pageSize: 0,
@@ -113,20 +88,88 @@ function AddMtp() {
       };
 
       try {
-        const [stps, products] = await Promise.all([
-          api.post("/STPMTP/GetAll", stpObj),
-          api.get("/Product"),
-        ]);
-
-        setStp(stps.data.data);
-        setProduct(products.data.data);
+        const response = await api.post("/STPMTP/GetAll", stpObj);
+        setStp(response.data.data);
       } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch secondary data.");
+        console.error("Failed to fetch STPs:", err);
+        toast.error("Failed to fetch STPs.");
       }
     };
-    fetchSecondaryData();
+
+    fetchStps();
   }, [users]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await api.get(
+          "/User/GetReportingToMtp?hqid=" + headQuarterId
+        );
+        setUsers(response.data.data);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to fetch users.");
+      }
+    };
+    fetchUsers();
+  }, [headQuarterId]);
+
+  // useEffect(() => {
+  //   const fetchDoctorsChemists = async () => {
+  //     try {
+  //       const [doctors, chemists] = await Promise.all([
+  //         api.get("/Doctor/GetAllDoctor"),
+  //         api.get("/Chemist/GetAllChemist"),
+  //       ]);
+
+  //       setDoctors(doctors.data.data);
+  //       setChemist(chemists.data.data);
+  //     } catch (err) {
+  //       console.error(err);
+  //       toast.error("Failed to fetch doctors/chemists.");
+  //     }
+  //   };
+  //   fetchDoctorsChemists();
+  // }, []);
+
+  useEffect(() => {
+    if (!headQuarterId) return;
+
+    const fetchDoctorsChemists = async () => {
+      const objReq = {
+        hqid: parseInt(headQuarterId) || 1,
+      };
+
+      try {
+        const [doctors] = await Promise.all([
+          api.post("/Doctor/GetAllDocChemByHdID", objReq),
+          // api.get("/Chemist/GetAllChemist"),
+        ]);
+
+        setDoctors(doctors.data.data);
+        // setChemist(chemists.data.data);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to fetch doctors/chemists.");
+      }
+    };
+
+    fetchDoctorsChemists();
+  }, [headQuarterId]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await api.get("/Product");
+        setProduct(response.data.data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+        toast.error("Failed to fetch products.");
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // const fetchData = async () => {
   //   let stpObj = {
@@ -170,10 +213,39 @@ function AddMtp() {
     if (name === "user" || name === "stp" || name === "doctor") {
       if (value) {
         let parsedValue = JSON.parse(value);
+
         if (name === "stp") {
+          const newHeadQuarter = parsedValue.headQuarter;
+
+          if (mtpRow.length > 0 && newHeadQuarter !== initialHeadQuarterId) {
+            setShowResetModal(true);
+
+            if (pendingStpChange) {
+              setMtpRow([]);
+              setInitialHeadQuarterId(newHeadQuarter);
+              setFormData({
+                user: [],
+                doctor: null,
+                description: "",
+                headQuarterId: newHeadQuarter,
+                modeOfWork: "",
+                product: [],
+              });
+              setSelectedStp(parsedValue);
+              setHeadQuarterId(newHeadQuarter);
+            }
+            return;
+          }
           setSelectedStp(parsedValue);
+          setHeadQuarterId(newHeadQuarter);
+          setFormData((prev) => ({
+            ...prev,
+            stp: parsedValue,
+            headQuarterId: newHeadQuarter,
+          }));
           return;
         }
+
         setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
       } else {
         setFormData((prevData) => ({ ...prevData, [name]: null }));
@@ -223,11 +295,12 @@ function AddMtp() {
             superiorID: mtp.user.map((user) => user.codeID),
             modeOfWork: mtp.modeOfWork,
             docID: mtp.doctor?.drCode || mtp.doctor?.chemistCode,
+            visitedType: mtp.doctor?.visitedType,
             description: mtp.description,
           })),
         };
 
-        console.log(obj);
+        console.log("MTPhandleSubmit:", obj);
 
         const response = await api.post("/STPMTP/addMTP", obj);
 
@@ -255,6 +328,9 @@ function AddMtp() {
   const handleAdd = () => {
     console.log("Add clicked");
     if (validateData()) {
+      if (!initialHeadQuarterId) {
+        setInitialHeadQuarterId(formData.headQuarterId);
+      }
       setMtpRow((prevData) => [
         { id: prevData.length + 1, ...formData },
         ...prevData,
@@ -263,6 +339,7 @@ function AddMtp() {
         user: [],
         doctor: null,
         product: [],
+        headQuarterId: "",
         description: "",
         modeOfWork: "",
       });
@@ -611,6 +688,38 @@ function AddMtp() {
           )}
         </button>
       </div>
+      {showResetModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+            <h2 className="text-lg font-semibold mb-4">Confirm Changes</h2>
+            <p className="mb-6">
+              Changing the Headquarter will reset all added data. Do you want to
+              continue?
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded"
+                onClick={() => {
+                  setShowResetModal(false);
+                  setPendingStpChange(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded"
+                onClick={() => {
+                  setShowResetModal(false);
+                  setPendingStpChange(true);
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

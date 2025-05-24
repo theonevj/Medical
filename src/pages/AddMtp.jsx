@@ -100,18 +100,20 @@ function AddMtp() {
   }, [users]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await api.get(
-          "/User/GetReportingToMtp?hqid=" + headQuarterId
-        );
-        setUsers(response.data.data);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch users.");
-      }
-    };
-    fetchUsers();
+    if (headQuarterId) {
+      const fetchUsers = async () => {
+        try {
+          const response = await api.get(
+            "/User/GetReportingToMtp?hqid=" + headQuarterId
+          );
+          setUsers(response.data.data);
+        } catch (err) {
+          console.error(err);
+          toast.error("Failed to fetch users.");
+        }
+      };
+      fetchUsers();
+    }
   }, [headQuarterId]);
 
   // useEffect(() => {
@@ -219,10 +221,7 @@ function AddMtp() {
 
           if (mtpRow.length > 0 && newHeadQuarter !== initialHeadQuarterId) {
             setShowResetModal(true);
-
             if (pendingStpChange) {
-              setMtpRow([]);
-              setInitialHeadQuarterId(newHeadQuarter);
               setFormData({
                 user: [],
                 doctor: null,
@@ -231,11 +230,13 @@ function AddMtp() {
                 modeOfWork: "",
                 product: [],
               });
+              setInitialHeadQuarterId(newHeadQuarter);
               setSelectedStp(parsedValue);
               setHeadQuarterId(newHeadQuarter);
             }
             return;
           }
+
           setSelectedStp(parsedValue);
           setHeadQuarterId(newHeadQuarter);
           setFormData((prev) => ({
@@ -702,7 +703,6 @@ function AddMtp() {
                 className="px-4 py-2 bg-gray-300 rounded"
                 onClick={() => {
                   setShowResetModal(false);
-                  setPendingStpChange(false);
                 }}
               >
                 Cancel
@@ -712,6 +712,7 @@ function AddMtp() {
                 onClick={() => {
                   setShowResetModal(false);
                   setPendingStpChange(true);
+                  setMtpRow([]);
                 }}
               >
                 Confirm

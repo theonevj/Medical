@@ -92,18 +92,18 @@ export default function Employee() {
     }
   };
 
-  const handleChangePassword = async () => {
-    if (!selectedId) return;
+  const handleChangePassword = async (data) => {
+    if (!data.id) return;
 
     const passChangeFormData = {
       currentPassword: "abc@1234",
       newPassword: "abc@1234",
       byAdmin: 1,
-      userid: 0,
+      userid: data.id,
     };
 
     try {
-      await api.post(`/User/UpdatePass?id=${selectedId}`, passChangeFormData);
+      await api.post("/User/UpdatePass", passChangeFormData);
       fetchData();
       toast.success("Password updated successfully.");
     } catch (err) {

@@ -7,6 +7,8 @@ import { saveAs } from "file-saver";
 //Importing icons
 import { LoaderCircle } from "lucide-react";
 import { toast } from "react-toastify";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
 const exportToExcel = (data, fileName = "Data") => {
   const worksheet = XLSX.utils.json_to_sheet(data);
@@ -31,11 +33,31 @@ const generateColumns = (data) => {
   }));
 };
 
-const DynamicDataTable = (data) => {
+const DynamicDataTable = ({ data, searchTerm, setSearchTerm }) => {
   const columns = generateColumns(data);
+
+  const handleClearSearchTerm = () => {
+    setSearchTerm("");
+  };
+
   return (
     <div className="mt-4 flex flex-col gap-2">
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-between mb-2">
+        <div className=" p-2 space-x-2  min-w-60  border border-gray-500 rounded flex justify-between">
+          <SearchOutlinedIcon className=" text-gray-500" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search..."
+            className="bg-transparent focus:ring-none focus:outline-none"
+          />
+          {searchTerm.length > 0 && (
+            <button onClick={handleClearSearchTerm}>
+              <CloseOutlinedIcon className=" text-red-500 text-[10px]" />
+            </button>
+          )}
+        </div>
         <button
           onClick={() => exportToExcel(data)}
           className="bg-green-600 text-white px-4 py-2 rounded-md font-medium"
@@ -66,6 +88,8 @@ function DownloadReport() {
   const [user, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [reportData, setReportData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredReportData, setFilteredReportData] = useState([]);
 
   const fetchHeadQuaterData = async () => {
     try {
@@ -140,6 +164,20 @@ function DownloadReport() {
       }
     }
   };
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredReportData(reportData);
+    }
+    const filteredData = reportData.filter((row) => {
+      return Object.values(row).some((value) => {
+        const stringValue =
+          typeof value === "object" ? JSON.stringify(value) : String(value);
+        return stringValue.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+    });
+    setFilteredReportData(filteredData);
+  }, [searchTerm, reportData]);
 
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">
@@ -245,7 +283,15 @@ function DownloadReport() {
         </div>
       </div>
 
-      <div>{reportData.length > 0 && DynamicDataTable(reportData)}</div>
+      <div>
+        {reportData.length > 0 && (
+          <DynamicDataTable
+            data={filteredReportData}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -302,7 +302,7 @@ function StourPlan() {
             <div className="flex justify-center gap-4">
               <Link to={`update/${stpId}`}>
                 <button className="px-4 py-2 bg-blue-900 text-white rounded">
-                  Edit
+                  Update
                 </button>
               </Link>
               <button

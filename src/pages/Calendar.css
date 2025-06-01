@@ -1,4 +1,3 @@
-/* Overall calendar container */
 .rbc-calendar {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #ffffff;
@@ -7,7 +6,6 @@
   overflow: hidden;
 }
 
-/* Toolbar styling */
 .rbc-toolbar {
   display: flex;
   justify-content: space-between;
@@ -16,11 +14,13 @@
   padding: 12px 20px;
   border-bottom: 1px solid #ddd;
 }
+
 .rbc-toolbar-label {
   font-size: 18px;
   font-weight: 900;
   color: #000000 !important;
 }
+
 .rbc-btn-group button {
   padding: 6px 12px;
   margin: 0 4px;
@@ -61,7 +61,6 @@
   border-right: none;
 }
 
-/* Day cells */
 .rbc-date-cell {
   text-align: left;
   padding: 6px;
@@ -78,7 +77,6 @@
   max-width: 80%;
 }
 
-/* Fix layout issues from React Big Calendar inline styles */
 .rbc-agenda-content table.rbc-agenda-table tr {
   display: table-row !important;
   width: auto !important;
@@ -89,12 +87,10 @@
   justify-content: unset !important;
 }
 
-/* Enforce consistent column sizing */
 .rbc-agenda-table {
-  table-layout: auto; /* Let browser calculate widths */
+  table-layout: auto;
 }
 
-/* Ensure header and cell widths match */
 .rbc-agenda-table th,
 .rbc-agenda-table td {
   border: 1px solid #e5e7eb;
@@ -107,7 +103,6 @@
   white-space: nowrap;
 }
 
-/* Optionally define explicit widths for consistency */
 .rbc-agenda-table th:nth-child(1),
 .rbc-agenda-table td:nth-child(1) {
   width: 30%;
@@ -123,7 +118,6 @@
   width: 70%;
 }
 
-/* Header styling */
 .rbc-agenda-table thead {
   background-color: #f1f5f9;
 }
@@ -133,12 +127,9 @@
   font-weight: bold;
 }
 
-/* Alternate row background */
 .rbc-agenda-table tr:nth-child(even) {
   background-color: #f9fafb;
 }
-
-/* Event-specific styling */
 
 .rbc-agenda-event-cell.absent {
   color: #dc2626;
@@ -147,4 +138,89 @@
 
 .rbc-agenda-event-cell.week-off {
   color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .rbc-calendar {
+    font-size: 14px;
+  }
+
+  .rbc-toolbar {
+    flex-wrap: nowrap;
+    padding: 8px;
+  }
+
+  .rbc-toolbar-label {
+    font-size: 14px !important;
+    font-weight: 700;
+    flex-basis: 100%;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .rbc-btn-group {
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  .rbc-btn-group button {
+    padding: 4px 8px;
+    margin: 0 2px;
+    font-size: 12px;
+  }
+
+  .rbc-header {
+    padding: 6px 4px;
+    font-size: 12px;
+    height: auto;
+  }
+
+  .rbc-date-cell {
+    padding: 4px 3px;
+  }
+
+  .rbc-event-content {
+    max-width: 100%;
+    font-size: 12px;
+  }
+
+  .rbc-agenda-table th,
+  .rbc-agenda-table td {
+    font-size: 12px;
+    padding: 6px 8px;
+    white-space: normal;
+  }
+
+  .rbc-agenda-table th:nth-child(1),
+  .rbc-agenda-table td:nth-child(1),
+  .rbc-agenda-table th:nth-child(3),
+  .rbc-agenda-table td:nth-child(3) {
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .rbc-toolbar-label {
+    font-size: 12px !important;
+    font-weight: 600;
+  }
+
+  .rbc-btn-group button {
+    padding: 3px 6px;
+    margin: 0 1px;
+    font-size: 10px;
+  }
+
+  .rbc-header {
+    font-size: 10px;
+    padding: 4px 2px;
+  }
+
+  .rbc-event-content {
+    font-size: 11px;
+  }
+
+  .rbc-date-cell {
+    padding: 3px 2px;
+  }
 }

@@ -6,6 +6,7 @@ import { DataGrid } from "@mui/x-data-grid";
 
 //Importing icons
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { LoaderCircle } from "lucide-react";
 import { ChevronUp } from "lucide-react";
 import { ChevronDown } from "lucide-react";
@@ -449,46 +450,57 @@ function AddMtp() {
                 Select Doctor/Chemist
                 <span className="text-sm text-red-500">*</span>
               </label>
-              <Select
-                options={docchem.map((item) => ({
-                  value: JSON.stringify(item),
-                  label: item.drName || item.chemistName,
-                }))}
-                onChange={(selectedOption) => {
-                  const value = selectedOption
-                    ? JSON.parse(selectedOption.value)
-                    : null;
-                  setFormData((prevData) => ({ ...prevData, doctor: value }));
-                }}
-                placeholder="--- Select or Type Doctor/Chemist ---"
-                isSearchable
-                isClearable
-                isMulti={false}
-                filterOption={filterOption}
-                styles={{
-                  control: (provided, state) => ({
-                    ...provided,
-                    borderColor: state.isFocused ? "#E5E7EB" : "#E5E7EB",
-                    boxShadow: "none",
-                    "&:hover": {
-                      borderColor: "#E5E7EB",
-                    },
-                  }),
-                  option: (provided, state) => ({
-                    ...provided,
-                    backgroundColor: state.isFocused ? "#78716c" : "",
-                    color: state.isFocused ? "white" : "#374151",
-                    "&:active": {
-                      backgroundColor: "#D1D5DB",
-                    },
-                  }),
-                  placeholder: (provided) => ({
-                    ...provided,
-                    color: "black",
-                  }),
-                }}
-                className="outline-none"
-              />
+
+              <div className="flex justify-content-between items-center px-2 border border-gray-200">
+                <SearchOutlinedIcon className=" text-gray-500" />
+                <div className="flex-1 w-full">
+                  <Select
+                    options={docchem.map((item) => ({
+                      value: JSON.stringify(item),
+                      label: item.drName || item.chemistName,
+                    }))}
+                    onChange={(selectedOption) => {
+                      const value = selectedOption
+                        ? JSON.parse(selectedOption.value)
+                        : null;
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        doctor: value,
+                      }));
+                    }}
+                    placeholder="Search..."
+                    isSearchable
+                    isClearable
+                    isMulti={false}
+                    filterOption={filterOption}
+                    styles={{
+                      control: (provided, state) => ({
+                        ...provided,
+                        border: "none",
+                        outline: "none",
+                        borderColor: "none",
+                        boxShadow: "none",
+                        "&:hover": {
+                          borderColor: "none",
+                        },
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isFocused ? "#78716c" : "",
+                        color: state.isFocused ? "white" : "#374151",
+                        "&:active": {
+                          backgroundColor: "#D1D5DB",
+                        },
+                      }),
+                      placeholder: (provided) => ({
+                        ...provided,
+                        color: "gray",
+                      }),
+                    }}
+                    className="outline-none"
+                  />
+                </div>
+              </div>
               {errors.doc && (
                 <span className="text-sm text-red-500">{errors.doc}</span>
               )}

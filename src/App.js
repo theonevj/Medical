@@ -18,6 +18,7 @@ import ResetPassword from "./pages/ResetPassword";
 
 // Admin dashboard components
 import Dashboard from "./components/Admin/Dashboard";
+import UpdateStourPlan from "./pages/UpdateStourPlan";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -312,6 +313,16 @@ function App() {
             <ProtectedRoute requiredRole="admin">
               <Suspense fallback={<div>Loading...</div>}>
                 <AddStourPlan></AddStourPlan>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "stpplan/update/:id",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <UpdateStourPlan></UpdateStourPlan>
               </Suspense>
             </ProtectedRoute>
           ),

@@ -195,7 +195,7 @@ export default function MyDashboard() {
       title: "Doctor Average",
       dailyCount: dailyAvgDocVisit,
       monthlyCount: monthlyAvgDocVisit,
-      gradient: "from-sky-400 to-sky-600",
+      gradient: "from-sky-400 to-sky-600 col-span-3 lg:col-span-1",
       textColor: "text-sky-100",
       icon: (
         <ContentPasteOffOutlinedIcon
@@ -207,7 +207,7 @@ export default function MyDashboard() {
       title: "Chemist Average",
       dailyCount: dailyAvgChecmist,
       monthlyCount: monthlyAvgChecmist,
-      gradient: "from-indigo-400 to-indigo-600",
+      gradient: "from-indigo-400 to-indigo-600 col-span-3 lg:col-span-1",
       textColor: "text-indigo-100",
       icon: (
         <ScienceOutlinedIcon style={{ fontSize: "8rem", opacity: "0.1" }} />
@@ -225,7 +225,7 @@ export default function MyDashboard() {
 
   return (
     <div className="h-full overflow-y-scroll ">
-      <div className="grid gap-6 mb-4  grid-cols-1 md:grid-cols-5">
+      <div className="xl:gap-6 md:gap-2 gap-2 grid  mb-4  grid-cols-3 md:grid-cols-3 lg:grid-cols-5">
         {dashboardCardsData.map((card, index) => (
           <div
             key={index}
@@ -233,27 +233,29 @@ export default function MyDashboard() {
           >
             {card.icon && (
               <span
-                className={`absolute top-8 right-6 ${card.textColor} text-3xl`}
+                className={`absolute top-8 right-6 ${card.textColor} text-md md:text-lg  xl:text-3xl`}
               >
                 {card.icon}
               </span>
             )}
-            <h1 className={`text-2xl font-bold ${card.textColor}`}>
+            <h1
+              className={`md:text-lg  xl:text-2xl font-bold ${card.textColor} text-center lg:text-start`}
+            >
               {card.title}
             </h1>
             {card.dailyCount && card.monthlyCount && (
               <div
-                className={`flex justify-between items-end mt-5 ${card.textColor}`}
+                className={`flex justify-between items-end mt-3 lg:mt-5 ${card.textColor}`}
               >
                 <div className="flex flex-col gap-1">
                   <span className="text-lg font-semibold">Daily Average</span>
-                  <span className="text-3xl font-semibold text-center">
+                  <span className="md:text-lg xl:text-3xl font-semibold text-center">
                     {card.dailyCount}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-lg font-semibold">Monthly Average</span>
-                  <span className="text-3xl font-semibold text-center">
+                  <span className="md:text-lg xl:text-3xl font-semibold text-center">
                     {card.monthlyCount}
                   </span>
                 </div>
@@ -262,12 +264,13 @@ export default function MyDashboard() {
             {card.count && (
               <div className="flex justify-center items-center">
                 <span
-                  className={`text-[80px] font-extrabold leading-none ${card.textColor}`}
+                  className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-none ${card.textColor}`}
                 >
                   {card.count}
                 </span>
               </div>
             )}
+
             <div className="mt-auto">
               <Link to={card.link}>
                 <span className={`text-base transition ${card.textColor}`}>
@@ -279,7 +282,7 @@ export default function MyDashboard() {
         ))}
       </div>
 
-      <div className="w-full relative mb-4 h-[800px]">
+      <div className="w-full relative mb-4 lg:h-[800px] h-[400px] md:[600px]">
         <Calendar
           selectable
           localizer={localizer}
@@ -348,12 +351,12 @@ export default function MyDashboard() {
           components={{
             event: ({ event }) => (
               <div className="">
-                <div className="flex justify-between items-center font-bold">
+                <div className="flex justify-between items-center font-semibold lg:font-bold">
                   {event.title}
                 </div>
 
                 {(event.stpname || event.stptype) && (
-                  <div className="text-[12px] font-normal  whitespace-normal break-words">
+                  <div className="text-[12px] font-normal  whitespace-normal break-words hidden lg:block">
                     <p className="flex  break-words">{event.stpname}</p>
                     <p>
                       {event.stptype === "0" ||
@@ -387,12 +390,12 @@ export default function MyDashboard() {
                   <X />
                 </button>
               </div>
-              <div className="p-4  bg-neutral-100 flex justify-between items-center">
-                <div className="leading-7 flex justify-content-between items-center">
-                  <p className="font-semibold text-md ml-4">
+              <div className="p-4 space-x-4 gap-3 lg:gap-0 bg-neutral-100 flex flex-col md:justify-between md:items-center">
+                <div className="lg:leading-7 gap-3 lg:gap-0 flex flex-col md:justify-between md:items-center">
+                  <p className="font-semibold text-md text-nowrap">
                     Date:- {formattedDate}
                   </p>
-                  <p className="font-semibold text-md ml-4">
+                  <p className="font-semibold text-md  text-nowrap">
                     <span className="">STP:-</span>{" "}
                     {filteredDetails.length > 0 && filteredDetails[0].stp}
                   </p>

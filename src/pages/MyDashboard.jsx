@@ -160,7 +160,12 @@ export default function MyDashboard() {
       title: "Doctors",
       count: doctorsCount,
       link: user.isAdmin ? "/admin/doctors" : "/employee/doctors",
-      linkText: "See all doctors",
+      linkText: (
+        <>
+          <span className="block sm:inline">See all </span>
+          <span className="hidden md:inline">Doctors</span>
+        </>
+      ),
       gradient: "from-blue-400 to-blue-600",
       textColor: "text-sky-100",
       icon: (
@@ -173,7 +178,12 @@ export default function MyDashboard() {
       title: "Chemist",
       count: chemistCount,
       link: user.isAdmin ? "/admin/chemists" : "/employee/chemists",
-      linkText: "See all chemist",
+      linkText: (
+        <>
+          <span className="block sm:inline">See all </span>
+          <span className="hidden md:inline">chemists</span>
+        </>
+      ),
       gradient: "from-violet-400 to-violet-600",
       textColor: "text-fuchsia-100",
       icon: (
@@ -184,7 +194,12 @@ export default function MyDashboard() {
       title: "My Team",
       count: myTeamCount,
       link: user.isAdmin ? "/admin/myteam" : "/employee/myteam",
-      linkText: "See all Member",
+      linkText: (
+        <>
+          <span className="block sm:inline">See all </span>
+          <span className="hidden md:inline">Members</span>
+        </>
+      ),
       gradient: "from-emerald-400 to-teal-600",
       textColor: "text-lime-100",
       icon: (
@@ -195,7 +210,7 @@ export default function MyDashboard() {
       title: "Doctor Average",
       dailyCount: dailyAvgDocVisit,
       monthlyCount: monthlyAvgDocVisit,
-      gradient: "from-sky-400 to-sky-600 col-span-3 lg:col-span-1",
+      gradient: "from-sky-400 to-sky-600 hidden lg:inline",
       textColor: "text-sky-100",
       icon: (
         <ContentPasteOffOutlinedIcon
@@ -207,7 +222,32 @@ export default function MyDashboard() {
       title: "Chemist Average",
       dailyCount: dailyAvgChecmist,
       monthlyCount: monthlyAvgChecmist,
-      gradient: "from-indigo-400 to-indigo-600 col-span-3 lg:col-span-1",
+      gradient: "from-indigo-400 to-indigo-600 hidden lg:inline",
+      textColor: "text-indigo-100",
+      icon: (
+        <ScienceOutlinedIcon style={{ fontSize: "8rem", opacity: "0.1" }} />
+      ),
+    },
+  ];
+
+  const dashboardCardsDataMobileView = [
+    {
+      title: "Doctor Average",
+      dailyCount: dailyAvgDocVisit,
+      monthlyCount: monthlyAvgDocVisit,
+      gradient: "from-sky-400 to-sky-600 hidden md:inline",
+      textColor: "text-sky-100",
+      icon: (
+        <ContentPasteOffOutlinedIcon
+          style={{ fontSize: "8rem", opacity: "0.1" }}
+        />
+      ),
+    },
+    {
+      title: "Chemist Average",
+      dailyCount: dailyAvgChecmist,
+      monthlyCount: monthlyAvgChecmist,
+      gradient: "from-indigo-400 to-indigo-600 hidden md:inline",
       textColor: "text-indigo-100",
       icon: (
         <ScienceOutlinedIcon style={{ fontSize: "8rem", opacity: "0.1" }} />
@@ -225,7 +265,7 @@ export default function MyDashboard() {
 
   return (
     <div className="h-full overflow-y-scroll ">
-      <div className="xl:gap-6 md:gap-2 gap-2 grid  mb-4  grid-cols-3 md:grid-cols-3 lg:grid-cols-5">
+      <div className="xl:gap-3 md:gap-2 gap-2 grid mb-2 lg:mb-4  grid-cols-3 md:grid-cols-3 lg:grid-cols-5">
         {dashboardCardsData.map((card, index) => (
           <div
             key={index}
@@ -233,7 +273,7 @@ export default function MyDashboard() {
           >
             {card.icon && (
               <span
-                className={`absolute top-8 right-6 ${card.textColor} text-md md:text-lg  xl:text-3xl`}
+                className={`absolute top-8 right-6 ${card.textColor} text-md md:text-lg  xl:text-3xl hidden lg:inline`}
               >
                 {card.icon}
               </span>
@@ -248,13 +288,13 @@ export default function MyDashboard() {
                 className={`flex justify-between items-end mt-3 lg:mt-5 ${card.textColor}`}
               >
                 <div className="flex flex-col gap-1">
-                  <span className="text-lg font-semibold">Daily Average</span>
+                  <span className="text-lg font-semibold">Daily Avg</span>
                   <span className="md:text-lg xl:text-3xl font-semibold text-center">
                     {card.dailyCount}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-lg font-semibold">Monthly Average</span>
+                  <span className="text-lg font-semibold">Monthly Avg</span>
                   <span className="md:text-lg xl:text-3xl font-semibold text-center">
                     {card.monthlyCount}
                   </span>
@@ -278,6 +318,48 @@ export default function MyDashboard() {
                 </span>
               </Link>
             </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 mb-4 lg:hidden">
+        {dashboardCardsDataMobileView.map((card, index) => (
+          <div
+            key={index}
+            className={`relative flex flex-col p-4 rounded-lg bg-gradient-to-r ${card.gradient}  overflow-hidden`}
+          >
+            {card.icon && (
+              <span
+                className={`absolute top-8 right-6 ${card.textColor} text-md md:text-lg hidden lg:inline  xl:text-3xl`}
+              >
+                {card.icon}
+              </span>
+            )}
+            <h1
+              className={`md:text-lg  xl:text-2xl font-bold ${card.textColor} text-center lg:text-start`}
+            >
+              {card.title}
+            </h1>
+            {card.dailyCount && card.monthlyCount && (
+              <div
+                className={`flex justify-between items-center mt-2 lg:mt-5 ${card.textColor}`}
+              >
+                <div className="flex flex-col gap-1 w-1/2">
+                  <span className="text-md font-semibold text-start">
+                    Daily Avg
+                  </span>
+                  <span className="text-md font-semibold text-center">
+                    {card.dailyCount}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 text-end w-1/2">
+                  <span className="text-md font-semibold">Monthly Avg</span>
+                  <span className="text-md font-semibold text-center">
+                    {card.monthlyCount}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

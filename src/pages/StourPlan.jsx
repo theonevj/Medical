@@ -33,7 +33,10 @@ function StourPlan() {
   const [headQuater, setHeadQuater] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [stpId, setStpId] = useState(null);
+  const [stpIdDetail, setStpIdDetail] = useState([]);
+
   console.log("stpId:", stpId);
+  console.log("stpIdDetail:", stpIdDetail);
 
   const getDate = (orgdate) => {
     if (!orgdate) return "";
@@ -82,6 +85,20 @@ function StourPlan() {
       toast.error(err?.response?.data?.message || "Something went wrong.");
     }
   };
+
+  useEffect(() => {
+    if (stpId !== null) {
+      const fetchStpDetail = async () => {
+        try {
+          const response = await api.get(`/STPMTP/${stpId}`);
+          setStpIdDetail(response.data);
+        } catch (err) {
+          toast.error(err?.response?.data?.message || "Something went wrong.");
+        }
+      };
+      fetchStpDetail();
+    }
+  }, [stpId]);
 
   useEffect(() => {
     fetchHeadquater();
@@ -204,7 +221,7 @@ function StourPlan() {
                       )}
 
                       {stp.addedDate && (
-                        <div className="flex items-start space-x-3 sm:flex-1">
+                        <div className="flex lg:justify-end items-start space-x-3 sm:flex-1">
                           <CalendarDays className="w-5 h-5 text-gray-500" />
                           <div className="flex flex-col">
                             <p className="text-sm font-medium text-gray-900 text-left">
@@ -285,7 +302,7 @@ function StourPlan() {
           <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold ">
-                Confirm Changes for STP ID: {stpId}
+                Details for STP ID: {stpId}
               </h2>
               <button
                 onClick={closeModal}
@@ -298,6 +315,75 @@ function StourPlan() {
               Changing the Headquarter will reset all added data. Do you want to
               continue?
             </p>
+
+            <table className="w-full border-collapse border border-neutral-300 bg-white  overflow-hidden my-4">
+              <tbody>
+                <tr className="hover:bg-neutral-50">
+                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    Date
+                  </th>
+                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                    {getDate(stpIdDetail.addedDate)}
+                  </td>
+                </tr>
+                <tr className="hover:bg-neutral-50">
+                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    Approved On
+                  </th>
+                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                    {getDate(stpIdDetail.approveDatetime)}
+                  </td>
+                </tr>
+                <tr className="hover:bg-neutral-50">
+                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    Approved By
+                  </th>
+                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                    {stpIdDetail.approvedBy}
+                  </td>
+                </tr>
+                <tr className="hover:bg-neutral-50">
+                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    HQ
+                  </th>
+                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                    {stpIdDetail.headQuarter}
+                  </td>
+                </tr>
+                <tr className="hover:bg-neutral-50">
+                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    Tour
+                  </th>
+                  <td
+                    className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600"
+                    title={stpIdDetail.tourName}
+                  >
+                    {stpIdDetail.tourName &&
+                      stpIdDetail.tourName
+                        .split("-")
+                        .map((i) => i.trim())
+                        .map((i) => i.slice(0, 3).toUpperCase())
+                        .join("   →   ")}
+                  </td>
+                </tr>
+                <tr className="hover:bg-neutral-50">
+                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    Tour Type
+                  </th>
+                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                    {stpIdDetail.tourType}
+                  </td>
+                </tr>
+                <tr className="hover:bg-neutral-50">
+                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    User Id
+                  </th>
+                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                    {stpIdDetail.userID}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
             <div className="flex justify-center gap-4">
               <Link to={`update/${stpId}`}>

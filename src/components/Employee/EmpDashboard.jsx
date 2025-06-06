@@ -487,7 +487,7 @@ export default function EmpDashboard() {
                         isActive("mtpplan") && "text-themeblue"
                       } group-hover:text-themeblue font-medium`}
                     >
-                      MTP Plan
+                      Reporting and Plan
                     </span>
                   )}
                 </div>
@@ -542,7 +542,7 @@ export default function EmpDashboard() {
                     isActive("leaves") && "text-themeblue"
                   } group-hover:text-themeblue font-medium  text-lg`}
                 >
-                  MTP Plan
+                  Reporting and Plan
                 </span>
               )}
             </div>

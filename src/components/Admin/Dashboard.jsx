@@ -389,8 +389,8 @@ export default function Dashboard() {
             </div>
             <div
               className={`px-2 flex flex-col ${
-                openLeave ? "h-20" : "h-0"
-              } transition-all duration-300 overflow-hidden`}
+                openLeave ? "h-25" : "h-0"
+              } transition-all ml-6 duration-300 overflow-hidden`}
             >
               <div
                 onClick={() => handleNavigate("myleaves")}
@@ -406,7 +406,7 @@ export default function Dashboard() {
                   } `}
                 >
                   <HorizontalRuleIcon
-                    style={{ fontSize: "1.5rem" }}
+                    style={{ fontSize: "1rem" }}
                   ></HorizontalRuleIcon>
                 </span>
                 {isMenuOpen && (
@@ -433,7 +433,7 @@ export default function Dashboard() {
                   } `}
                 >
                   <HorizontalRuleIcon
-                    style={{ fontSize: "1.5rem" }}
+                    style={{ fontSize: "1rem" }}
                   ></HorizontalRuleIcon>
                 </span>
                 {isMenuOpen && (
@@ -454,7 +454,7 @@ export default function Dashboard() {
               onClick={() => setOpenPlan((prev) => !prev)}
               className={`group flex ${
                 isActive("plan") && "bg-blue-50 border-r-2 border-themeblue"
-              } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
+              } hover:bg-blue-50 py-4  cursor-pointer px-8 justify-between`}
             >
               <div className="flex items-center gap-2">
                 <span
@@ -464,7 +464,7 @@ export default function Dashboard() {
                       : "text-gray-700 group-hover:text-themeblue"
                   } `}
                 >
-                  <BiTrip style={{ fontSize: "1.5rem" }}></BiTrip>
+                  <BiTrip style={{ fontSize: "1rem" }}></BiTrip>
                 </span>
                 {isMenuOpen && (
                   <span
@@ -488,8 +488,8 @@ export default function Dashboard() {
             </div>
             <div
               className={`px-2 flex flex-col ${
-                openPlan ? "h-32" : "h-0"
-              } transition-all duration-300 overflow-hidden`}
+                openPlan ? "h-36" : "h-0"
+              } transition-all ml-6 duration-300 overflow-hidden`}
             >
               <div
                 onClick={() => handleNavigate("stpplan")}
@@ -505,7 +505,7 @@ export default function Dashboard() {
                   } `}
                 >
                   <HorizontalRuleIcon
-                    style={{ fontSize: "1.5rem" }}
+                    style={{ fontSize: "1rem" }}
                   ></HorizontalRuleIcon>
                 </span>
                 {isMenuOpen && (
@@ -532,7 +532,7 @@ export default function Dashboard() {
                   } `}
                 >
                   <HorizontalRuleIcon
-                    style={{ fontSize: "1.5rem" }}
+                    style={{ fontSize: "1rem" }}
                   ></HorizontalRuleIcon>
                 </span>
                 {isMenuOpen && (
@@ -541,7 +541,7 @@ export default function Dashboard() {
                       isActive("mtpplan") && "text-themeblue"
                     } group-hover:text-themeblue font-medium`}
                   >
-                    MTP Plan
+                    Reporting and Plan
                   </span>
                 )}
               </div>
@@ -559,7 +559,7 @@ export default function Dashboard() {
                   } `}
                 >
                   <HorizontalRuleIcon
-                    style={{ fontSize: "1.5rem" }}
+                    style={{ fontSize: "1rem" }}
                   ></HorizontalRuleIcon>
                 </span>
                 {isMenuOpen && (

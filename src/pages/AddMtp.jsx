@@ -7,7 +7,7 @@ import { DataGrid } from "@mui/x-data-grid";
 //Importing icons
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, Search } from "lucide-react";
 import { ChevronUp } from "lucide-react";
 import { ChevronDown } from "lucide-react";
 
@@ -38,6 +38,8 @@ function AddMtp() {
   const [pendingStpChange, setPendingStpChange] = useState(false);
 
   const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [userSearchTerm, setUserSearchTerm] = useState("");
   const [openUser, setOpenUser] = useState(false);
 
   const userdropdownref = useRef(null);
@@ -386,6 +388,14 @@ function AddMtp() {
     return option.label.toLowerCase().includes(inputValue.toLowerCase());
   };
 
+  const filteredProducts = product.filter((item) =>
+    item?.productName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredUsers = users.filter((name) =>
+    name?.user?.toLowerCase().includes(userSearchTerm.toLowerCase())
+  );
+
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">
       <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 md:px-4 flex items-center justify-between">
@@ -507,33 +517,37 @@ function AddMtp() {
             </div>
             <div className="flex flex-col gap-2">
               <label className="font-medium">Work With</label>
+
               <div className="relative w-full">
                 <div
                   onClick={() => setOpenUser((prev) => !prev)}
-                  className="p-1.5 cursor-pointer border flex gap-2 justify-between items-center rounded-md "
+                  className="p-1.5 cursor-pointer border flex gap-2 justify-between items-center  "
                 >
+                  <input
+                    type="text"
+                    value={userSearchTerm}
+                    onChange={(e) => setUserSearchTerm(e.target.value)}
+                    placeholder="Search..."
+                    className="px-4 border-none rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400  "
+                  />
+
                   <span>
-                    {formData.user.length === 0
-                      ? "Select Users"
-                      : `${formData.user.length} Users`}
-                  </span>
-                  <span>
-                    {openUser ? (
+                    {open ? (
                       <ChevronUp className="w-5 h-5 text-gray-600"></ChevronUp>
                     ) : (
                       <ChevronDown className="w-5 h-5 text-gray-600"></ChevronDown>
                     )}
                   </span>
                 </div>
-                {openUser && (
+                {(openUser || userSearchTerm.length !== 0) && (
                   <div
                     ref={userdropdownref}
                     className="absolute h-24 overflow-scroll w-full shadow bg-white z-40"
                   >
-                    {users.map((item, index) => (
+                    {filteredUsers.map((item, index) => (
                       <div
                         key={index}
-                        className="grid p-2 grid-cols-8 items-center gap-2"
+                        className="grid p-2 grid-cols-4 items-center gap-2"
                       >
                         <input
                           onChange={() => handleSelectUser(item)}
@@ -541,7 +555,7 @@ function AddMtp() {
                           checked={formData.user.includes(item)}
                           type="checkbox"
                         ></input>
-                        <span className="text-xs col-span-7">
+                        <span className="text-md col-span-3">
                           {item.codeName}
                         </span>
                       </div>
@@ -605,13 +619,16 @@ function AddMtp() {
               <div className="relative w-full">
                 <div
                   onClick={() => setOpen((prev) => !prev)}
-                  className="p-1.5 cursor-pointer border flex gap-2 justify-between items-center rounded-md "
+                  className="p-1.5 cursor-pointer border flex gap-2 justify-between items-center  "
                 >
-                  <span>
-                    {formData.product.length === 0
-                      ? "Select Products"
-                      : `${formData.product.length} Products`}
-                  </span>
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search..."
+                    className="px-4 border-none rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400  "
+                  />
+
                   <span>
                     {open ? (
                       <ChevronUp className="w-5 h-5 text-gray-600"></ChevronUp>
@@ -620,20 +637,25 @@ function AddMtp() {
                     )}
                   </span>
                 </div>
-                {open && (
-                  <div className="absolute h-36 overflow-scroll w-full shadow bg-white z-40">
-                    {product.map((item, index) => (
+
+                {(open || searchTerm.length !== 0) && (
+                  <div className="absolute h-72 overflow-scroll w-full shadow bg-white z-40">
+                    {filteredProducts.map((item, index) => (
                       <div
                         key={index}
-                        className="grid p-2 grid-cols-4 items-center gap-2"
+                        className="grid p-2 grid-cols-4 items-center gap-2 font-semibold hover:bg-neutral-500 hover:text-white"
                       >
                         <input
-                          onChange={() => handleSelectProduct(item)}
-                          className="col-span-1"
+                          onChange={() => {
+                            handleSelectProduct(item);
+                            setSearchTerm("");
+                            setOpen(true);
+                          }}
+                          className="w-full text-center col-span-1 w-5 h-5 text-neutral-600 bg-white border-2 border-gray-300 rounded-md  cursor-pointer"
                           checked={formData.product.includes(item)}
                           type="checkbox"
                         ></input>
-                        <span className="text-xs col-span-3">
+                        <span className="text-md col-span-3">
                           {item.productName}
                         </span>
                       </div>

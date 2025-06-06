@@ -145,7 +145,7 @@ function UpdateStourPlan() {
         setTourPlanName("");
         setPlaces([]);
         toast.success("Tour plan added successfully.");
-        navigate("/stpplan");
+        navigate("/admin/stpplan");
       } catch (err) {
         console.log(err);
       }

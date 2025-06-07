@@ -103,11 +103,11 @@ function AddMtp() {
   }, [users]);
 
   useEffect(() => {
-    if (headQuarterId) {
+    if (headQuarterId !== null) {
       const fetchUsers = async () => {
         try {
           const response = await api.get(
-            "/User/GetReportingToMtp?hqid=" + headQuarterId
+            "/User/GetReportingToMtp?hqid=" + parseInt(headQuarterId)
           );
           setUsers(response.data.data);
         } catch (err) {
@@ -393,8 +393,10 @@ function AddMtp() {
   );
 
   const filteredUsers = users.filter((name) =>
-    name?.user?.toLowerCase().includes(userSearchTerm.toLowerCase())
+    name?.codeName?.toLowerCase().includes(userSearchTerm.toLowerCase())
   );
+
+  console.log("filteredUsers", filteredUsers);
 
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">
@@ -542,16 +544,16 @@ function AddMtp() {
                 {(openUser || userSearchTerm.length !== 0) && (
                   <div
                     ref={userdropdownref}
-                    className="absolute h-24 overflow-scroll w-full shadow bg-white z-40"
+                    className="absolute h-72 overflow-scroll w-full shadow bg-white z-40"
                   >
                     {filteredUsers.map((item, index) => (
                       <div
                         key={index}
-                        className="grid p-2 grid-cols-4 items-center gap-2"
+                        className="grid p-2 grid-cols-4 items-center gap-2 uppercase font-semibold hover:bg-neutral-500 hover:text-white"
                       >
                         <input
                           onChange={() => handleSelectUser(item)}
-                          className="col-span-1"
+                          className="w-full text-center col-span-1 w-5 h-5 text-neutral-600 bg-white border-2 border-gray-300 rounded-md  cursor-pointer"
                           checked={formData.user.includes(item)}
                           type="checkbox"
                         ></input>

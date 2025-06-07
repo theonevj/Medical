@@ -339,7 +339,9 @@ function StourPlan() {
                     Approved By
                   </th>
                   <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
-                    {stpIdDetail.approvedBy}
+                    {stpIdDetail.tourLocations
+                      ?.map((loc) => loc.locationName)
+                      .join(", ")}
                   </td>
                 </tr>
                 <tr className="hover:bg-neutral-50">

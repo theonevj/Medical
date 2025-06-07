@@ -472,13 +472,13 @@ export default function MyDashboard() {
                   <X />
                 </button>
               </div>
-              <div className="p-4 space-x-4 gap-3 lg:gap-0 bg-neutral-100 flex flex-col md:justify-between md:items-center">
-                <div className="lg:leading-7 gap-3 lg:gap-0 flex flex-col md:justify-between md:items-center">
-                  <p className="font-semibold text-md text-nowrap">
-                    Date:- {formattedDate}
+              <div className="p-4 space-x-4 gap-3  bg-neutral-100 flex flex-col md:flex-row md:justify-between md:items-center">
+                <div className="lg:leading-7 gap-3 lg:gap-4  flex flex-col md:flex-row md:justify-between md:items-center">
+                  <p className="font-semibold text-gray-500 text-md text-nowrap">
+                    <span className="font-bold ">Date:-</span> {formattedDate}
                   </p>
-                  <p className="font-semibold text-md  text-nowrap">
-                    <span className="">STP:-</span>{" "}
+                  <p className="font-semibold text-md text-gray-500 text-nowrap">
+                    <span className="font-bold">STP:-</span>{" "}
                     {filteredDetails.length > 0 && filteredDetails[0].stp}
                   </p>
                 </div>

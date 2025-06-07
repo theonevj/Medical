@@ -200,11 +200,6 @@ function DownloadReport() {
               className="p-2 outline-none border rounded-md border-neutral-400"
             >
               <option value={""}>--- Select Report Type ---</option>
-              <option value={"DoctorList"}>DoctorList</option>
-              <option value={"ChemistList"}>ChemistList</option>
-              <option value={"EMList"}>EMPList</option>
-              <option value={"ProductList"}>ProductList</option>
-              <option value={"DoctorMappingList"}>DoctorMappingList</option>
               {reportTypeData.map((item) => (
                 <option value={item}>{item}</option>
               ))}

@@ -319,45 +319,19 @@ function StourPlan() {
             <table className="w-full border-collapse border border-neutral-300 bg-white  overflow-hidden my-4">
               <tbody>
                 <tr className="hover:bg-neutral-50">
-                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
-                    Date
-                  </th>
-                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
-                    {getDate(stpIdDetail.addedDate)}
-                  </td>
-                </tr>
-                <tr className="hover:bg-neutral-50">
-                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
-                    Approved On
-                  </th>
-                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
-                    {getDate(stpIdDetail.approveDatetime)}
-                  </td>
-                </tr>
-                <tr className="hover:bg-neutral-50">
-                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
-                    Approved By
-                  </th>
-                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
-                    {stpIdDetail.tourLocations
-                      ?.map((loc) => loc.locationName)
-                      .join(", ")}
-                  </td>
-                </tr>
-                <tr className="hover:bg-neutral-50">
-                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                  <th className="border border-neutral-300 px-4 py-3 uppercase text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
                     HQ
                   </th>
-                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
-                    {stpIdDetail.headQuarter}
+                  <td className="border border-neutral-300 px-4 py-3 uppercase text-sm text-neutral-600">
+                    {stpIdDetail.hqName}
                   </td>
                 </tr>
                 <tr className="hover:bg-neutral-50">
-                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                  <th className="border border-neutral-300 px-4 py-3 uppercase text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
                     Tour
                   </th>
                   <td
-                    className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600"
+                    className="border border-neutral-300 px-4  py-3 uppercase text-sm text-neutral-600"
                     title={stpIdDetail.tourName}
                   >
                     {stpIdDetail.tourName &&
@@ -369,19 +343,36 @@ function StourPlan() {
                   </td>
                 </tr>
                 <tr className="hover:bg-neutral-50">
-                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                  <th className="border border-neutral-300 px-4 py-3 text-left uppercase text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    Location
+                  </th>
+                  <td className="border border-neutral-300 px-4 py-3 text-sm uppercase text-neutral-600">
+                    {stpIdDetail.tourLocations
+                      ?.map((loc) => loc.locationName)
+                      .join(", ")}
+                  </td>
+                </tr>
+
+                <tr className="hover:bg-neutral-50">
+                  <th className="border border-neutral-300 px-4 py-3 text-left uppercase text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
                     Tour Type
                   </th>
-                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
-                    {stpIdDetail.tourType}
+                  <td className="border border-neutral-300 px-4 py-3 text-sm uppercase text-neutral-600">
+                    {stpIdDetail.tourType === 0
+                      ? "Local"
+                      : stpIdDetail.tourType === 1
+                      ? "Outstation"
+                      : stpIdDetail.tourType === 2
+                      ? "Ex - Station"
+                      : ""}
                   </td>
                 </tr>
                 <tr className="hover:bg-neutral-50">
-                  <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
-                    User Id
+                  <th className="border border-neutral-300 px-4 py-3 uppercase text-left text-sm font-semibold text-neutral-700 bg-neutral-50 w-1/3">
+                    Allowance
                   </th>
-                  <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
-                    {stpIdDetail.userID}
+                  <td className="border border-neutral-300 px-4 py-3 uppercase text-sm text-neutral-600">
+                    {stpIdDetail.tourAllowance || "Not Provided"}
                   </td>
                 </tr>
               </tbody>

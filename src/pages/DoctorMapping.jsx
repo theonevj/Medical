@@ -141,6 +141,25 @@ function DoctorMapping() {
     fetchAllData();
   }, []);
 
+  const handleMapDoctor = (doctor) => {
+  setSelectedDoctor((prev) => {
+    if (!prev.some((d) => d.drCode === doctor.drCode)) {
+      return [...prev, doctor];
+    }
+    return prev;
+  });
+
+  setSelectedDocIdx((prev) => {
+    if (!prev.includes(doctor.drCode)) {
+      return [...prev, doctor.drCode];
+    }
+    return prev;
+  });
+
+  toast.success(`Doctor ${doctor.drName} mapped successfully!`);
+};
+
+
   const handleSelectDoctors = (newDoctor) => {
     setSelectedDocIdx(newDoctor);
     setSelectedDoctor(doctor.filter((item) => newDoctor.includes(item.drCode)));
@@ -393,92 +412,74 @@ function DoctorMapping() {
 
       {/* Unmapped Doctors Modal */}
       {/* Unmapped Doctors Modal */}
-      <Modal open={openUnmapModal} onClose={() => setOpenUnmapModal(false)}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "70%",
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            borderRadius: 2,
-            p: 3,
-          }}
-        >
-          <Typography variant="h6" mb={2}>
-            Unmapped Doctors
-          </Typography>
-          <Box sx={{ height: 400 }}>
-            <DataGrid
-              rows={unMappedDoctors}
-              columns={docMapColumn}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
-              disableRowSelectionOnClick
-              getRowId={(row) => row.drCode}
-              rowSelectionModel={selectedDoctor.map((d) => d.drCode)}
-              onRowSelectionModelChange={(newSelected) => {
-                const selectedDocs = unMappedDoctors.filter((doc) =>
-                  newSelected.includes(doc.drCode)
-                );
-
-                setSelectedDoctor((prev) => {
-                  const updated = [...prev];
-                  selectedDocs.forEach((doc) => {
-                    if (!updated.some((d) => d.drCode === doc.drCode)) {
-                      updated.push(doc);
-                    }
-                  });
-                  return updated;
-                });
-
-                setSelectedDocIdx((prev) => {
-                  const updated = [...prev];
-                  newSelected.forEach((id) => {
-                    if (!updated.includes(id)) updated.push(id);
-                  });
-                  return updated;
-                });
+    <Modal open={openUnmapModal} onClose={() => setOpenUnmapModal(false)}>
+  <Box
+    sx={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "70%",
+      bgcolor: "background.paper",
+      boxShadow: 24,
+      borderRadius: 2,
+      p: 3,
+    }}
+  >
+    <Typography variant="h6" mb={2}>
+      Unmapped Doctors
+    </Typography>
+    <Box sx={{ height: 400 }}>
+      <DataGrid
+        rows={unMappedDoctors}
+        getRowId={(row) => row.drCode}
+        pageSizeOptions={[5, 10]}
+        disableRowSelectionOnClick
+        columns={[
+          {
+            field: "mapAction",
+            headerName: "Action",
+            width: 120,
+            renderCell: (params) => (
+              <button
+                onClick={() => handleMapDoctor(params.row)}
+                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
+              >
+                Map
+              </button>
+            ),
+          },
+          ...docMapColumn,
+        ]}
+        slots={{
+          noRowsOverlay: () => (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                color: "#666",
               }}
-
-
-
-              slots={{
-                noRowsOverlay: () => (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "100%",
-                      color: "#666",
-                    }}
-                  >
-                    All doctors are mapped 🎉
-                  </Box>
-                ),
-              }}
-            />
-          </Box>
-          <div className="flex justify-end gap-2 mt-3">
-            <button
-              onClick={() => setOpenUnmapModal(false)}
-              className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-md"
             >
-              Close
-            </button>
-            <button
-              disabled={selectedDoctor.length === 0 || selectedEmployee.length === 0}
-              onClick={handleSave}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-            >
-              Map Selected Doctors
-            </button>
-          </div>
-        </Box>
-      </Modal>
+              All doctors are mapped 🎉
+            </Box>
+          ),
+        }}
+      />
+    </Box>
+
+    <div className="flex justify-end gap-2 mt-3">
+      <button
+        onClick={() => setOpenUnmapModal(false)}
+        className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-md"
+      >
+        Close
+      </button>
+    </div>
+  </Box>
+</Modal>
+
 
 
       {/* Save Button */}
@@ -490,7 +491,7 @@ function DoctorMapping() {
         {saveLoader ? "Saving..." : "Map Selected Doctors"}
       </button>
     </div>
-  );
+  );  
 }
 
 export default DoctorMapping;

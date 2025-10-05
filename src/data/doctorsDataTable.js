@@ -136,7 +136,7 @@ export const columns = (handleOpenUpdateData,handleOpenConfirmPopUp)=>[
       ),
     },
   ];
-
+ 
 
 
 export const filterDoctorColumns = (handleOpenUpdateData,handleOpenConfirmPopUp)=>[

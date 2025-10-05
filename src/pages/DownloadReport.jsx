@@ -21,7 +21,7 @@ const exportToExcel = (data, fileName = "Data") => {
   });
   saveAs(fileData, `${fileName}.xlsx`);
 };
-
+  
 // Generate columns dynamically
 const generateColumns = (data) => {
   if (data.length === 0) return [];

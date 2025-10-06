@@ -34,7 +34,8 @@ export default function DoctorMapping() {
   const [selectedDoctor, setSelectedDoctor] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedEmpIdx, setSelectedEmpIdx] = useState([]); // [id]
-  const [selctedDocIdx, setSelectedDocIdx] = useState([]); // drCode list of mapped doctors
+  // const [selctedDocIdx, setSelectedDocIdx] = useState([]); // drCode list of mapped doctors
+  const [selectedDocIdx, setSelectedDocIdx] = useState([]); // correct spelling
 
   const [userSearch, setUserSearch] = useState("");
   const [doctorSearch, setDoctorSearch] = useState("");
@@ -142,12 +143,54 @@ export default function DoctorMapping() {
     }
   }, [selectedHeadQuater, doctor, users]);
 
-  const filteredDoctors = filterDoctor.filter(
-    (items) =>
-      items?.drName?.toLowerCase().includes(doctorSearch.toLowerCase()) ||
-      items?.speciality?.toLowerCase().includes(doctorSearch.toLowerCase())
-  );
-
+  // Search + HQ filtered doctor list
+  const filteredDoctors = doctor
+    .filter((doc) => {
+      if (selectedHeadQuater) {
+        return Number(doc.headquarter) === Number(selectedHeadQuater);
+      }
+      return true;
+    })
+    .filter((doc) => {
+      if (!doctorSearch) return true;
+      const search = doctorSearch.toLowerCase();
+      return (
+        doc?.drName?.toLowerCase()?.includes(search) ||
+        doc?.className?.toLowerCase()?.includes(search) ||
+        doc?.speciality?.toLowerCase()?.includes(search) ||
+        doc?.qualification?.toLowerCase()?.includes(search) ||
+        doc?.dob?.toLowerCase()?.includes(search) ||
+        doc?.gender?.toLowerCase()?.includes(search) ||
+        doc?.routeName?.toLowerCase()?.includes(search) ||
+        doc?.addressLine1?.toLowerCase()?.includes(search) ||
+        doc?.addressLine2?.toLowerCase()?.includes(search) ||
+        doc?.pinCode?.toLowerCase()?.includes(search) ||
+        doc?.doctorArea?.toLowerCase()?.includes(search) ||
+        doc?.vfreq?.toLowerCase()?.includes(search) ||
+        doc?.mobileNo?.toLowerCase()?.includes(search) ||
+        doc?.phone?.toLowerCase()?.includes(search)
+      );
+    });
+  const filteredMappedDoctors = selectedDoctor.filter((doc) => {
+    if (!doctorSearch) return true;
+    const search = doctorSearch.toLowerCase();
+    return (
+      doc?.drName?.toLowerCase()?.includes(search) ||
+      doc?.className?.toLowerCase()?.includes(search) ||
+      doc?.speciality?.toLowerCase()?.includes(search) ||
+      doc?.qualification?.toLowerCase()?.includes(search) ||
+      doc?.dob?.toLowerCase()?.includes(search) ||
+      doc?.gender?.toLowerCase()?.includes(search) ||
+      doc?.routeName?.toLowerCase()?.includes(search) ||
+      doc?.addressLine1?.toLowerCase()?.includes(search) ||
+      doc?.addressLine2?.toLowerCase()?.includes(search) ||
+      doc?.pinCode?.toLowerCase()?.includes(search) ||
+      doc?.doctorArea?.toLowerCase()?.includes(search) ||
+      doc?.vfreq?.toLowerCase()?.includes(search) ||
+      doc?.mobileNo?.toLowerCase()?.includes(search) ||
+      doc?.phone?.toLowerCase()?.includes(search)
+    );
+  });
   // --- Map single doctor (UI only) ---
   const handleMapDoctor = (doc) => {
     // add to selectedDoctor locally (no doc_no yet)
@@ -294,7 +337,7 @@ export default function DoctorMapping() {
 
         <Box sx={{ height: 400 }}>
           <DataGrid
-            rows={mappedTableRows}
+            rows={filteredMappedDoctors}
             getRowId={(row) => row.drCode}
             columns={[
               {
@@ -329,7 +372,9 @@ export default function DoctorMapping() {
           <Typography variant="h6" mb={2}>Unmapped Doctors</Typography>
           <Box sx={{ height: 420 }}>
             <DataGrid
-              rows={filteredDoctors.filter((doc) => !selctedDocIdx.includes(doc.drCode))}
+              // rows={filteredDoctors.filter((doc) => !selctedDocIdx.includes(doc.drCode))}
+              rows={filteredDoctors.filter((doc) => !selectedDocIdx.includes(doc.drCode))}
+
               getRowId={(row) => row.drCode}
               pageSizeOptions={[5, 10]}
               disableRowSelectionOnClick

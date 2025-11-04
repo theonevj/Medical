@@ -24,8 +24,8 @@ function Leave() {
   const [pendingCounts, setPendingCounts] = useState(0);
   const [rejectCounts, setRejectCounts] = useState(0);
 
-  const [selectedId,setSelectedId] = useState(null) 
-  const [openRemovePopUp,setOpenRemovePopUp] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)
+  const [openRemovePopUp, setOpenRemovePopUp] = useState(false)
 
 
   const getImage = (leaveType) => {
@@ -86,29 +86,29 @@ function Leave() {
     fetchData();
   }, []);
 
-  const handleOpenLeavePopUp = (id)=>{
-     console.log(id)
-     setSelectedId(id)
-     setOpenRemovePopUp(true)
+  const handleOpenLeavePopUp = (id) => {
+    console.log(id)
+    setSelectedId(id)
+    setOpenRemovePopUp(true)
   }
-  
-  const handleCloseOpenLeavePopUp = () =>{
+
+  const handleCloseOpenLeavePopUp = () => {
     setSelectedId(null)
     setOpenRemovePopUp(false)
 
   }
 
-  const handleRemoveLeave = async () =>{
-    if(selectedId){
-     try{
+  const handleRemoveLeave = async () => {
+    if (selectedId) {
+      try {
         await api.post(`/Leave/${selectedId}`)
         fetchData()
         handleCloseOpenLeavePopUp()
         toast.success("Leave deleted successfully")
-     }catch(err){
-       console.log(err)
-       toast.error(err?.response?.data?.message || "Something went wrong.");
-     }
+      } catch (err) {
+        console.log(err)
+        toast.error(err?.response?.data?.message || "Something went wrong.");
+      }
     }
   }
 
@@ -279,7 +279,7 @@ function Leave() {
                           style={{ fontSize: "1.2rem" }}
                         ></DeleteOutlineOutlinedIcon>
                       </span>{" "}
-                      <span onClick={()=>handleOpenLeavePopUp(item.id)} className="md:text-[15px] text-sm">Remove</span>
+                      <span onClick={() => handleOpenLeavePopUp(item.id)} className="md:text-[15px] text-sm">Remove</span>
                     </button>
                   </div>
                 </div>
@@ -383,86 +383,83 @@ function Leave() {
 
   return (
     <>
-    {
-      openRemovePopUp && (
-       <div className="fixed z-50 flex justify-center items-center inset-0 bg-black/50">
-        <div className="bg-white w-96 rounded-md p-4 flex flex-col">
-          <h1 className="font-medium text-lg">Confirmation</h1>
-          <span>Are you sure to remove this leave?</span>
-          <div className="w-full mt-4 flex place-content-end gap-2">
-             <button onClick={handleCloseOpenLeavePopUp} className="font-medium text-white rounded-md p-1 w-20 bg-blue-500 hover:bg-blue-600">Cancel</button>
-             <button onClick={handleRemoveLeave} className="font-medium text-white rounded-md p-1 w-20 bg-red-500 hover:bg-red-600">Remove</button>
+      {
+        openRemovePopUp && (
+          <div className="fixed z-50 flex justify-center items-center inset-0 bg-black/50">
+            <div className="bg-white w-96 rounded-md p-4 flex flex-col">
+              <h1 className="font-medium text-lg">Confirmation</h1>
+              <span>Are you sure to remove this leave?</span>
+              <div className="w-full mt-4 flex place-content-end gap-2">
+                <button onClick={handleCloseOpenLeavePopUp} className="font-medium text-white rounded-md p-1 w-20 bg-blue-500 hover:bg-blue-600">Cancel</button>
+                <button onClick={handleRemoveLeave} className="font-medium text-white rounded-md p-1 w-20 bg-red-500 hover:bg-red-600">Remove</button>
+              </div>
+            </div>
           </div>
-         </div>
-       </div>
-      )
-    }
-    <div className="flex h-full flex-col gap-3 md:gap-4">
-      <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center justify-between">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-gray-600 text-base md:text-lg font-medium">
-            Leaves
-          </h1>
-          <div className="flex items-center gap-2">
+        )
+      }
+      <div className="flex h-full flex-col gap-3 md:gap-4">
+        <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center justify-between">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-gray-600 text-base md:text-lg font-medium">
+              Leaves
+            </h1>
+            <div className="flex items-center gap-2">
+              <span
+                onClick={() => setActiveState("approve")}
+                className={`w-20 ${activeState === "approve"
+                    ? "bg-themeblue text-white"
+                    : "text-gray-600"
+                  } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
+              >
+                Approved
+              </span>
+              <span
+                onClick={() => setActiveState("pending")}
+                className={`w-20 ${activeState === "pending"
+                    ? "bg-themeblue text-white"
+                    : "text-gray-600"
+                  } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
+              >
+                Pending
+              </span>
+              <span
+                onClick={() => setActiveState("rejected")}
+                className={`w-20 ${activeState === "rejected"
+                    ? "bg-themeblue text-white"
+                    : "text-gray-600"
+                  } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
+              >
+                Rejected
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
             <span
-              onClick={() => setActiveState("approve")}
-              className={`w-20 ${
-                activeState === "approve"
-                  ? "bg-themeblue text-white"
-                  : "text-gray-600"
-              } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
+              onClick={fetchData}
+              className="cursor-pointer md:w-9 md:h-9 w-8 h-8 border-slate-200 border flex justify-center items-center rounded-md"
             >
-              Approved
+              <AutorenewIcon></AutorenewIcon>
             </span>
-            <span
-              onClick={() => setActiveState("pending")}
-              className={`w-20 ${
-                activeState === "pending"
-                  ? "bg-themeblue text-white"
-                  : "text-gray-600"
-              } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
+            <Link
+              to={user.isAdmin ? "/admin/myleaves/add" : "/employee/myleaves/add"}
             >
-              Pending
-            </span>
-            <span
-              onClick={() => setActiveState("rejected")}
-              className={`w-20 ${
-                activeState === "rejected"
-                  ? "bg-themeblue text-white"
-                  : "text-gray-600"
-              } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
-            >
-              Rejected
-            </span>
+              <button className="md:p-2 p-1.5 bg-themeblue md:text-base text-sm text-white rounded-md">
+                Add Leave
+              </button>
+            </Link>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span
-            onClick={fetchData}
-            className="cursor-pointer md:w-9 md:h-9 w-8 h-8 border-slate-200 border flex justify-center items-center rounded-md"
-          >
-            <AutorenewIcon></AutorenewIcon>
-          </span>
-          <Link
-            to={user.isAdmin ? "/admin/myleaves/add" : "/employee/myleaves/add"}
-          >
-            <button className="md:p-2 p-1.5 bg-themeblue md:text-base text-sm text-white rounded-md">
-              Add Leave
-            </button>
-          </Link>
-        </div>
-      </div>
 
-      <div className="bg-white h-full overflow-auto rounded-md md:py-4 py-3 px-3">
-        {loading ? (
-          <div className="w-full h-full flex justify-center items-center">
-            <img src={Loader} alt="loader" className="w-10 h-10"></img>
-          </div>
-        ) : (
-          renderLeaves()
-        )}
+        <div className="bg-white h-full overflow-auto rounded-md md:py-4 py-3 px-3">
+          {loading ? (
+            <div className="w-full h-full flex justify-center items-center">
+              <img src={Loader} alt="loader" className="w-10 h-10"></img>
+            </div>
+          ) : (
+            renderLeaves()
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 }

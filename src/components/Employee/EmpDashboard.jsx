@@ -49,11 +49,15 @@ export default function EmpDashboard() {
     navigate(pathname);
   };
 
+  const handleNavigateAddDoc = (pathname) => {
+    setIsMenuOpen(true);
+    navigate(pathname);
+  };
+
   const sidebarRef = useRef(null);
 
   const popupRef = useRef(null);
 
-  // Handle click outside
   const handleClickOutside = (event) => {
     if (popupRef.current && !popupRef.current.contains(event.target)) {
       setIsProfileOpen(false);
@@ -70,10 +74,7 @@ export default function EmpDashboard() {
   };
 
   useEffect(() => {
-    // Add event listener for clicks
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -86,12 +87,10 @@ export default function EmpDashboard() {
 
   return (
     <div className="flex h-screen bg-lightgray">
-      {/* Navbar */}
       <div className="fixed bg-white z-40 top-0 right-0 left-0 md:h-24 h-20 flex items-center">
         <div
-          className={`${
-            isMenuOpen ? "md:w-72" : "md:w-28"
-          } w-28 duration-300 transition-all px-5 h-full flex items-center gap-2`}
+          className={`${isMenuOpen ? "md:w-72" : "md:w-28"
+            } w-28 duration-300 transition-all px-5 h-full flex items-center gap-2`}
         >
           {isMenuOpen ? (
             <img className="md:w-36  md:h-14 h-8" alt="logo" src={LOGO}></img>
@@ -179,22 +178,19 @@ export default function EmpDashboard() {
       <div className="w-full relative flex md:mt-24 mt-20">
         {/* Sidebar For Web screen */}
         <div
-          className={`${
-            isMenuOpen ? "w-72" : "w-28"
-          } z-40 md:block hidden transition-all duration-300 shadow-lg bg-white`}
+          className={`${isMenuOpen ? "w-72" : "w-28"
+            } z-40 md:block hidden transition-all duration-300 shadow-lg bg-white`}
         >
           <div
             onClick={() => handleNavigate("dashboard")}
-            className={`group flex ${
-              isActive("dashboard") && "bg-blue-50 border-r-2 border-themeblue"
-            } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+            className={`group flex ${isActive("dashboard") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${
-                isActive("dashboard")
-                  ? "text-themeblue"
-                  : "text-gray-700 group-hover:text-themeblue"
-              } `}
+              className={`${isActive("dashboard")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
             >
               <DashboardOutlinedIcon
                 style={{ fontSize: "1.5rem" }}
@@ -202,9 +198,8 @@ export default function EmpDashboard() {
             </span>
             {isMenuOpen && (
               <span
-                className={`${
-                  isActive("dashboard") && "text-themeblue"
-                } group-hover:text-themeblue font-medium text-lg`}
+                className={`${isActive("dashboard") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
               >
                 Dashboard
               </span>
@@ -212,16 +207,14 @@ export default function EmpDashboard() {
           </div>
           <div
             onClick={() => handleNavigate("doctors")}
-            className={`group flex ${
-              isActive("doctors") && "bg-blue-50 border-r-2 border-themeblue"
-            } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+            className={`group flex ${isActive("doctors") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${
-                isActive("doctors")
-                  ? "text-themeblue"
-                  : "text-gray-700 group-hover:text-themeblue"
-              } `}
+              className={`${isActive("doctors")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
             >
               <LocalHospitalOutlinedIcon
                 style={{ fontSize: "1.5rem" }}
@@ -229,26 +222,47 @@ export default function EmpDashboard() {
             </span>
             {isMenuOpen && (
               <span
-                className={`${
-                  isActive("doctors") && "text-themeblue"
-                } group-hover:text-themeblue font-medium text-lg`}
+                className={`${isActive("doctors") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
               >
-                Doctors
+                Map Doctors
+              </span>
+            )}
+          </div>
+          <div
+            onClick={() => handleNavigate("addDoctors")}
+            className={`group flex ${isActive("addDoctors") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("addDoctors")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <LocalHospitalOutlinedIcon
+                style={{ fontSize: "1.5rem" }}
+              ></LocalHospitalOutlinedIcon>
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("addDoctors") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
+              >
+                Add Doctors
               </span>
             )}
           </div>
           <div
             onClick={() => handleNavigate("chemists")}
-            className={`group flex ${
-              isActive("chemists") && "bg-blue-50 border-r-2 border-themeblue"
-            } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+            className={`group flex ${isActive("chemists") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${
-                isActive("chemists")
-                  ? "text-themeblue"
-                  : "text-gray-700 group-hover:text-themeblue"
-              } `}
+              className={`${isActive("chemists")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
             >
               <ScienceOutlinedIcon
                 style={{ fontSize: "1.5rem" }}
@@ -256,26 +270,47 @@ export default function EmpDashboard() {
             </span>
             {isMenuOpen && (
               <span
-                className={`${
-                  isActive("chemist") && "text-themeblue"
-                } group-hover:text-themeblue font-medium  text-lg`}
+                className={`${isActive("chemist") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium  text-lg`}
               >
-                Chemist
+                Map Chemist
+              </span>
+            )}
+          </div>
+          <div
+            onClick={() => handleNavigate("addChemist")}
+            className={`group flex ${isActive("addChemist") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("addChemist")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <ScienceOutlinedIcon
+                style={{ fontSize: "1.5rem" }}
+              ></ScienceOutlinedIcon>
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("addChemist") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium  text-lg`}
+              >
+                Add Chemist
               </span>
             )}
           </div>
           <div
             onClick={() => handleNavigate("myteam")}
-            className={`group flex ${
-              isActive("myteam") && "bg-blue-50 border-r-2 border-themeblue"
-            } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+            className={`group flex ${isActive("myteam") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${
-                isActive("myteam")
-                  ? "text-themeblue"
-                  : "text-gray-700 group-hover:text-themeblue"
-              } `}
+              className={`${isActive("myteam")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
             >
               <PersonOutlineIcon
                 style={{ fontSize: "1.5rem" }}
@@ -283,9 +318,8 @@ export default function EmpDashboard() {
             </span>
             {isMenuOpen && (
               <span
-                className={`${
-                  isActive("myteam") && "text-themeblue"
-                } group-hover:text-themeblue font-medium  text-lg`}
+                className={`${isActive("myteam") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium  text-lg`}
               >
                 My Team
               </span>
@@ -296,17 +330,15 @@ export default function EmpDashboard() {
             <div className="relative">
               <div
                 onClick={() => setOpenLeave((prev) => !prev)}
-                className={`group flex ${
-                  isActive("leaves") && "bg-blue-50 border-r-2 border-themeblue"
-                } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
+                className={`group flex ${isActive("leaves") && "bg-blue-50 border-r-2 border-themeblue"
+                  } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className={`${
-                      isActive("leaves")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("leaves")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <ExitToAppIcon
                       style={{ fontSize: "1.5rem" }}
@@ -314,9 +346,8 @@ export default function EmpDashboard() {
                   </span>
                   {isMenuOpen && (
                     <span
-                      className={`${
-                        isActive("leaves") && "text-themeblue"
-                      } group-hover:text-themeblue font-medium  text-lg`}
+                      className={`${isActive("leaves") && "text-themeblue"
+                        } group-hover:text-themeblue font-medium  text-lg`}
                     >
                       Leaves
                     </span>
@@ -333,22 +364,19 @@ export default function EmpDashboard() {
                 )}
               </div>
               <div
-                className={`px-2 flex flex-col ${
-                  openLeave ? "h-20" : "h-0"
-                } transition-all duration-300 overflow-hidden`}
+                className={`px-2 flex flex-col ${openLeave ? "h-20" : "h-0"
+                  } transition-all duration-300 overflow-hidden`}
               >
                 <div
                   onClick={() => handleNavigate("myleaves")}
-                  className={`group flex ${
-                    isActive("myleaves") && "text-blue-600"
-                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                  className={`group flex ${isActive("myleaves") && "text-blue-600"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
                 >
                   <span
-                    className={`${
-                      isActive("myleaves")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("myleaves")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <HorizontalRuleIcon
                       style={{ fontSize: "1.5rem" }}
@@ -356,9 +384,8 @@ export default function EmpDashboard() {
                   </span>
                   {isMenuOpen && (
                     <span
-                      className={`${
-                        isActive("myleaves") && "text-themeblue"
-                      } group-hover:text-themeblue font-medium`}
+                      className={`${isActive("myleaves") && "text-themeblue"
+                        } group-hover:text-themeblue font-medium`}
                     >
                       My Leaves
                     </span>
@@ -366,16 +393,14 @@ export default function EmpDashboard() {
                 </div>
                 <div
                   onClick={() => handleNavigate("pendingleaves")}
-                  className={`group flex ${
-                    isActive("pendingleaves") && "text-blue-600"
-                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                  className={`group flex ${isActive("pendingleaves") && "text-blue-600"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
                 >
                   <span
-                    className={`${
-                      isActive("pendingleaves")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("pendingleaves")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <HorizontalRuleIcon
                       style={{ fontSize: "1.5rem" }}
@@ -383,9 +408,8 @@ export default function EmpDashboard() {
                   </span>
                   {isMenuOpen && (
                     <span
-                      className={`${
-                        isActive("pendingleaves") && "text-themeblue"
-                      } group-hover:text-themeblue font-medium`}
+                      className={`${isActive("pendingleaves") && "text-themeblue"
+                        } group-hover:text-themeblue font-medium`}
                     >
                       Pending On Me
                     </span>
@@ -396,24 +420,21 @@ export default function EmpDashboard() {
           ) : (
             <div
               onClick={() => handleNavigate("myleaves")}
-              className={`group flex ${
-                isActive("myleaves") && "bg-blue-50 border-r-2 border-themeblue"
-              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+              className={`group flex ${isActive("myleaves") && "bg-blue-50 border-r-2 border-themeblue"
+                } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
             >
               <span
-                className={`${
-                  isActive("myleaves")
-                    ? "text-themeblue"
-                    : "text-gray-700 group-hover:text-themeblue"
-                } `}
+                className={`${isActive("myleaves")
+                  ? "text-themeblue"
+                  : "text-gray-700 group-hover:text-themeblue"
+                  } `}
               >
                 <ExitToAppIcon style={{ fontSize: "1.5rem" }}></ExitToAppIcon>
               </span>
               {isMenuOpen && (
                 <span
-                  className={`${
-                    isActive("leaves") && "text-themeblue"
-                  } group-hover:text-themeblue font-medium  text-lg`}
+                  className={`${isActive("leaves") && "text-themeblue"
+                    } group-hover:text-themeblue font-medium  text-lg`}
                 >
                   Leaves
                 </span>
@@ -425,25 +446,22 @@ export default function EmpDashboard() {
             <div className="relative">
               <div
                 onClick={() => setOpenPlan((prev) => !prev)}
-                className={`group flex ${
-                  isActive("plan") && "bg-blue-50 border-r-2 border-themeblue"
-                } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
+                className={`group flex ${isActive("plan") && "bg-blue-50 border-r-2 border-themeblue"
+                  } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className={`${
-                      isActive("plan")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("plan")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <BiTrip style={{ fontSize: "1.5rem" }}></BiTrip>
                   </span>
                   {isMenuOpen && (
                     <span
-                      className={`${
-                        isActive("plan") && "text-themeblue"
-                      } group-hover:text-themeblue font-medium  text-lg`}
+                      className={`${isActive("plan") && "text-themeblue"
+                        } group-hover:text-themeblue font-medium  text-lg`}
                     >
                       Tour Plans
                     </span>
@@ -460,22 +478,19 @@ export default function EmpDashboard() {
                 )}
               </div>
               <div
-                className={`px-2 flex flex-col ${
-                  openPlan ? "h-30" : "h-0"
-                } transition-all duration-300 overflow-hidden`}
+                className={`px-2 flex flex-col ${openPlan ? "h-30" : "h-0"
+                  } transition-all duration-300 overflow-hidden`}
               >
                 <div
                   onClick={() => handleNavigate("mtpplan")}
-                  className={`group flex ${
-                    isActive("mtpplan") && "text-blue-600"
-                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                  className={`group flex ${isActive("mtpplan") && "text-blue-600"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
                 >
                   <span
-                    className={`${
-                      isActive("mtpplan")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("mtpplan")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <HorizontalRuleIcon
                       style={{ fontSize: "1.5rem" }}
@@ -483,9 +498,8 @@ export default function EmpDashboard() {
                   </span>
                   {isMenuOpen && (
                     <span
-                      className={`${
-                        isActive("mtpplan") && "text-themeblue"
-                      } group-hover:text-themeblue font-medium`}
+                      className={`${isActive("mtpplan") && "text-themeblue"
+                        } group-hover:text-themeblue font-medium`}
                     >
                       Reporting and Plan
                     </span>
@@ -493,16 +507,14 @@ export default function EmpDashboard() {
                 </div>
                 <div
                   onClick={() => handleNavigate("pendingmtp")}
-                  className={`group flex ${
-                    isActive("pendingmtp") && "text-blue-600"
-                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                  className={`group flex ${isActive("pendingmtp") && "text-blue-600"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
                 >
                   <span
-                    className={`${
-                      isActive("pendingmtp")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("pendingmtp")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <HorizontalRuleIcon
                       style={{ fontSize: "1.5rem" }}
@@ -510,9 +522,8 @@ export default function EmpDashboard() {
                   </span>
                   {isMenuOpen && (
                     <span
-                      className={`${
-                        isActive("pendingmtp") && "text-themeblue"
-                      } group-hover:text-themeblue font-medium`}
+                      className={`${isActive("pendingmtp") && "text-themeblue"
+                        } group-hover:text-themeblue font-medium`}
                     >
                       DCR Pending
                     </span>
@@ -523,24 +534,21 @@ export default function EmpDashboard() {
           ) : (
             <div
               onClick={() => handleNavigate("mtpplan")}
-              className={`group flex ${
-                isActive("mtpplan") && "bg-blue-50 border-r-2 border-themeblue"
-              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+              className={`group flex ${isActive("mtpplan") && "bg-blue-50 border-r-2 border-themeblue"
+                } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
             >
               <span
-                className={`${
-                  isActive("mtpplan")
-                    ? "text-themeblue"
-                    : "text-gray-700 group-hover:text-themeblue"
-                } `}
+                className={`${isActive("mtpplan")
+                  ? "text-themeblue"
+                  : "text-gray-700 group-hover:text-themeblue"
+                  } `}
               >
                 <BiTrip style={{ fontSize: "1.5rem" }}></BiTrip>
               </span>
               {isMenuOpen && (
                 <span
-                  className={`${
-                    isActive("leaves") && "text-themeblue"
-                  } group-hover:text-themeblue font-medium  text-lg`}
+                  className={`${isActive("leaves") && "text-themeblue"
+                    } group-hover:text-themeblue font-medium  text-lg`}
                 >
                   Reporting and Plan
                 </span>
@@ -551,24 +559,21 @@ export default function EmpDashboard() {
           {user.designation !== "6" && (
             <div
               onClick={() => handleNavigate("download")}
-              className={`group flex ${
-                isActive("download") && "bg-blue-50 border-r-2 border-themeblue"
-              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+              className={`group flex ${isActive("download") && "bg-blue-50 border-r-2 border-themeblue"
+                } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
             >
               <span
-                className={`${
-                  isActive("download")
-                    ? "text-themeblue"
-                    : "text-gray-700 group-hover:text-themeblue"
-                } `}
+                className={`${isActive("download")
+                  ? "text-themeblue"
+                  : "text-gray-700 group-hover:text-themeblue"
+                  } `}
               >
                 <Download className="w-5 h-5"></Download>
               </span>
               {isMenuOpen && (
                 <span
-                  className={`${
-                    isActive("download") && "text-themeblue"
-                  } group-hover:text-themeblue font-medium  text-lg`}
+                  className={`${isActive("download") && "text-themeblue"
+                    } group-hover:text-themeblue font-medium  text-lg`}
                 >
                   Download Report
                 </span>
@@ -579,106 +584,93 @@ export default function EmpDashboard() {
         {/* sidebar for mobile screen */}
         <div
           ref={sidebarRef}
-          className={`${
-            isMenuOpen ? "-left-96" : "left-0"
-          } z-40 w-64 bottom-0 top-0 md:hidden absolute transition-all duration-300 shadow-lg bg-white`}
+          className={`${isMenuOpen ? "-left-96" : "left-0"
+            } z-40 w-64 bottom-0 top-0 md:hidden absolute transition-all duration-300 shadow-lg bg-white`}
         >
           <div
             onClick={() => handleNavigate("dashboard")}
-            className={`group flex ${
-              isActive("dashboard") && "bg-blue-50 border-r-2 border-themeblue"
-            } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+            className={`group flex ${isActive("dashboard") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${
-                isActive("dashboard")
-                  ? "text-themeblue"
-                  : "text-gray-700 group-hover:text-themeblue"
-              } `}
+              className={`${isActive("dashboard")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
             >
               <DashboardOutlinedIcon
                 style={{ fontSize: "1.5rem" }}
               ></DashboardOutlinedIcon>
             </span>
             <span
-              className={`${
-                isActive("dashboard") && "text-themeblue"
-              } group-hover:text-themeblue font-medium text-lg`}
+              className={`${isActive("dashboard") && "text-themeblue"
+                } group-hover:text-themeblue font-medium text-lg`}
             >
               Dashboard
             </span>
           </div>
           <div
             onClick={() => handleNavigate("doctors")}
-            className={`group flex ${
-              isActive("doctors") && "bg-blue-50 border-r-2 border-themeblue"
-            } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+            className={`group flex ${isActive("doctors") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${
-                isActive("doctors")
-                  ? "text-themeblue"
-                  : "text-gray-700 group-hover:text-themeblue"
-              } `}
+              className={`${isActive("doctors")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
             >
               <LocalHospitalOutlinedIcon
                 style={{ fontSize: "1.5rem" }}
               ></LocalHospitalOutlinedIcon>
             </span>
             <span
-              className={`${
-                isActive("doctors") && "text-themeblue"
-              } group-hover:text-themeblue font-medium text-lg`}
+              className={`${isActive("doctors") && "text-themeblue"
+                } group-hover:text-themeblue font-medium text-lg`}
             >
               Doctors
             </span>
           </div>
           <div
             onClick={() => handleNavigate("chemists")}
-            className={`group flex ${
-              isActive("chemists") && "bg-blue-50 border-r-2 border-themeblue"
-            } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+            className={`group flex ${isActive("chemists") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${
-                isActive("chemists")
-                  ? "text-themeblue"
-                  : "text-gray-700 group-hover:text-themeblue"
-              } `}
+              className={`${isActive("chemists")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
             >
               <ScienceOutlinedIcon
                 style={{ fontSize: "1.5rem" }}
               ></ScienceOutlinedIcon>
             </span>
             <span
-              className={`${
-                isActive("chemists") && "text-themeblue"
-              } group-hover:text-themeblue font-medium  text-lg`}
+              className={`${isActive("chemists") && "text-themeblue"
+                } group-hover:text-themeblue font-medium  text-lg`}
             >
               Chemist
             </span>
           </div>
           <div
             onClick={() => handleNavigate("myteam")}
-            className={`group flex ${
-              isActive("myteam") && "bg-blue-50 border-r-2 border-themeblue"
-            } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+            className={`group flex ${isActive("myteam") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${
-                isActive("myteam")
-                  ? "text-themeblue"
-                  : "text-gray-700 group-hover:text-themeblue"
-              } `}
+              className={`${isActive("myteam")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
             >
               <PersonOutlineIcon
                 style={{ fontSize: "1.5rem" }}
               ></PersonOutlineIcon>
             </span>
             <span
-              className={`${
-                isActive("myteam") && "text-themeblue"
-              } group-hover:text-themeblue font-medium  text-lg`}
+              className={`${isActive("myteam") && "text-themeblue"
+                } group-hover:text-themeblue font-medium  text-lg`}
             >
               My Team
             </span>
@@ -687,26 +679,23 @@ export default function EmpDashboard() {
             <div className="relative">
               <div
                 onClick={() => setOpenLeave((prev) => !prev)}
-                className={`group flex ${
-                  isActive("leaves") && "bg-blue-50 border-r-2 border-themeblue"
-                } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
+                className={`group flex ${isActive("leaves") && "bg-blue-50 border-r-2 border-themeblue"
+                  } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className={`${
-                      isActive("myleaves")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("myleaves")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <ExitToAppIcon
                       style={{ fontSize: "1.5rem" }}
                     ></ExitToAppIcon>
                   </span>
                   <span
-                    className={`${
-                      isActive("myleaves") && "text-themeblue"
-                    } group-hover:text-themeblue font-medium  text-lg`}
+                    className={`${isActive("myleaves") && "text-themeblue"
+                      } group-hover:text-themeblue font-medium  text-lg`}
                   >
                     Leaves
                   </span>
@@ -720,56 +709,49 @@ export default function EmpDashboard() {
                 </span>
               </div>
               <div
-                className={`flex flex-col ${
-                  openLeave ? "h-20" : "h-0"
-                } px-2 transition-all duration-300 overflow-hidden`}
+                className={`flex flex-col ${openLeave ? "h-20" : "h-0"
+                  } px-2 transition-all duration-300 overflow-hidden`}
               >
                 <div
                   onClick={() => handleNavigate("myleaves")}
-                  className={`group flex ${
-                    isActive("myleaves") && "text-themeblue"
-                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                  className={`group flex ${isActive("myleaves") && "text-themeblue"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
                 >
                   <span
-                    className={`${
-                      isActive("myleaves")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("myleaves")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <HorizontalRuleIcon
                       style={{ fontSize: "1.5rem" }}
                     ></HorizontalRuleIcon>
                   </span>
                   <span
-                    className={`${
-                      isActive("myleaves") && "text-themeblue"
-                    } group-hover:text-themeblue font-medium`}
+                    className={`${isActive("myleaves") && "text-themeblue"
+                      } group-hover:text-themeblue font-medium`}
                   >
                     My Leaves
                   </span>
                 </div>
                 <div
                   onClick={() => handleNavigate("pendingleaves")}
-                  className={`group flex ${
-                    isActive("pendingleaves") && "text-themeblue"
-                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                  className={`group flex ${isActive("pendingleaves") && "text-themeblue"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
                 >
                   <span
-                    className={`${
-                      isActive("pendingleaves")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("pendingleaves")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <HorizontalRuleIcon
                       style={{ fontSize: "1.5rem" }}
                     ></HorizontalRuleIcon>
                   </span>
                   <span
-                    className={`${
-                      isActive("pendingleaves") && "text-themeblue"
-                    } group-hover:text-themeblue font-medium`}
+                    className={`${isActive("pendingleaves") && "text-themeblue"
+                      } group-hover:text-themeblue font-medium`}
                   >
                     Pending On Me
                   </span>
@@ -779,23 +761,20 @@ export default function EmpDashboard() {
           ) : (
             <div
               onClick={() => handleNavigate("myleaves")}
-              className={`group flex ${
-                isActive("myleaves") && "bg-blue-50 border-r-2 border-themeblue"
-              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+              className={`group flex ${isActive("myleaves") && "bg-blue-50 border-r-2 border-themeblue"
+                } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
             >
               <span
-                className={`${
-                  isActive("myleaves")
-                    ? "text-themeblue"
-                    : "text-gray-700 group-hover:text-themeblue"
-                } `}
+                className={`${isActive("myleaves")
+                  ? "text-themeblue"
+                  : "text-gray-700 group-hover:text-themeblue"
+                  } `}
               >
                 <ExitToAppIcon style={{ fontSize: "1.5rem" }}></ExitToAppIcon>
               </span>
               <span
-                className={`${
-                  isActive("myleaves") && "text-themeblue"
-                } group-hover:text-themeblue font-medium  text-lg`}
+                className={`${isActive("myleaves") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium  text-lg`}
               >
                 Leaves
               </span>
@@ -805,24 +784,21 @@ export default function EmpDashboard() {
             <div className="relative">
               <div
                 onClick={() => setOpenPlan((prev) => !prev)}
-                className={`group flex ${
-                  isActive("plan") && "bg-blue-50 border-r-2 border-themeblue"
-                } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
+                className={`group flex ${isActive("plan") && "bg-blue-50 border-r-2 border-themeblue"
+                  } hover:bg-blue-50 py-4 cursor-pointer px-8 justify-between`}
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className={`${
-                      isActive("myleaves")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("myleaves")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <BiTrip style={{ fontSize: "1.5rem" }}></BiTrip>
                   </span>
                   <span
-                    className={`${
-                      isActive("myleaves") && "text-themeblue"
-                    } group-hover:text-themeblue font-medium  text-lg`}
+                    className={`${isActive("myleaves") && "text-themeblue"
+                      } group-hover:text-themeblue font-medium  text-lg`}
                   >
                     Tour Plans
                   </span>
@@ -836,56 +812,49 @@ export default function EmpDashboard() {
                 </span>
               </div>
               <div
-                className={`flex flex-col ${
-                  openPlan ? "h-30" : "h-0"
-                } px-2 transition-all duration-300 overflow-hidden`}
+                className={`flex flex-col ${openPlan ? "h-30" : "h-0"
+                  } px-2 transition-all duration-300 overflow-hidden`}
               >
                 <div
                   onClick={() => handleNavigate("mtpplan")}
-                  className={`group flex ${
-                    isActive("mtpplan") && "text-themeblue"
-                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                  className={`group flex ${isActive("mtpplan") && "text-themeblue"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
                 >
                   <span
-                    className={`${
-                      isActive("mtpplan")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("mtpplan")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <HorizontalRuleIcon
                       style={{ fontSize: "1.5rem" }}
                     ></HorizontalRuleIcon>
                   </span>
                   <span
-                    className={`${
-                      isActive("mtpplan") && "text-themeblue"
-                    } group-hover:text-themeblue font-medium`}
+                    className={`${isActive("mtpplan") && "text-themeblue"
+                      } group-hover:text-themeblue font-medium`}
                   >
                     MTP Plan
                   </span>
                 </div>
                 <div
                   onClick={() => handleNavigate("pendingmtp")}
-                  className={`group flex ${
-                    isActive("pendingmtp") && "text-themeblue"
-                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                  className={`group flex ${isActive("pendingmtp") && "text-themeblue"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
                 >
                   <span
-                    className={`${
-                      isActive("pendingmtp")
-                        ? "text-themeblue"
-                        : "text-gray-700 group-hover:text-themeblue"
-                    } `}
+                    className={`${isActive("pendingmtp")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
                   >
                     <HorizontalRuleIcon
                       style={{ fontSize: "1.5rem" }}
                     ></HorizontalRuleIcon>
                   </span>
                   <span
-                    className={`${
-                      isActive("pendingmtp") && "text-themeblue"
-                    } group-hover:text-themeblue font-medium`}
+                    className={`${isActive("pendingmtp") && "text-themeblue"
+                      } group-hover:text-themeblue font-medium`}
                   >
                     DCR Pending
                   </span>
@@ -895,23 +864,20 @@ export default function EmpDashboard() {
           ) : (
             <div
               onClick={() => handleNavigate("mtpplan")}
-              className={`group flex ${
-                isActive("mtpplan") && "bg-blue-50 border-r-2 border-themeblue"
-              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+              className={`group flex ${isActive("mtpplan") && "bg-blue-50 border-r-2 border-themeblue"
+                } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
             >
               <span
-                className={`${
-                  isActive("mtpplan")
-                    ? "text-themeblue"
-                    : "text-gray-700 group-hover:text-themeblue"
-                } `}
+                className={`${isActive("mtpplan")
+                  ? "text-themeblue"
+                  : "text-gray-700 group-hover:text-themeblue"
+                  } `}
               >
                 <BiTrip style={{ fontSize: "1.5rem" }}></BiTrip>
               </span>
               <span
-                className={`${
-                  isActive("mtpplan") && "text-themeblue"
-                } group-hover:text-themeblue font-medium text-lg`}
+                className={`${isActive("mtpplan") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
               >
                 MTP Plan
               </span>
@@ -920,23 +886,20 @@ export default function EmpDashboard() {
           {user.designation !== "6" && (
             <div
               onClick={() => handleNavigate("download")}
-              className={`group flex ${
-                isActive("download") && "bg-blue-50 border-r-2 border-themeblue"
-              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+              className={`group flex ${isActive("download") && "bg-blue-50 border-r-2 border-themeblue"
+                } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
             >
               <span
-                className={`${
-                  isActive("download")
-                    ? "text-themeblue"
-                    : "text-gray-700 group-hover:text-themeblue"
-                } `}
+                className={`${isActive("download")
+                  ? "text-themeblue"
+                  : "text-gray-700 group-hover:text-themeblue"
+                  } `}
               >
                 <Download className="w-5 h-5"></Download>
               </span>
               <span
-                className={`${
-                  isActive("download") && "text-themeblue"
-                } group-hover:text-themeblue font-medium text-lg`}
+                className={`${isActive("download") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
               >
                 Download Report
               </span>

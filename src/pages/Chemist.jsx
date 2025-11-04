@@ -700,7 +700,8 @@ export default function Chemist() {
               rows={filteredChemist}
               columns={filterColumns(
                 handleOpenUpdateData,
-                handleOpenConfirmPopUp
+                handleOpenConfirmPopUp,
+                getChemistData
               )}
               loading={loading}
               initialState={{

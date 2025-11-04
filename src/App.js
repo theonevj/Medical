@@ -19,6 +19,10 @@ import ResetPassword from "./pages/ResetPassword";
 // Admin dashboard components
 import Dashboard from "./components/Admin/Dashboard";
 import UpdateStourPlan from "./pages/UpdateStourPlan";
+import AddNewDocUser from "./pages/AddNewDocUser";
+import AddNewChemistUser from "./pages/AddNewChemistUser";
+import DoctorsUser from "./pages/DoctorsUser";
+import ChemistUser from "./pages/ChemistUser";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -429,14 +433,24 @@ function App() {
             </ProtectedRoute>
           ),
         },
-        // {
-        //   path:'doctors/addnew',
-        //   element:(
-        //     <ProtectedRoute requiredRole="employee">
-        //       <AddNewDoc></AddNewDoc>
-        //     </ProtectedRoute>
-        //   )
-        // },
+        {
+          path: 'doctors/addnew',
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <AddNewDocUser></AddNewDocUser>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: "addDoctors",
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <Suspense fallback={<div>Loading...</div>}>
+                <DoctorsUser></DoctorsUser>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
         {
           path: "chemists",
           element: (
@@ -447,14 +461,24 @@ function App() {
             </ProtectedRoute>
           ),
         },
-        // {
-        //   path:'chemists/addnew',
-        //   element:(
-        //     <ProtectedRoute requiredRole="employee">
-        //       <AddNewChemist></AddNewChemist>
-        //     </ProtectedRoute>
-        //   )
-        // },
+        {
+          path: "addChemist",
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <Suspense fallback={<div>Loading...</div>}>
+                <ChemistUser></ChemistUser>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: 'chemists/addnew',
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <AddNewChemistUser></AddNewChemistUser>
+            </ProtectedRoute>
+          )
+        },
         {
           path: "myteam",
           element: (

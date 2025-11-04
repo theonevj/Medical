@@ -33,7 +33,6 @@ export default function Doctors() {
   const [file, setFile] = useState(null);
   const [headQuater, setHeadQuater] = useState([]);
   const [selectedHeadquater, setSelectedHeadQuater] = useState(null);
-
   const [openConfirmPopUp, setOpenConfirmPopUp] = useState(false);
 
   const [updateData, setUpdateData] = useState({
@@ -57,13 +56,11 @@ export default function Doctors() {
   });
 
   const [errors, setErrors] = useState({});
-
   const [updateLoading, setUpdateLoading] = useState(false);
 
   const fetchHeadQuater = async () => {
     try {
       const response = await api.get("/Headquarters");
-      console.log("headquater---->", response.data);
       setHeadQuater(response.data);
     } catch (err) {
       console.log(err);
@@ -148,7 +145,6 @@ export default function Doctors() {
 
   const [updatePopUp, setUpdatePopUp] = useState(false);
 
-  //For updating data
   const handleOpenUpdateData = (data) => {
     const { id, ...updateData } = data;
     setUpdateData(updateData);
@@ -713,7 +709,7 @@ export default function Doctors() {
               <AutorenewIcon></AutorenewIcon>
             </span>
             {user.isAdmin && (
-              <Link to={"/admin/doctors/addnew"}>
+              <Link to={`/${user?.isAdmin ? "admin" : "employee"}/doctors/addnew`}>
                 <button className="md:p-2 p-1.5 bg-themeblue md:text-base text-sm text-white rounded-md">
                   Add New Doctor
                 </button>
@@ -749,7 +745,7 @@ export default function Doctors() {
           >
             <DataGrid
               rows={filteredDoctors}
-              columns={docColumns(handleOpenUpdateData, handleOpenConfirmPopUp)}
+              columns={docColumns(handleOpenUpdateData, handleOpenConfirmPopUp, fetchData)}
               loading={loading}
               initialState={{
                 pagination: {

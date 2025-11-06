@@ -333,6 +333,8 @@ export default function Dashboard() {
             )}
           </div>
 
+
+
           <div className="relative">
             <div
               onClick={() => setOpenLeave((prev) => !prev)}
@@ -456,6 +458,7 @@ export default function Dashboard() {
                 </span>
               )}
             </div>
+
             <div
               className={`px-2 flex flex-col ${openPlan ? "h-36" : "h-0"
                 } transition-all ml-6 duration-300 overflow-hidden`}
@@ -533,6 +536,7 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
+
           </div>
 
           <div
@@ -581,6 +585,28 @@ export default function Dashboard() {
                 Doctor Mapping
               </span>
             )}
+          </div>
+
+          <div
+            onClick={() => handleNavigate("headquarter")}
+            className={`group flex ${isActive("headquarter") &&
+              "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("headquarter")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <ClipboardMinus className="w-5 h-5"></ClipboardMinus>
+            </span>
+            <span
+              className={`${isActive("headquarter") && "text-themeblue"
+                } group-hover:text-themeblue font-medium  text-lg`}
+            >
+              Headquarter
+            </span>
           </div>
 
           <div

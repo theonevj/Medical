@@ -653,8 +653,7 @@ export const rows = [
 
 export const getAllChemist = async () => {
   try {
-    // const response = await api.get(`/Chemist/GetAllChemist`)
-    const response = await api.get(`/Chemist/GetAll`)
+    const response = await api.get(`/Chemist/GetAllChemist`)
     return response.data.data
   } catch (err) {
     throw err
@@ -663,7 +662,7 @@ export const getAllChemist = async () => {
 
 export const getAllChemistForEmployee = async () => {
   try {
-    const response = await api.get('/Chemist/GetAll')
+    const response = await api.get('/Chemist/GetAllChemist')
     return response.data.data
   } catch (err) {
     throw err

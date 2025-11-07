@@ -103,11 +103,11 @@ function AddMtp() {
   }, [users]);
 
   useEffect(() => {
-    if (headQuarterId !== null) {
+    if (user?.headQuater !== null) {
       const fetchUsers = async () => {
         try {
           const response = await api.get(
-            "/User/GetReportingToMtp?hqid=" + parseInt(headQuarterId)
+            "/User/GetReportingToMtp?hqid=" + parseInt(user?.headQuater)
           );
           setUsers(response.data.data);
         } catch (err) {
@@ -117,7 +117,7 @@ function AddMtp() {
       };
       fetchUsers();
     }
-  }, [headQuarterId]);
+  }, [user?.headQuater]);
 
   // useEffect(() => {
   //   const fetchDoctorsChemists = async () => {
@@ -218,7 +218,6 @@ function AddMtp() {
     if (name === "user" || name === "stp" || name === "doctor") {
       if (value) {
         let parsedValue = JSON.parse(value);
-
         if (name === "stp") {
           const newHeadQuarter = parsedValue.headQuarter;
 
@@ -304,15 +303,12 @@ function AddMtp() {
           })),
         };
 
-        console.log("MTPhandleSubmit:", obj);
-
         const response = await api.post("/STPMTP/addMTP", obj);
 
         if (response.data.statusCode === 500) {
           toast.error(
             "Mtp is already added./Can not submit date other than today and yesterday."
           );
-          console.log(response.data);
           return;
         }
 
@@ -395,8 +391,6 @@ function AddMtp() {
   const filteredUsers = users.filter((name) =>
     name?.codeName?.toLowerCase().includes(userSearchTerm.toLowerCase())
   );
-
-  console.log("filteredUsers", filteredUsers);
 
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">

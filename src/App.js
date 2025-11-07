@@ -23,6 +23,7 @@ import AddNewDocUser from "./pages/AddNewDocUser";
 import AddNewChemistUser from "./pages/AddNewChemistUser";
 import DoctorsUser from "./pages/DoctorsUser";
 import ChemistUser from "./pages/ChemistUser";
+import Headquarter from "./pages/Headquarter";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -401,6 +402,16 @@ function App() {
             </ProtectedRoute>
           ),
         },
+        {
+          path: "headquarter",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <Headquarter></Headquarter>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
       ],
     },
     {
@@ -602,6 +613,7 @@ function App() {
       ],
     },
   ]);
+
   return (
     <div className="max-w-[100vw] max-h-screen">
       <ToastContainer></ToastContainer>

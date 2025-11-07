@@ -472,7 +472,7 @@ export const getDoctors = async () => {
 
 export const getDoctorsForEmployee = async () => {
   try {
-    const response = await api.get('/Doctor/GetAll')
+    const response = await api.get('/Doctor/GetAllDoctor')
     return response.data.data
   } catch (err) {
     throw err

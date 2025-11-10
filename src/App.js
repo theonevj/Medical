@@ -24,6 +24,7 @@ import AddNewChemistUser from "./pages/AddNewChemistUser";
 import DoctorsUser from "./pages/DoctorsUser";
 import ChemistUser from "./pages/ChemistUser";
 import Headquarter from "./pages/Headquarter";
+import ExcelUserDownload from "./pages/ExcelUserDownload";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -610,6 +611,17 @@ function App() {
             </ProtectedRoute>
           ),
         },
+        {
+          path: "excelUser",
+          element: (
+            <ProtectedRoute requiredRole="excelUser">
+              <Suspense fallback={<div>Loading...</div>}>
+                <ExcelUserDownload></ExcelUserDownload>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        // ExcelUserDownload
       ],
     },
   ]);

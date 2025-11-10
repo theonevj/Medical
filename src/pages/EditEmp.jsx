@@ -15,15 +15,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 function EditEmp() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [headQuater,setHeadQuater] = useState([])
+  const [headQuater, setHeadQuater] = useState([])
   const [loading, setLoading] = useState(false);
-
   const [formData, setFormData] = useState({});
-
   const [errors, setErrors] = useState({});
-
-  const [designation,setDesignation] = useState([])
-  const [reporting,setReporting] = useState([])
+  const [designation, setDesignation] = useState([])
+  const [reporting, setReporting] = useState([])
 
   useEffect(() => {
     if (!location.state) {
@@ -32,22 +29,19 @@ function EditEmp() {
     setFormData(location.state);
   }, []);
 
-  useEffect(()=>{
-    const fetchHeadQauter = async () =>{
-      try{
+  useEffect(() => {
+    const fetchHeadQauter = async () => {
+      try {
         const response = await api.get('/Headquarters')
         console.log(response.data)
         setHeadQuater(response.data)
-      }catch(err){
+      } catch (err) {
         console.log(err)
       }
     }
 
     fetchHeadQauter()
-  },[])
-
-  console.log('formdata---->',formData)
-
+  }, [])
 
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -70,7 +64,7 @@ function EditEmp() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: name==="reportingTo"?parseInt(value):value }));
+    setFormData((prevData) => ({ ...prevData, [name]: name === "reportingTo" ? parseInt(value) : value }));
   };
 
   const validateData = () => {
@@ -91,14 +85,14 @@ function EditEmp() {
     if (!formData.dob) newErrors.dob = "Please enter date of birth.";
     if (!formData.panCard) newErrors.panCard = "Please enter pancard.";
     if (!formData.gender) newErrors.gender = "Please enter gender.";
-    if(!formData.designation) newErrors.designation="Please enter designation."
-    if(!formData.pfno) newErrors.pfno="Please enter Provident fund"
-    if(!formData.uan) newErrors.uan="Please enter Universal Account Number."
-    if(!formData.headQuater) newErrors.headQuater="Please enter headQuater details."
-    if(!formData.bankName) newErrors.bankName="Please enter bank name."
-    if(!formData.ifscCode) newErrors.ifscCode="Please enter ifsc code."
-    if(!formData.bankAcctNo) newErrors.bankAcctNo="Please enter account number."
-    if(!formData.reportingTo) newErrors.reportingTo="Please select reporting to."
+    if (!formData.designation) newErrors.designation = "Please enter designation."
+    if (!formData.pfno) newErrors.pfno = "Please enter Provident fund"
+    if (!formData.uan) newErrors.uan = "Please enter Universal Account Number."
+    if (!formData.headQuater) newErrors.headQuater = "Please enter headQuater details."
+    if (!formData.bankName) newErrors.bankName = "Please enter bank name."
+    if (!formData.ifscCode) newErrors.ifscCode = "Please enter ifsc code."
+    if (!formData.bankAcctNo) newErrors.bankAcctNo = "Please enter account number."
+    if (!formData.reportingTo) newErrors.reportingTo = "Please select reporting to."
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
@@ -112,7 +106,6 @@ function EditEmp() {
   const handleSubmit = async () => {
     if (validateData()) {
       setLoading(true);
-      console.log(formData.id);
       const {
         password,
         userID,
@@ -135,7 +128,6 @@ function EditEmp() {
         bankAcctNo,
         headQuater
       } = formData;
-      
       try {
         await api.post(
           `/User/UpdateUser?id=${formData.id}`,
@@ -173,8 +165,8 @@ function EditEmp() {
     }
   };
 
-  useEffect(()=>{
-    
+  useEffect(() => {
+
     const fetchDropDownData = async () => {
       try {
         const [designationRes, reportingRes] = await Promise.all([
@@ -191,7 +183,7 @@ function EditEmp() {
 
     fetchDropDownData();
 
-  },[])
+  }, [])
 
 
   return (
@@ -409,14 +401,14 @@ function EditEmp() {
             <label htmlFor="designation" className="font-medium text-gray-700">
               Designation <span className="text-red-500">*</span>
             </label>
-            <select name='designation' onChange={handleChange}  value={formData.designation} id='designation' className='p-2 outline-none border-2 border-gray-200'>
-               <option value="">--- Select Designation ---</option>
-               {
-                 designation.map((item,index)=>(
+            <select name='designation' onChange={handleChange} value={formData.designation} id='designation' className='p-2 outline-none border-2 border-gray-200'>
+              <option value="">--- Select Designation ---</option>
+              {
+                designation.map((item, index) => (
                   <option key={index} value={item.codeID}>{item.codeName}</option>
-                 ))
-               }
-             </select>
+                ))
+              }
+            </select>
             {errors.designation && (
               <span className="text-sm text-red-400">{errors.designation}</span>
             )}
@@ -462,14 +454,14 @@ function EditEmp() {
             <select
               name="headQuater"
               onChange={handleChange}
-              value={formData.headQuater}
+              value={formData?.headQuater}
               id="headQuater"
               className="p-2 outline-none border-2 border-gray-200"
             >
               <option value={''}>--- Select Headquater ---</option>
               {
-                headQuater.map((item)=>(
-                    <option value={item.hqid}>{item.hqName}</option>
+                headQuater?.map((item) => (
+                  <option value={item.hqid}>{item.hqName}</option>
                 ))
               }
             </select>
@@ -479,37 +471,37 @@ function EditEmp() {
           </div>
 
           <div className='flex flex-col gap-2'>
-           <label htmlFor='reportingTo' className='font-medium text-gray-700'>Reporting To <span className='text-red-500'>*</span></label>
-           <select className='p-2 outline-none border-2 border-gray-200'  name='reportingTo' onChange={handleChange} value={formData.reportingTo}>
+            <label htmlFor='reportingTo' className='font-medium text-gray-700'>Reporting To <span className='text-red-500'>*</span></label>
+            <select className='p-2 outline-none border-2 border-gray-200' name='reportingTo' onChange={handleChange} value={formData.reportingTo}>
               <option value={''}>--- Select Reporting To ---</option>
               {
-                reporting.map((item,index)=>(
+                reporting.map((item, index) => (
                   <option key={index} value={item.codeID}>{item.codeName}</option>
                 ))
               }
-           </select>
-           {errors.reportingTo && <span className='text-sm text-red-400'>{errors.reportingTo}</span>}
-         </div>
+            </select>
+            {errors.reportingTo && <span className='text-sm text-red-400'>{errors.reportingTo}</span>}
+          </div>
 
           <div className='md:col-span-2'>
-             <h1 className='text-lg font-smibold'>Employee Bank Details</h1>
-         </div>
+            <h1 className='text-lg font-smibold'>Employee Bank Details</h1>
+          </div>
 
-         <div className='flex flex-col gap-2'>
-             <label htmlFor='bankName' className='font-medium text-gray-700'>Bank Name <span className='text-red-500'>*</span></label>
-             <input name='bankName' onChange={handleChange} type='text' value={formData.bankName} placeholder='Ex. STATE BANK OF INDIA' id='bankName' className='p-2 outline-none border-b-2 border-gray-200'></input>
-             {errors.bankName && <span className='text-sm text-red-400'>{errors.bankName}</span>}
-         </div>
-         <div className='flex flex-col gap-2'>
-             <label htmlFor='ifscCode' className='font-medium text-gray-700'>IFSC Code <span className='text-red-500'>*</span></label>
-             <input name='ifscCode' onChange={handleChange} type='text' value={formData.ifscCode} placeholder='Ex. KKBK0000123' id='ifscCode' className='p-2 outline-none border-b-2 border-gray-200'></input>
-             {errors.ifscCode && <span className='text-sm text-red-400'>{errors.ifscCode}</span>}
-         </div>
-         <div className='flex flex-col gap-2'>
-             <label htmlFor='bankAcctNo' className='font-medium text-gray-700'>Account No <span className='text-red-500'>*</span></label>
-             <input name='bankAcctNo' onChange={handleChange} type='text' value={formData.bankAcctNo} placeholder='Ex. 1234567000' id='bankAcctNo' className='p-2 outline-none border-b-2 border-gray-200'></input>
-             {errors.bankAcctNo && <span className='text-sm text-red-400'>{errors.bankAcctNo}</span>}
-         </div>
+          <div className='flex flex-col gap-2'>
+            <label htmlFor='bankName' className='font-medium text-gray-700'>Bank Name <span className='text-red-500'>*</span></label>
+            <input name='bankName' onChange={handleChange} type='text' value={formData.bankName} placeholder='Ex. STATE BANK OF INDIA' id='bankName' className='p-2 outline-none border-b-2 border-gray-200'></input>
+            {errors.bankName && <span className='text-sm text-red-400'>{errors.bankName}</span>}
+          </div>
+          <div className='flex flex-col gap-2'>
+            <label htmlFor='ifscCode' className='font-medium text-gray-700'>IFSC Code <span className='text-red-500'>*</span></label>
+            <input name='ifscCode' onChange={handleChange} type='text' value={formData.ifscCode} placeholder='Ex. KKBK0000123' id='ifscCode' className='p-2 outline-none border-b-2 border-gray-200'></input>
+            {errors.ifscCode && <span className='text-sm text-red-400'>{errors.ifscCode}</span>}
+          </div>
+          <div className='flex flex-col gap-2'>
+            <label htmlFor='bankAcctNo' className='font-medium text-gray-700'>Account No <span className='text-red-500'>*</span></label>
+            <input name='bankAcctNo' onChange={handleChange} type='text' value={formData.bankAcctNo} placeholder='Ex. 1234567000' id='bankAcctNo' className='p-2 outline-none border-b-2 border-gray-200'></input>
+            {errors.bankAcctNo && <span className='text-sm text-red-400'>{errors.bankAcctNo}</span>}
+          </div>
 
         </div>
       </div>
@@ -517,11 +509,10 @@ function EditEmp() {
         <button
           disabled={loading}
           onClick={handleSubmit}
-          className={`p-2 text-white w-36 flex justify-center items-center rounded-md ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-themeblue hover:bg-blue-800"
-          }`}
+          className={`p-2 text-white w-36 flex justify-center items-center rounded-md ${loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-themeblue hover:bg-blue-800"
+            }`}
         >
           {loading && (
             <svg

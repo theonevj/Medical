@@ -253,6 +253,7 @@ export default function EmpDashboard() {
               </span>
             )}
           </div>
+
           <div
             onClick={() => handleNavigate("chemists")}
             className={`group flex ${isActive("chemists") && "bg-blue-50 border-r-2 border-themeblue"
@@ -580,6 +581,31 @@ export default function EmpDashboard() {
               )}
             </div>
           )}
+
+          <div
+            onClick={() => handleNavigate("excelUser")}
+            className={`group flex ${isActive("excelUser") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("excelUser")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              {/* <LocalHospitalOutlinedIcon
+                style={{ fontSize: "1.5rem" }}
+              ></LocalHospitalOutlinedIcon> */}
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("excelUser") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
+              >
+                Data Download
+              </span>
+            )}
+          </div>
         </div>
         {/* sidebar for mobile screen */}
         <div

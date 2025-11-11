@@ -51,7 +51,6 @@ export default function Employee() {
   }, [searchQuery, users]);
 
   const handleNavigateToEdit = (data) => {
-    console.log(data);
     navigate(user.isAdmin ? "/admin/employee/edit" : "/employee/user/edit", {
       state: data,
     });

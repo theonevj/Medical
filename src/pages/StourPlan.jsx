@@ -35,9 +35,6 @@ function StourPlan() {
   const [stpId, setStpId] = useState(null);
   const [stpIdDetail, setStpIdDetail] = useState([]);
 
-  console.log("stpId:", stpId);
-  console.log("stpIdDetail:", stpIdDetail);
-
   const getDate = (orgdate) => {
     if (!orgdate) return "";
     const dateObj = new Date(orgdate);
@@ -156,7 +153,7 @@ function StourPlan() {
           </div>
         ) : (
           <div className="h-full gap-4 w-full grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 items-start">
-            {stpPlan.map((stp, index) => (
+            {[...stpPlan]?.reverse().map((stp, index) => (
               <button
                 onClick={() => {
                   console.log("Clicked:", stp.tourID);
@@ -185,20 +182,19 @@ function StourPlan() {
                     </div>
 
                     <span
-                      className={`${
-                        stp.tourType === 0
-                          ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
-                          : stp.tourType === 1
+                      className={`${stp.tourType === 0
+                        ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
+                        : stp.tourType === 1
                           ? "bg-indigo-100 text-indigo-700 border border-indigo-300"
                           : "bg-sky-100 text-sky-700 border border-sky-300"
-                      } inline-flex items-center px-3 py-1 rounded-full text-sm font-medium hover:opacity-90 transition-opacity duration-150 cursor-pointer`}
+                        } inline-flex items-center px-3 py-1 rounded-full text-sm font-medium hover:opacity-90 transition-opacity duration-150 cursor-pointer`}
                     >
                       <Car className="w-4 h-4 mr-1" />
                       {stp.tourType === 0
                         ? "Local"
                         : stp.tourType === 1
-                        ? "Out Station"
-                        : "Ex-Station"}
+                          ? "Out Station"
+                          : "Ex-Station"}
                     </span>
                   </div>
                   <div className="flex gap-3 flex-col p-3 mx-3">
@@ -361,10 +357,10 @@ function StourPlan() {
                     {stpIdDetail.tourType === 0
                       ? "Local"
                       : stpIdDetail.tourType === 1
-                      ? "Outstation"
-                      : stpIdDetail.tourType === 2
-                      ? "Ex - Station"
-                      : ""}
+                        ? "Outstation"
+                        : stpIdDetail.tourType === 2
+                          ? "Ex - Station"
+                          : ""}
                   </td>
                 </tr>
                 <tr className="hover:bg-neutral-50">
@@ -386,7 +382,7 @@ function StourPlan() {
               </Link>
               <button
                 className="px-4 py-2 bg-red-500 text-white rounded"
-                onClick={() => {}}
+                onClick={() => { }}
               >
                 Delete
               </button>

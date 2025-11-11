@@ -593,9 +593,9 @@ export default function EmpDashboard() {
                 : "text-gray-700 group-hover:text-themeblue"
                 } `}
             >
-              {/* <LocalHospitalOutlinedIcon
+              <Download
                 style={{ fontSize: "1.5rem" }}
-              ></LocalHospitalOutlinedIcon> */}
+              ></Download>
             </span>
             {isMenuOpen && (
               <span

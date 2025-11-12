@@ -1,164 +1,256 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../api";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { Pencil, Trash2, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ExpenseForm = () => {
-    const [expenseType, setExpenseType] = useState("");
-    const [amount, setAmount] = useState("");
-    const [details, setDetails] = useState("");
-    const [proof, setProof] = useState(null);
+    const { user } = useSelector((state) => state.auth);
     const [expenses, setExpenses] = useState([]);
+    const [filteredExpenses, setFilteredExpenses] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [editingExpense, setEditingExpense] = useState(null);
+    const [updatedData, setUpdatedData] = useState({
+        amount: "",
+        description: "",
+    });
+    const navigate = useNavigate();
 
-    const handleSave = () => {
-        if (!expenseType || !amount || !details) {
-            toast.error("Please fill all fields before saving!");
-            return;
+    useEffect(() => {
+        fetchExpenses();
+    }, []);
+
+    const fetchExpenses = async () => {
+        try {
+            setLoading(true);
+            const res = await api.get("/UserExpense");
+            setExpenses(res.data);
+            setFilteredExpenses(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load expenses.");
+        } finally {
+            setLoading(false);
         }
-
-        const newExpense = {
-            expenseType,
-            amount,
-            details,
-            proof: proof ? proof.name : "No File",
-        };
-
-        setExpenses([...expenses, newExpense]);
-        toast.success("Expense saved successfully!");
     };
 
-    const handleAdd = () => {
-        if (!expenseType || !amount || !details || !proof) {
-            toast.error("Please fill all fields and upload proof before adding!");
-            return;
-        }
+    const handleSearch = (e) => {
+        const value = e.target.value.toLowerCase();
+        setSearchTerm(value);
+        const filtered = expenses.filter(
+            (item) =>
+                item?.expenseMasterName?.toLowerCase().includes(value) ||
+                item?.description?.toLowerCase().includes(value) ||
+                String(item?.amount)?.includes(value)
+        );
+        setFilteredExpenses(filtered);
+    };
 
-        console.log("Calling Add API with data:", {
-            expenseType,
-            amount,
-            details,
-            proof,
+    const handleEdit = (expense) => {
+        setEditingExpense(expense);
+        setUpdatedData({
+            amount: expense.amount,
+            description: expense.description,
         });
+    };
 
-        toast.success("Expense added successfully!");
-        setExpenseType("");
-        setAmount("");
-        setDetails("");
-        setProof(null);
-        setExpenses([]);
+    const handleUpdate = async () => {
+        try {
+            const updatedExpense = {
+                ...editingExpense,
+                amount: updatedData.amount,
+                description: updatedData.description,
+            };
+            console.log("editingExpense.expenseId", editingExpense.expenseId)
+            console.log("updatedExpense", updatedExpense)
+
+            await api.post(`/UserExpense/${editingExpense.expenseId}`, updatedExpense);
+            toast.success("Expense updated successfully!");
+            setExpenses((prev) =>
+                prev.map((exp) =>
+                    exp.expenseId === editingExpense.expenseId ? updatedExpense : exp
+                )
+            );
+            setFilteredExpenses((prev) =>
+                prev.map((exp) =>
+                    exp.expenseId === editingExpense.expenseId ? updatedExpense : exp
+                )
+            );
+
+            setEditingExpense(null);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update expense.");
+        }
+    };
+
+    const handleDelete = async (id) => {
+        console.log("Deleting expense with id:", id);
+        if (!window.confirm("Are you sure you want to delete this expense?")) return;
+        try {
+            await api.post(`/UserExpense/delete/${id}`);
+            toast.success("Expense deleted successfully!");
+            setExpenses((prev) => prev.filter((item) => item.expenseId !== id));
+            setFilteredExpenses((prev) => prev.filter((item) => item.expenseId !== id));
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to delete expense!");
+        }
     };
 
     return (
-        <div className="min-h-screen w-full bg-gray-100 from-blue-100 via-white to-blue-200 p-2">
-            <div className="mx-auto rounded-3xl transition-all duration-500">
-                <div className="  p-6 rounded-xl ">
-                    <h1 className="text-3xl font-bold mb-2 text-blue-500 "> Add Your Expense</h1>
-                    <p className="text-sm opacity-90 text-black ">
-                        Keep track of your business & personal spending effortlessly
-                    </p>
-                </div>
-
-                <div className="p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label className="block mb-2 font-semibold text-gray-700">
-                                Expense Type
-                            </label>
-                            <select
-                                value={expenseType}
-                                onChange={(e) => setExpenseType(e.target.value)}
-                                className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                            >
-                                <option value="">Select Type</option>
-                                <option value="Travel">🚗 Travel</option>
-                                <option value="Food">🍴 Food</option>
-                                <option value="Office Supplies">🧾 Office Supplies</option>
-                                <option value="Other">📦 Other</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block mb-2 font-semibold text-gray-700">
-                                Expense Amount
-                            </label>
-                            <input
-                                type="number"
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                                placeholder="Enter amount"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="block mb-2 font-semibold text-gray-700">
-                            Details
-                        </label>
-                        <textarea
-                            value={details}
-                            onChange={(e) => setDetails(e.target.value)}
-                            className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                            placeholder="Write short description..."
-                            rows="3"
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="block mb-2 font-semibold text-gray-700">
-                            Upload Proof
-                        </label>
-                        <input
-                            type="file"
-                            onChange={(e) => setProof(e.target.files[0])}
-                            className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                        />
-                    </div>
-
-                    {expenses.length > 0 && (
-                        <div className="overflow-x-auto">
-                            <h3 className="text-xl font-semibold mb-3 text-gray-800 text-center">
-                                Saved Expenses
-                            </h3>
-                            <table className="w-full text-left border border-gray-300 rounded-xl overflow-hidden">
-                                <thead>
-                                    <tr className="bg-indigo-100 text-gray-800">
-                                        <th className="p-3 border">Type</th>
-                                        <th className="p-3 border">Amount</th>
-                                        <th className="p-3 border">Details</th>
-                                        <th className="p-3 border">Proof</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {expenses.map((exp, i) => (
-                                        <tr key={i} className="hover:bg-gray-50">
-                                            <td className="p-3 border">{exp.expenseType}</td>
-                                            <td className="p-3 border">₹{exp.amount}</td>
-                                            <td className="p-3 border">{exp.details}</td>
-                                            <td className="p-3 border">{exp.proof}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
-                    <div className="flex flex-col sm:flex-row justify-center gap-6  mt-10">
-                        <button
-                            onClick={handleSave}
-                            className="bg-green-500 hover:bg-green-600 text-white px-16 py-3 rounded-1xl shadow-lg transition transform hover:scale-105 font-semibold text-lg"
-                        >
-                            Save
-                        </button>
-                        <button
-                            onClick={handleAdd}
-                            className="bg-indigo-500 hover:bg-indigo-600 text-white px-16 py-3 rounded-1xl shadow-lg transition transform hover:scale-105 font-semibold text-lg"
-                        >
-                            Add
-                        </button>
-                    </div>
-
-
+        <div className="min-h-screen bg-gray-100 p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold text-blue-500">All Expenses</h1>
+                <div className="flex items-center gap-4 mt-4 sm:mt-0">
+                    <span className="text-gray-700 font-semibold text-lg">
+                        Welcome, {user?.firstName || "User"} 👋
+                    </span>
+                    <button
+                        onClick={() => navigate("addExpense")}
+                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-xs shadow-md transition-transform transform hover:scale-105"
+                    >
+                        Add Expense
+                    </button>
                 </div>
             </div>
+
+            {/* Search */}
+            <div className="mb-6">
+                <input
+                    type="text"
+                    placeholder="Search by name, description, or amount..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                />
+            </div>
+
+            {/* Table */}
+            {filteredExpenses?.length > 0 ? (
+                <div className="overflow-x-auto bg-white rounded-2xl shadow-lg">
+                    <table className="w-full text-left border border-gray-200 rounded-xl overflow-hidden">
+                        <thead className="bg-indigo-100">
+                            <tr>
+                                <th className="p-3 border text-gray-700 font-semibold">Type</th>
+                                <th className="p-3 border text-gray-700 font-semibold">Amount</th>
+                                <th className="p-3 border text-gray-700 font-semibold">Details</th>
+                                <th className="p-3 border text-gray-700 font-semibold">Status</th>
+                                <th className="p-3 border text-gray-700 font-semibold text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredExpenses?.map((exp) => (
+                                <tr key={exp.expenseId} className="hover:bg-gray-50 transition-all">
+                                    <td className="p-3 border">{exp.expenseMasterName}</td>
+                                    <td className="p-3 border">₹{exp.amount}</td>
+                                    <td className="p-3 border">{exp.description}</td>
+                                    <td className="p-3 border">
+                                        <span
+                                            className={`px-3 py-1 rounded text-sm font-medium ${exp.status === "Approved"
+                                                ? "bg-green-100 text-green-700"
+                                                : exp.status === "Pending" || exp.status === "pending"
+                                                    ? "bg-yellow-50 text-yellow-700"
+                                                    : "bg-red-100 text-red-700"
+                                                }`}
+                                        >
+                                            {exp.status}
+                                        </span>
+                                    </td>
+                                    <td className="p-3 border text-center space-x-3">
+                                        <button
+                                            onClick={() => handleEdit(exp)}
+                                            className="text-blue-600 hover:text-blue-800 transition"
+                                            title="Edit"
+                                        >
+                                            <Pencil size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(exp.expenseId)}
+                                            className="text-red-600 hover:text-red-800 transition"
+                                            title="Delete"
+                                        >
+                                            <Trash2 size={20} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            ) : loading ? (
+                <p className="text-center text-gray-600 mt-10 text-lg">
+                    Loading expenses...
+                </p>
+            ) : (
+                <p className="text-center text-gray-600 mt-10 text-lg">
+                    No expenses found.
+                </p>
+            )
+            }
+
+            {/* ✏️ Edit Modal */}
+            {
+                editingExpense && (
+                    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
+                            <button
+                                onClick={() => setEditingExpense(null)}
+                                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                            >
+                                <X size={22} />
+                            </button>
+                            <h2 className="text-2xl font-bold mb-6 text-indigo-600">
+                                Edit Expense
+                            </h2>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-gray-700 font-semibold mb-2">
+                                        Amount
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={updatedData.amount}
+                                        onChange={(e) =>
+                                            setUpdatedData({ ...updatedData, amount: e.target.value })
+                                        }
+                                        className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700 font-semibold mb-2">
+                                        Details
+                                    </label>
+                                    <textarea
+                                        value={updatedData.description}
+                                        onChange={(e) =>
+                                            setUpdatedData({
+                                                ...updatedData,
+                                                description: e.target.value,
+                                            })
+                                        }
+                                        className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                                        rows="3"
+                                    />
+                                </div>
+
+                                <div className="flex justify-end mt-6">
+                                    <button
+                                        onClick={handleUpdate}
+                                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-xl font-semibold shadow transition"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </div >
     );
 };

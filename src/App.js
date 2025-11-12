@@ -26,6 +26,7 @@ import ChemistUser from "./pages/ChemistUser";
 import Headquarter from "./pages/Headquarter";
 import ExcelUserDownload from "./pages/ExcelUserDownload";
 import ExpenseForm from "./pages/Expense";
+import AddExpense from "./pages/AddExpense";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -384,16 +385,7 @@ function App() {
             </ProtectedRoute>
           ),
         },
-        {
-          path: "addExpense",
-          element: (
-            <ProtectedRoute requiredRole="employee">
-              <Suspense fallback={<div>Loading...</div>}>
-                <ExpenseForm></ExpenseForm>
-              </Suspense>
-            </ProtectedRoute>
-          ),
-        },
+
         {
           path: "report",
           element: (
@@ -446,6 +438,7 @@ function App() {
             </ProtectedRoute>
           ),
         },
+
         {
           path: "doctors",
           element: (
@@ -633,7 +626,26 @@ function App() {
             </ProtectedRoute>
           ),
         },
-        // ExcelUserDownload
+        {
+          path: "expense",
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <Suspense fallback={<div>Loading...</div>}>
+                <ExpenseForm></ExpenseForm>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "expense/addExpense",
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <Suspense fallback={<div>Loading...</div>}>
+                <AddExpense />
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
       ],
     },
   ]);

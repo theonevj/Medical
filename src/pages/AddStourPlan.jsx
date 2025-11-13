@@ -65,9 +65,9 @@ function AddStourPlan() {
   const [allowance, setAllowance] = useState([])
   const [open, setOpen] = useState(false)
   const [selectedAllowance, setSelectedAllowanace] = useState([])
-  const [loading, setLoading] = useState(false)
   const [headQuater, setHeadQuater] = useState([])
   const [selectedHeadQuater, setSelectedHeadquater] = useState('')
+  const [newPlace, setNewPlace] = useState('')
 
   const movePlace = (fromIndex, toIndex) => {
     const updatedPlaces = [...places];
@@ -79,8 +79,6 @@ function AddStourPlan() {
   const removePlace = (ind) => {
     setPlaces((prevData) => prevData.filter((item, index) => ind !== index))
   }
-
-  const [newPlace, setNewPlace] = useState('')
 
   const addNewPlace = () => {
     if (!newPlace) {
@@ -103,6 +101,7 @@ function AddStourPlan() {
     if (selectedAllowance.length === 0) newErrors.selectedAllowance = 'Please select any one allowance.'
     if (!perKm) newErrors.perKm = 'Please enter km value'
     if (!selectedHeadQuater) newErrors.headQuater = "Please select headquater."
+    if (!km) newErrors.km = "Please enter km value."
 
     setErrors(newErrors)
 
@@ -121,13 +120,10 @@ function AddStourPlan() {
           tourType: tourType,
           perKm: perKm,
           lstAllowance: selectedAllowance,
-          tourLocations: locations
+          tourLocations: locations,
+          km: km
         }
-
-        console.log(obj)
-
         await api.post(`STPMTP`, obj)
-        console.log("stp added")
         setTourPlanName('')
         setPlaces([])
         toast.success("Tour plan added successfully.")
@@ -168,9 +164,6 @@ function AddStourPlan() {
       toast.error(err?.response?.data?.message || "Something went wrong.")
     }
   }
-
-
-
 
   useEffect(() => {
     getAllowance()

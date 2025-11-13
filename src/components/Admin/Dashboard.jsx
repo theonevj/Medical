@@ -73,7 +73,6 @@ export default function Dashboard() {
     navigate(pathname);
   };
 
-  // Handle click outside
   const handleClickOutside = (event) => {
     if (popupRef.current && !popupRef.current.contains(event.target)) {
       setIsProfileOpen(false);

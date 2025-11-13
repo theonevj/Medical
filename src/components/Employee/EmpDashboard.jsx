@@ -28,6 +28,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import { Download } from "lucide-react";
+import { ChartColumnBig } from "lucide-react";
 
 export default function EmpDashboard() {
   const { user } = useSelector((state) => state.auth);
@@ -593,9 +594,9 @@ export default function EmpDashboard() {
                 : "text-gray-700 group-hover:text-themeblue"
                 } `}
             >
-              {/* <LocalHospitalOutlinedIcon
+              <Download
                 style={{ fontSize: "1.5rem" }}
-              ></LocalHospitalOutlinedIcon> */}
+              ></Download>
             </span>
             {isMenuOpen && (
               <span
@@ -606,8 +607,31 @@ export default function EmpDashboard() {
               </span>
             )}
           </div>
+          <div
+            onClick={() => handleNavigate("expense")}
+            className={`group flex ${isActive("expense") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("expense")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <ChartColumnBig className="w-5 h-5"></ChartColumnBig>
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("expense") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium  text-lg`}
+              >
+                Expense
+              </span>
+            )}
+          </div>
+
         </div>
-        {/* sidebar for mobile screen */}
+
         <div
           ref={sidebarRef}
           className={`${isMenuOpen ? "-left-96" : "left-0"

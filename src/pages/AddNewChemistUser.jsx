@@ -82,7 +82,6 @@ export default function AddNewChemistUser() {
     const handleSubmit = async () => {
         if (validateData()) {
             try {
-                console.log(formData)
                 await api.post(`/Chemist/AddChemist`, formData)
                 setFormData({
                     chemistCode: 0,

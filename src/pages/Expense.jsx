@@ -63,9 +63,6 @@ const ExpenseForm = () => {
                 amount: updatedData.amount,
                 description: updatedData.description,
             };
-            console.log("editingExpense.expenseId", editingExpense.expenseId)
-            console.log("updatedExpense", updatedExpense)
-
             await api.post(`/UserExpense/${editingExpense.expenseId}`, updatedExpense);
             toast.success("Expense updated successfully!");
             setExpenses((prev) =>
@@ -87,7 +84,6 @@ const ExpenseForm = () => {
     };
 
     const handleDelete = async (id) => {
-        console.log("Deleting expense with id:", id);
         if (!window.confirm("Are you sure you want to delete this expense?")) return;
         try {
             await api.post(`/UserExpense/delete/${id}`);
@@ -128,7 +124,6 @@ const ExpenseForm = () => {
                 />
             </div>
 
-            {/* Table */}
             {filteredExpenses?.length > 0 ? (
                 <div className="overflow-x-auto bg-white rounded-2xl shadow-lg">
                     <table className="w-full text-left border border-gray-200 rounded-xl overflow-hidden">
@@ -137,7 +132,6 @@ const ExpenseForm = () => {
                                 <th className="p-3 border text-gray-700 font-semibold">Type</th>
                                 <th className="p-3 border text-gray-700 font-semibold">Amount</th>
                                 <th className="p-3 border text-gray-700 font-semibold">Details</th>
-                                <th className="p-3 border text-gray-700 font-semibold">Status</th>
                                 <th className="p-3 border text-gray-700 font-semibold text-center">Actions</th>
                             </tr>
                         </thead>
@@ -148,32 +142,41 @@ const ExpenseForm = () => {
                                     <td className="p-3 border">₹{exp.amount}</td>
                                     <td className="p-3 border">{exp.description}</td>
                                     <td className="p-3 border">
-                                        <span
-                                            className={`px-3 py-1 rounded text-sm font-medium ${exp.status === "Approved"
-                                                ? "bg-green-100 text-green-700"
-                                                : exp.status === "Pending" || exp.status === "pending"
-                                                    ? "bg-yellow-50 text-yellow-700"
-                                                    : "bg-red-100 text-red-700"
-                                                }`}
-                                        >
-                                            {exp.status}
-                                        </span>
-                                    </td>
-                                    <td className="p-3 border text-center space-x-3">
-                                        <button
-                                            onClick={() => handleEdit(exp)}
-                                            className="text-blue-600 hover:text-blue-800 transition"
-                                            title="Edit"
-                                        >
-                                            <Pencil size={20} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(exp.expenseId)}
-                                            className="text-red-600 hover:text-red-800 transition"
-                                            title="Delete"
-                                        >
-                                            <Trash2 size={20} />
-                                        </button>
+                                        <td className="p-3 text-center">
+
+                                            {exp.status === "Pending" || exp.status === "pending" ? (
+                                                <div className="flex justify-center gap-4">
+                                                    <button
+                                                        onClick={() => handleEdit(exp)}
+                                                        className="text-blue-600 hover:text-blue-800 transition"
+                                                        title="Edit"
+                                                    >
+                                                        <Pencil size={20} />
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => handleDelete(exp.expenseId)}
+                                                        className="text-red-600 hover:text-red-800 transition"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={20} />
+                                                    </button>
+                                                </div>
+
+                                            ) : (
+                                                <span
+                                                    className={`px-3 py-1 rounded text-sm font-medium ${exp.status === "Approved"
+                                                        ? "bg-green-100 text-green-700"
+                                                        : exp.status === "Rejected"
+                                                            ? "bg-red-100 text-red-700"
+                                                            : "bg-yellow-50 text-yellow-700"
+                                                        }`}
+                                                >
+                                                    {exp.status}
+                                                </span>
+                                            )}
+                                        </td>
+
                                     </td>
                                 </tr>
                             ))}
@@ -191,7 +194,6 @@ const ExpenseForm = () => {
             )
             }
 
-            {/* ✏️ Edit Modal */}
             {
                 editingExpense && (
                     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

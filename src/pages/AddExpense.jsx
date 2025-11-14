@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../api";
 import { useSelector } from "react-redux";
+import { LoaderCircle } from "lucide-react";
 
 const AddExpense = () => {
     const [expenseType, setExpenseType] = useState("");
@@ -10,9 +11,11 @@ const AddExpense = () => {
     const [expenses, setExpenses] = useState([]);
     const [expenseTypes, setExpenseTypes] = useState([]);
     const [selectedExpense, setSelectedExpense] = useState(null);
-    const [isSaved, setIsSaved] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
     const [proof, setProof] = useState(null);
+    const [expenseDate, setExpenseDate] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const [lastCreatedExpenseId, setLastCreatedExpenseId] = useState(null);
 
     const { user } = useSelector((state) => state.auth);
 
@@ -39,9 +42,33 @@ const AddExpense = () => {
         }
     };
 
-    // ✅ Save button click
-    const handleSave = async () => {
-        if (!expenseType || !amount || !details) {
+    const handleSave = async (id) => {
+        if (!proof || proof.length === 0) {
+            toast.error("Please upload at least 1 file");
+            return;
+        }
+        try {
+            setLoading(true);
+            for (let file of proof) {
+                const formData = new FormData();
+                formData.append("file", file);
+                await api.post(`/UserExpense/${id}/upload`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+            }
+            toast.success("Files Uploaded Successfully");
+            setProof([]);
+        } catch (err) {
+            console.error(err);
+            toast.error("File Upload Failed! Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    const handleAdd = async () => {
+        if (!expenseType || !amount || !details || !expenseDate) {
             toast.error("Please fill all fields before saving!");
             return;
         }
@@ -52,7 +79,7 @@ const AddExpense = () => {
             expenseMasterId: Number(selectedExpense?.expenseId),
             amount: Number(amount),
             description: details,
-            expenseDate: new Date().toISOString(),
+            expenseDate: expenseDate,
             status: "Pending",
             approvalBy: 0,
             approvalDateTime: new Date().toISOString(),
@@ -62,30 +89,24 @@ const AddExpense = () => {
             expenseMasterName: selectedExpense?.name || "",
         };
 
-        setIsSaving(true);
         try {
+            setLoading(true);
             const response = await api.post("/UserExpense", expenseData);
-            toast.success("Expense saved successfully!");
-            console.log("Expense saved:", response.data);
-
-            // update local list
+            setLastCreatedExpenseId(response.data.expenseId);
+            toast.success("Expense added! Now uploading files...");
+            handleSave(response.data.expenseId);
             setExpenses((prev) => [...prev, expenseData]);
-            setIsSaved(true); // ✅ show Add button now
+            setExpenseType("");
+            setAmount("");
+            setDetails("");
+            setExpenseDate("");
 
         } catch (err) {
             console.error(err);
-            toast.error(err?.response?.data?.message || "Something went wrong while saving expense.");
+            toast.error(err?.response?.data?.message || "Something went wrong.");
         } finally {
-            setIsSaving(false);
+            setLoading(false);
         }
-    };
-
-    const handleAdd = () => {
-        toast.success("Expense added successfully!");
-        setExpenseType("");
-        setAmount("");
-        setDetails("");
-        setIsSaved(false);
     };
 
     return (
@@ -109,7 +130,7 @@ const AddExpense = () => {
                             <select
                                 value={expenseType}
                                 onChange={handleExpenseChange}
-                                className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm"
                             >
                                 <option value="" disabled>
                                     -- Select Expense Type --
@@ -127,82 +148,132 @@ const AddExpense = () => {
                                 Expense Amount
                             </label>
                             <input
+                                min="0"
                                 type="number"
                                 value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val >= 0) setAmount(val);
+                                }}
+                                className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm"
                                 placeholder="Enter amount"
                             />
                         </div>
                     </div>
 
-                    <div className="mb-6">
+                    <div>
+                        <label className="block mb-2 font-semibold text-gray-700">
+                            Expense Date
+                        </label>
+                        <input
+                            type="date"
+                            value={expenseDate}
+                            onChange={(e) => setExpenseDate(e.target.value)}
+                            className="w-[40%] border border-gray-300 rounded-xl px-4 py-3 shadow-sm"
+                        />
+                    </div>
+
+                    <div className="mb-2 mt-5">
                         <label className="block mb-2 font-semibold text-gray-700">
                             Details
                         </label>
                         <textarea
                             value={details}
                             onChange={(e) => setDetails(e.target.value)}
-                            className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                            className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm"
                             placeholder="Write short description..."
                             rows="3"
                         />
                     </div>
 
-                    {expenses?.length > 0 && (
-                        <div className="overflow-x-auto mt-6">
-                            <h3 className="text-xl font-semibold mb-3 text-gray-800 text-center">
-                                Saved Expenses
-                            </h3>
-                            <table className="w-full text-left border border-gray-300 rounded-xl overflow-hidden">
-                                <thead>
-                                    <tr className="bg-indigo-100 text-gray-800">
-                                        <th className="p-3 border">Type</th>
-                                        <th className="p-3 border">Amount</th>
-                                        <th className="p-3 border">Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {expenses.map((exp, i) => (
-                                        <tr key={i} className="hover:bg-gray-50">
-                                            <td className="p-3 border">{exp.expenseMasterName}</td>
-                                            <td className="p-3 border">₹{exp.amount}</td>
-                                            <td className="p-3 border">{exp.description}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+                    <div className="mb-6">
+                        <label className="block mb-2 font-semibold text-gray-700">
+                            Upload Documents (Images + PDF)
+                        </label>
 
+                        <input
+                            type="file"
+                            accept="image/*,application/pdf"
+                            multiple
+                            onChange={(e) => {
+                                const files = Array.from(e.target.files);
+                                setProof((prev) => [...(prev || []), ...files]);
+                            }}
+                            className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white shadow-sm"
+                        />
 
+                        {proof && proof?.length > 0 && (
+                            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {proof.map((file, index) => {
+                                    const isImage = file.type.startsWith("image/");
+                                    const isPdf = file.type === "application/pdf";
 
-                    <div className="flex flex-col sm:flex-row justify-end gap-6 mt-10">
-                        {!isSaved && (
-                            <button
-                                onClick={handleSave}
-                                disabled={isSaving}
-                                className={`px-20 py-3 rounded-xl shadow-lg font-semibold text-lg transition transform 
-                                    hover:scale-105 text-white ${isSaving
-                                        ? "bg-gray-400 cursor-not-allowed"
-                                        : "bg-green-500 hover:bg-green-600"
-                                    }`}
-                            >
-                                {isSaving ? "Saving..." : "Save"}
-                            </button>
-                        )}
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="relative border rounded-xl bg-white p-3 shadow-md"
+                                        >
+                                            <button
+                                                onClick={() => {
+                                                    setProof((prev) =>
+                                                        prev.filter((_, i) => i !== index)
+                                                    );
+                                                }}
+                                                className="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm"
+                                            >
+                                                ×
+                                            </button>
 
-                        {isSaved && (
-                            <button
-                                onClick={handleAdd}
-                                className="bg-indigo-500 hover:bg-indigo-600 text-white px-16 py-3 rounded-xl shadow-lg transition transform hover:scale-105 font-semibold text-lg"
-                            >
-                                Add
-                            </button>
+                                            {isImage && (
+                                                <img
+                                                    src={URL.createObjectURL(file)}
+                                                    alt="preview"
+                                                    className="w-full h-40 object-cover rounded-lg"
+                                                />
+                                            )}
+
+                                            {isPdf && (
+                                                <div className="flex flex-col items-center justify-center h-40 bg-red-50 rounded-lg border border-red-200">
+                                                    <span className="text-red-600 text-4xl">📄</span>
+                                                    <p className="text-sm mt-2 text-gray-700 font-medium text-center px-2">
+                                                        {file.name}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         )}
                     </div>
+
+                    <div className="flex flex-col sm:flex-row justify-end gap-6 mt-10">
+                        <button
+                            onClick={handleAdd}
+                            className="bg-indigo-500 hover:bg-indigo-600 text-white px-16 py-3 rounded-xl shadow-lg"
+                        >
+                            Add Expense
+                        </button>
+                    </div>
+
+                    {lastCreatedExpenseId && (
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                onClick={() => handleSave(lastCreatedExpenseId)}
+                                className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl shadow-lg"
+                            >
+                                Re-upload Files
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <LoaderCircle className="animate-spin text-white" size={60} />
+                </div>
+            )}
         </div>
     );
 };

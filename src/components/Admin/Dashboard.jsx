@@ -631,6 +631,30 @@ export default function Dashboard() {
             )}
           </div>
 
+
+          <div
+            onClick={() => handleNavigate("getExpense")}
+            className={`group flex ${isActive("getExpense") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("getExpense")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <ChartColumnBig className="w-5 h-5"></ChartColumnBig>
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("getExpense") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium  text-lg`}
+              >
+                All Expense
+              </span>
+            )}
+          </div>
+
           <div
             onClick={() => handleNavigate("download")}
             className={`group flex ${isActive("download") && "bg-blue-50 border-r-2 border-themeblue"

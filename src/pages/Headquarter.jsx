@@ -123,8 +123,6 @@ const styles = {
     },
 };
 
-// ------------------------- SAME LOGIC BELOW -----------------------------
-
 const Headquarter = () => {
     const [headquarters, setHeadquarters] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -407,7 +405,7 @@ const Headquarter = () => {
                 <table style={styles.table}>
                     <thead>
                         <tr>
-                            {/* <th style={styles.th}>ID</th> */}
+                            {/* <th style={styles.th}>Date</th> */}
                             <th style={styles.th}>Name</th>
                             <th style={styles.th}>City/Location</th>
                             <th style={styles.th}>Actions</th>
@@ -424,7 +422,6 @@ const Headquarter = () => {
                                     (e.currentTarget.style.backgroundColor = "#fff")
                                 }
                             >
-                                {/* <td style={styles.td}>{hq.hqid}</td> */}
                                 <td style={styles.td}>{hq.hqName}</td>
                                 <td style={styles.td}>{hq.location}</td>
                                 <td style={styles.td}>

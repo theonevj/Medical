@@ -27,6 +27,7 @@ import Headquarter from "./pages/Headquarter";
 import ExcelUserDownload from "./pages/ExcelUserDownload";
 import ExpenseForm from "./pages/Expense";
 import AddExpense from "./pages/AddExpense";
+import GetExpense from "./pages/GetExpense";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -396,6 +397,17 @@ function App() {
             </ProtectedRoute>
           ),
         },
+        {
+          path: "getExpense",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetExpense></GetExpense>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        // GetExpense
         {
           path: "download",
           element: (

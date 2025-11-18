@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logout } from "../../redux/actions/authActions";
 
-//importing images
 import LOGO from "../../assets/ELVIRA LOGO.png";
 import PERSON from "../../assets/asset4.jpg";
 
@@ -29,6 +28,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import { Download } from "lucide-react";
 import { ChartColumnBig } from "lucide-react";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 export default function EmpDashboard() {
   const { user } = useSelector((state) => state.auth);
@@ -607,6 +607,32 @@ export default function EmpDashboard() {
               </span>
             )}
           </div>
+
+          {/* <div
+            onClick={() => handleNavigate("errorlogs")}
+            className={`group flex ${isActive("errorlogs") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("errorlogs")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <ErrorOutlineIcon
+                style={{ fontSize: "1.5rem" }}
+              ></ErrorOutlineIcon>
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("errorlogs") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
+              >
+                error logs
+              </span>
+            )}
+          </div> */}
+
           <div
             onClick={() => handleNavigate("expense")}
             className={`group flex ${isActive("expense") && "bg-blue-50 border-r-2 border-themeblue"
@@ -629,8 +655,8 @@ export default function EmpDashboard() {
               </span>
             )}
           </div>
-
         </div>
+
 
         <div
           ref={sidebarRef}

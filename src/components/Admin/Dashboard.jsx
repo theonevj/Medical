@@ -34,6 +34,7 @@ import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import { ClipboardMinus } from "lucide-react";
 import { Beaker } from "lucide-react";
 import { ChartColumnBig } from "lucide-react";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 export default function Dashboard() {
   const { user } = useSelector((state) => state.auth);
@@ -96,10 +97,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    // Add event listener for clicks
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -331,8 +329,6 @@ export default function Dashboard() {
               </span>
             )}
           </div>
-
-
 
           <div className="relative">
             <div
@@ -631,7 +627,6 @@ export default function Dashboard() {
             )}
           </div>
 
-
           <div
             onClick={() => handleNavigate("getExpense")}
             className={`group flex ${isActive("getExpense") && "bg-blue-50 border-r-2 border-themeblue"
@@ -654,6 +649,31 @@ export default function Dashboard() {
               </span>
             )}
           </div>
+
+          {/* <div
+            onClick={() => handleNavigate("errorlogs")}
+            className={`group flex ${isActive("errorlogs") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("errorlogs")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <ErrorOutlineIcon
+                style={{ fontSize: "1.5rem" }}
+              ></ErrorOutlineIcon>
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("errorlogs") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
+              >
+                error logs
+              </span>
+            )}
+          </div> */}
 
           <div
             onClick={() => handleNavigate("download")}
@@ -678,7 +698,7 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-        {/* sidebar for mobile screen */}
+
         <div
           ref={sidebarRef}
           className={`${isMenuOpen ? "-left-96" : "left-0"
@@ -1045,11 +1065,12 @@ export default function Dashboard() {
             </span>
           </div>
         </div>
+
         <NotificationBar
           ref={notificationRef}
           notificationOpen={notificationOpen}
         ></NotificationBar>
-        {/* Outlate */}
+
         <div className="w-full md:px-6 px-4 py-2 md:py-4 overflow-y-auto ">
           <Outlet></Outlet>
         </div>

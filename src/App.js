@@ -28,6 +28,7 @@ import ExcelUserDownload from "./pages/ExcelUserDownload";
 import ExpenseForm from "./pages/Expense";
 import AddExpense from "./pages/AddExpense";
 import GetExpense from "./pages/GetExpense";
+import ErrorLogs from "./pages/ErrorLogs";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -73,7 +74,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         );
       } catch (err) {
         console.log(err);
-        dispatch(logout());
+        // dispatch(logout());
       }
     };
 
@@ -98,7 +99,6 @@ function App() {
   const dispatch = useDispatch();
   const { user, api_token } = useSelector((state) => state.auth);
 
-  //vallidate user
   useEffect(() => {
     const validateUser = async () => {
       dispatch(loginStart());
@@ -109,7 +109,7 @@ function App() {
         );
       } catch (err) {
         console.log(err);
-        dispatch(logout());
+        // dispatch(logout());
       }
     };
     validateUser();
@@ -149,6 +149,14 @@ function App() {
       ),
     },
     {
+      path: "/",
+      element: !user ? (
+        <Login />
+      ) : (
+        <Navigate to={`/${user.isAdmin ? "admin" : "employee"}/errorlogs/`} />
+      ),
+    },
+    {
       path: "/admin",
       element: (
         <ProtectedRoute requiredRole="admin">
@@ -162,6 +170,16 @@ function App() {
             <ProtectedRoute requiredRole="admin">
               <Suspense fallback={<div>Loading...</div>}>
                 <MyDashboard></MyDashboard>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "errorlogs",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <ErrorLogs />
               </Suspense>
             </ProtectedRoute>
           ),
@@ -446,6 +464,16 @@ function App() {
             <ProtectedRoute requiredRole="employee">
               <Suspense fallback={<div>Loading...</div>}>
                 <MyDashboard></MyDashboard>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "errorlogs",
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <Suspense fallback={<div>Loading...</div>}>
+                <ErrorLogs />
               </Suspense>
             </ProtectedRoute>
           ),

@@ -18,7 +18,7 @@ const GetExpense = () => {
             setExpenseList(res.data);
         } catch (err) {
             console.error(err);
-            toast.error("Failed to load expenses.");
+            // toast.error("Failed to load expenses.");
         } finally {
             setLoader(false);
         }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api";
 import { LoaderCircle } from "lucide-react";
 import * as XLSX from "xlsx";
+import { useSelector } from "react-redux";
 
 const AttendanceReport = () => {
     const [users, setUsers] = useState([]);
@@ -13,12 +14,12 @@ const AttendanceReport = () => {
     const [selectedExpenseType, setSelectedExpenseType] = useState("");
     const [otherExpenses, setOtherExpenses] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
         const today = new Date();
         const formatted = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
         setSelectedMonth(formatted);
-
         loadUsers();
         loadExpenseTypes();
     }, []);
@@ -47,12 +48,12 @@ const AttendanceReport = () => {
             const formattedMonth = selectedMonth ? `${selectedMonth}-01` : "";
 
             const body = {
-                userid: selectedUser ? Number(selectedUser) : 0,
+                userid: user?.isAdmin ? selectedUser ? Number(selectedUser) : 0 : user?.id,
                 expensestatus: selectedStatus === "All" ? "" : selectedStatus,
                 expenseId: selectedExpenseType ? Number(selectedExpenseType) : 0,
                 expensemmYYYY: formattedMonth,
             };
-
+            console.log("Request Body:", body);
             const res = await api.post("/ExpenseMaster/GetExpense", body);
 
             setOtherExpenses(res.data.expenseData || []);
@@ -114,18 +115,20 @@ const AttendanceReport = () => {
             <h2 style={heading}>Expense Report</h2>
 
             <div style={filterCard}>
-                <select
-                    style={dropdown}
-                    value={selectedUser}
-                    onChange={(e) => setSelectedUser(e.target.value)}
-                >
-                    <option value="">Select User</option>
-                    {users?.map((u) => (
-                        <option key={u.id} value={u.id}>
-                            {u?.firstName} {u?.lastName}
-                        </option>
-                    ))}
-                </select>
+                {user?.isAdmin && (
+                    <select
+                        style={dropdown}
+                        value={selectedUser}
+                        onChange={(e) => setSelectedUser(e.target.value)}
+                    >
+                        <option value="">Select User</option>
+                        {users?.map((u) => (
+                            <option key={u.id} value={u.id}>
+                                {u?.firstName} {u?.lastName}
+                            </option>
+                        ))}
+                    </select>
+                )}
 
                 <select
                     style={dropdown}

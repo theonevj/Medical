@@ -650,6 +650,32 @@ export default function Dashboard() {
             )}
           </div>
 
+          <div
+            onClick={() => handleNavigate("excelUser")}
+            className={`group flex ${isActive("excelUser") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("excelUser")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <Download
+                style={{ fontSize: "1.5rem" }}
+              ></Download>
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("excelUser") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
+              >
+                Data Download
+              </span>
+            )}
+          </div>
+
+
           {/* <div
             onClick={() => handleNavigate("errorlogs")}
             className={`group flex ${isActive("errorlogs") && "bg-blue-50 border-r-2 border-themeblue"

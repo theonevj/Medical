@@ -446,6 +446,16 @@ function App() {
             </ProtectedRoute>
           ),
         },
+        {
+          path: "excelUser",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <ExcelUserDownload></ExcelUserDownload>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
       ],
     },
     {

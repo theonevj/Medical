@@ -242,13 +242,11 @@
 
 import React, { useEffect, useState } from "react";
 import api from "../api";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { Pencil, Trash2, X, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const ExpenseForm = () => {
-    const { user } = useSelector((state) => state.auth);
     const [expenses, setExpenses] = useState([]);
     const [filteredExpenses, setFilteredExpenses] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -289,16 +287,12 @@ const ExpenseForm = () => {
         return grouped;
     };
 
-    // -----------------------------
-    // APPLY FILTER (RUN ONLY ON BUTTON CLICK)
-    // -----------------------------
     const applyFilters = () => {
         let data = [...expenses];
 
         const search = searchText.trim().toLowerCase();
         const status = selectedStatus.trim().toLowerCase();
 
-        // Search filter
         if (search !== "") {
             data = data.filter((exp) =>
                 exp.userName?.toLowerCase().includes(search) ||
@@ -307,7 +301,6 @@ const ExpenseForm = () => {
             );
         }
 
-        // Status filter
         if (selectedStatus !== "All") {
             data = data.filter(
                 (exp) => exp.status?.trim().toLowerCase() === status
@@ -335,15 +328,12 @@ const ExpenseForm = () => {
             };
 
             await api.post(`/UserExpense/${editingExpense.expenseId}`, updatedExpense);
-
             toast.success("Expense updated successfully!");
-
             setExpenses((prev) =>
                 prev.map((exp) =>
                     exp.expenseId === editingExpense.expenseId ? updatedExpense : exp
                 )
             );
-
             applyFilters();
             setEditingExpense(null);
         } catch (err) {
@@ -354,7 +344,6 @@ const ExpenseForm = () => {
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this expense?")) return;
-
         try {
             await api.post(`/UserExpense/delete/${id}`);
             toast.success("Expense deleted successfully!");

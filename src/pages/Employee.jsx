@@ -31,7 +31,6 @@ export default function Employee() {
       setUsers(users.map((item, index) => ({ ...item, srno: index + 1 })));
     } catch (err) {
       console.log(err);
-      toast.error("Something went wrong while fetching data.");
     } finally {
       setLoader(false);
     }

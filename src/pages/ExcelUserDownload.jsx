@@ -17,9 +17,6 @@ const AttendanceReport = () => {
     const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
-        const today = new Date();
-        const formatted = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
-        setSelectedMonth(formatted);
         loadUsers();
         loadExpenseTypes();
     }, []);
@@ -45,17 +42,12 @@ const AttendanceReport = () => {
     const handleGetData = async () => {
         try {
             setLoading(true);
-            const formattedMonth = selectedMonth ? `${selectedMonth}-01` : "";
-
             const body = {
                 userid: user?.isAdmin ? selectedUser ? Number(selectedUser) : 0 : user?.id,
                 expensestatus: selectedStatus === "All" ? "" : selectedStatus,
                 expenseId: selectedExpenseType ? Number(selectedExpenseType) : 0,
-                expensemmYYYY: formattedMonth,
             };
-            console.log("Request Body:", body);
             const res = await api.post("/ExpenseMaster/GetExpense", body);
-
             setOtherExpenses(res.data.expenseData || []);
             setFilteredData(res.data.workExpenseReport || []);
         } catch (err) {
@@ -103,12 +95,10 @@ const AttendanceReport = () => {
         setSelectedUser("");
         setSelectedStatus("All");
         const today = new Date();
-        setSelectedMonth(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`);
         setSelectedExpenseType("");
         setFilteredData([]);
         setOtherExpenses([]);
     };
-
 
     return (
         <div style={page}>
@@ -137,16 +127,9 @@ const AttendanceReport = () => {
                 >
                     <option value="All">All</option>
                     <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
                 </select>
-
-                <input
-                    type="month"
-                    style={dropdown}
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                />
 
                 <select
                     style={dropdown}

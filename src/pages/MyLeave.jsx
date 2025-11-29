@@ -107,7 +107,6 @@ function Leave() {
         toast.success("Leave deleted successfully")
       } catch (err) {
         console.log(err)
-        toast.error(err?.response?.data?.message || "Something went wrong.");
       }
     }
   }
@@ -407,8 +406,8 @@ function Leave() {
               <span
                 onClick={() => setActiveState("approve")}
                 className={`w-20 ${activeState === "approve"
-                    ? "bg-themeblue text-white"
-                    : "text-gray-600"
+                  ? "bg-themeblue text-white"
+                  : "text-gray-600"
                   } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
               >
                 Approved
@@ -416,8 +415,8 @@ function Leave() {
               <span
                 onClick={() => setActiveState("pending")}
                 className={`w-20 ${activeState === "pending"
-                    ? "bg-themeblue text-white"
-                    : "text-gray-600"
+                  ? "bg-themeblue text-white"
+                  : "text-gray-600"
                   } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
               >
                 Pending
@@ -425,8 +424,8 @@ function Leave() {
               <span
                 onClick={() => setActiveState("rejected")}
                 className={`w-20 ${activeState === "rejected"
-                    ? "bg-themeblue text-white"
-                    : "text-gray-600"
+                  ? "bg-themeblue text-white"
+                  : "text-gray-600"
                   } cursor-pointer hover:bg-themeblue hover:text-white transition-colors duration-300 flex justify-center items-center text-sm p-1 border rounded-md`}
               >
                 Rejected

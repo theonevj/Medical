@@ -105,7 +105,6 @@ export default function AddNewChemistUser() {
                 })
                 toast.success("Chemist Details Added.")
             } catch (err) {
-                toast.error("Something went wrong.")
                 console.log(err)
             }
         }

@@ -280,7 +280,7 @@ const ExpenseForm = () => {
 
     const groupByName = (data) => {
         const grouped = {};
-        data.forEach((exp) => {
+        data?.forEach((exp) => {
             if (!grouped[exp.userName]) grouped[exp.userName] = [];
             grouped[exp.userName].push(exp);
         });

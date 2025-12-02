@@ -47,14 +47,9 @@ export default function MyDashboard() {
 
   const fetchCalenderData = async (currentDate) => {
     const dateData = getMonthYear(currentDate);
-
-    console.log("Sending date data:", dateData);
     try {
       const response = await api.post("/User/dashboard", dateData);
-      console.log("Sending date data:", dateData);
       let data = response.data.data.result;
-      console.log("DataFromApi", data);
-
       setDoctorsCount(data[0].noofdoc);
       setChemistCount(data[0].noofChemist);
       setMyTeamCount(data[0].noofTeam);
@@ -95,7 +90,6 @@ export default function MyDashboard() {
         const response = await api.post(
           `/STPMTP/GetAllByID?id=${selectedEvent.mtpID}`
         );
-        console.log("FetchMTPData:", response);
         setMtpDetails(response.data.data.mtpdetails);
       } catch (err) {
         console.log(err);
@@ -448,10 +442,10 @@ export default function MyDashboard() {
                         (event.stptype === "0"
                           ? "Local"
                           : event.stptype === "1"
-                          ? "Outstation"
-                          : event.stptype === "2"
-                          ? "Ex - Station"
-                          : "")}
+                            ? "Outstation"
+                            : event.stptype === "2"
+                              ? "Ex - Station"
+                              : "")}
                     </p>
                   </div>
                 )}

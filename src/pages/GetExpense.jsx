@@ -18,7 +18,6 @@ const GetExpense = () => {
             setExpenseList(res.data);
         } catch (err) {
             console.error(err);
-            // toast.error("Failed to load expenses.");
         } finally {
             setLoader(false);
         }
@@ -71,6 +70,7 @@ const GetExpense = () => {
                     <thead>
                         <tr className="bg-[#f9f9f9] text-gray-600 border-b">
                             <th className="p-3 text-left">ID</th>
+                            <th className="p-3 text-left">Name</th>
                             <th className="p-3 text-left">Type</th>
                             <th className="p-3 text-left">Amount</th>
                             <th className="p-3 text-left">Date</th>
@@ -86,6 +86,7 @@ const GetExpense = () => {
                                 className="border-b hover:bg-[#f6f6f6] transition-all "
                             >
                                 <td className="p-3">{exp.expenseId}</td>
+                                <td className="p-3">{exp.userName}</td>
                                 <td className="p-3 font-medium text-gray-700">
                                     {exp.expenseMasterName}
                                 </td>

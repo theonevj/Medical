@@ -121,7 +121,6 @@ export default function DoctorsUser() {
             }
         } catch (err) {
             console.log(err);
-            toast.error("Something went wrong while fetching data.");
         } finally {
             setLoading(false);
         }

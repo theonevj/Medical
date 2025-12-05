@@ -105,7 +105,6 @@ export default function Dashboard() {
 
   const logoutUser = () => {
     dispatch(logout());
-    console.log("logout user");
     navigate("/");
   };
 
@@ -670,7 +669,7 @@ export default function Dashboard() {
                 className={`${isActive("excelUser") && "text-themeblue"
                   } group-hover:text-themeblue font-medium text-lg`}
               >
-                Data Download
+                Expenses Report
               </span>
             )}
           </div>

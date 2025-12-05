@@ -11,12 +11,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { loginStart, loginFailure, logout } from "./redux/actions/authActions";
 import axios from "axios";
 
-// Lazy load pages
 import Login from "./pages/Login";
 import ForgetPassword from "./pages/ForgetPassword";
 import ResetPassword from "./pages/ResetPassword";
 
-// Admin dashboard components
 import Dashboard from "./components/Admin/Dashboard";
 import UpdateStourPlan from "./pages/UpdateStourPlan";
 import AddNewDocUser from "./pages/AddNewDocUser";
@@ -74,7 +72,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         );
       } catch (err) {
         console.log(err);
-        // dispatch(logout());
+        dispatch(logout());
       }
     };
 
@@ -109,7 +107,7 @@ function App() {
         );
       } catch (err) {
         console.log(err);
-        // dispatch(logout());
+        dispatch(logout());
       }
     };
     validateUser();

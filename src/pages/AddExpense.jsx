@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import api from "../api";
 import { useSelector } from "react-redux";
 import { LoaderCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AddExpense = () => {
     const [expenseType, setExpenseType] = useState("");
@@ -14,10 +15,9 @@ const AddExpense = () => {
     const [proof, setProof] = useState(null);
     const [expenseDate, setExpenseDate] = useState("");
     const [loading, setLoading] = useState(false);
-
     const [lastCreatedExpenseId, setLastCreatedExpenseId] = useState(null);
-
     const { user } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
 
     const handleExpenseChange = (e) => {
         const selectedId = e.target.value;
@@ -87,6 +87,7 @@ const AddExpense = () => {
             updatedBy: user?.id || 0,
             isActive: true,
             expenseMasterName: selectedExpense?.name || "",
+            userName: user?.name || "",
         };
 
         try {
@@ -112,15 +113,24 @@ const AddExpense = () => {
     return (
         <div className="min-h-screen w-full bg-gray-100 p-4">
             <div className="mx-auto rounded-3xl transition-all duration-500">
-                <div className="p-6 rounded-xl">
-                    <h1 className="text-3xl font-bold mb-2 text-blue-500">
-                        Add Your Expense
-                    </h1>
-                    <p className="text-sm opacity-90 text-black">
-                        Keep track of your business & personal spending effortlessly
-                    </p>
-                </div>
+                <div className="mx-auto rounded-3xl transition-all duration-500">
+                    <div className="p-6 rounded-xl flex items-center gap-4">
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="w-10 h-10 flex items-center justify-center rounded bg-indigo-100
+                             hover:bg-indigo-200 text-indigo-600"
+                        >
+                            ←
+                        </button>
+                        <div>
+                            <h1 className="text-2xl font-bold text-black">Add Your Expense</h1>
+                            <p className="text-sm opacity-90 text-black">
+                                Keep track of your business & personal spending effortlessly
+                            </p>
+                        </div>
 
+                    </div>
+                </div>
                 <div className="p-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
@@ -148,16 +158,24 @@ const AddExpense = () => {
                                 Expense Amount
                             </label>
                             <input
-                                min="0"
                                 type="number"
                                 value={amount}
                                 onChange={(e) => {
-                                    const val = e.target.value;
-                                    if (val >= 0) setAmount(val);
+                                    let val = e.target.value;
+                                    if (/[^0-9]/.test(val)) return;
+                                    if (val.length > 4) return;
+                                    if (Number(val) > 1000) return;
+                                    setAmount(val);
+                                }}
+                                onKeyDown={(e) => {
+                                    if (["e", "E", "+", "-", "."].includes(e.key)) {
+                                        e.preventDefault();
+                                    }
                                 }}
                                 className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm"
-                                placeholder="Enter amount"
+                                placeholder="Enter amount (max 1000)"
                             />
+
                         </div>
                     </div>
 
@@ -168,6 +186,7 @@ const AddExpense = () => {
                         <input
                             type="date"
                             value={expenseDate}
+                            onKeyDown={(e) => e.preventDefault()}
                             onChange={(e) => setExpenseDate(e.target.value)}
                             className="w-[40%] border border-gray-300 rounded-xl px-4 py-3 shadow-sm"
                         />

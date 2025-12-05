@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import { LoaderCircle } from "lucide-react";
-import * as XLSX from "xlsx";
+import XLSX from "xlsx-js-style";
 import { useSelector } from "react-redux";
+import { saveAs } from "file-saver";
 
 const AttendanceReport = () => {
     const [users, setUsers] = useState([]);
@@ -15,6 +16,7 @@ const AttendanceReport = () => {
     const [otherExpenses, setOtherExpenses] = useState([]);
     const [loading, setLoading] = useState(false);
     const { user } = useSelector((state) => state.auth);
+    const [selectedYear, setSelectedYear] = useState("");
 
     useEffect(() => {
         loadUsers();
@@ -24,6 +26,7 @@ const AttendanceReport = () => {
     const loadUsers = async () => {
         try {
             const res = await api.get("/User/GetAllUsers");
+            console.log("Expense user: ", res?.data);
             setUsers(res?.data?.data);
         } catch (err) {
             console.error(err);
@@ -47,8 +50,11 @@ const AttendanceReport = () => {
                 userid: user?.isAdmin ? selectedUser ? Number(selectedUser) : 0 : user?.id,
                 expensestatus: selectedStatus === "All" ? "" : selectedStatus,
                 expenseId: selectedExpenseType ? Number(selectedExpenseType) : 0,
+                month: selectedMonth ? Number(selectedMonth) : 0,
+                year: selectedYear ? Number(selectedYear) : 0,
             };
             const res = await api.post("/ExpenseMaster/GetExpense", body);
+            console.log("res ", res?.data)
             setOtherExpenses(res.data.expenseData || []);
             setFilteredData(res.data.workExpenseReport || []);
         } catch (err) {
@@ -59,36 +65,214 @@ const AttendanceReport = () => {
         }
     };
 
+    // const handleDownloadExcel = () => {
+    //     const ws1 = XLSX.utils.json_to_sheet(
+    //         filteredData.map(d => ({
+    //             Date: d.date?.split("T")[0],
+    //             Day: d.day,
+    //             Place: d.placeOfWork,
+    //             DoctorCalls: d.numberOfDoctorCalls,
+    //             ChemistCalls: d.numberOfChemistCalls,
+    //             Kilometers: d.kilometers,
+    //             TravelAmount: d.travelAmount,
+    //             Allowance: d.allowance,
+    //             TotalAmount: d.totalAmount,
+    //         }))
+    //     );
+
+    //     const totalOtherExpense =
+    //         otherExpenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+    //     const ws2 = XLSX.utils.json_to_sheet([
+    //         ...otherExpenses.map(e => ({
+    //             ExpenseType: e.expenseType,
+    //             Amount: e.amount,
+    //         })),
+    //         { ExpenseType: "TOTAL", Amount: totalOtherExpense },
+    //     ]);
+
+    //     const wb = XLSX.utils.book_new();
+    //     XLSX.utils.book_append_sheet(wb, ws1, "Work Report");
+    //     XLSX.utils.book_append_sheet(wb, ws2, "Other Expenses");
+
+    //     XLSX.writeFile(wb, "ExpenseReport.xlsx");
+    // };
+
     const handleDownloadExcel = () => {
-        const ws1 = XLSX.utils.json_to_sheet(
-            filteredData.map(d => ({
-                Date: d.date?.split("T")[0],
-                Day: d.day,
-                Place: d.placeOfWork,
-                DoctorCalls: d.numberOfDoctorCalls,
-                ChemistCalls: d.numberOfChemistCalls,
-                Kilometers: d.kilometers,
-                TravelAmount: d.travelAmount,
-                Allowance: d.allowance,
-                TotalAmount: d.totalAmount,
-            }))
+        const ws = XLSX.utils.aoa_to_sheet([]);
+        let row = 1;
+
+        // 👉 Safe Style Setter (MOST IMPORTANT)
+        const setCellStyle = (cell) => {
+            if (!ws[cell]) ws[cell] = {};  // create cell if missing
+            return ws[cell];
+        };
+
+        const headerStyle = {
+            font: { bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "4F81BD" } },
+            alignment: { horizontal: "center" },
+            border: {
+                top: { style: "thin", color: { rgb: "000000" } },
+                bottom: { style: "thin", color: { rgb: "000000" } },
+                left: { style: "thin", color: { rgb: "000000" } },
+                right: { style: "thin", color: { rgb: "000000" } },
+            },
+        };
+
+        const normalCell = {
+            border: {
+                top: { style: "thin", color: { rgb: "DDDDDD" } },
+                bottom: { style: "thin", color: { rgb: "DDDDDD" } },
+                left: { style: "thin", color: { rgb: "DDDDDD" } },
+                right: { style: "thin", color: { rgb: "DDDDDD" } },
+            },
+        };
+
+        const totalStyle = {
+            font: { bold: true },
+            fill: { fgColor: { rgb: "FFF2CC" } },
+            border: normalCell.border,
+        };
+
+        // -----------------------------------
+        // TABLE HEADERS
+        // -----------------------------------
+        const headers = [
+            "Date", "Day", "Place", "DoctorCalls", "ChemistCalls",
+            "Kilometers", "TravelAmount", "Allowance", "TotalAmount"
+        ];
+
+        XLSX.utils.sheet_add_aoa(ws, [headers], { origin: `A${row}` });
+
+        headers.forEach((_, i) => {
+            const cell = XLSX.utils.encode_cell({ r: row - 1, c: i });
+            setCellStyle(cell).s = headerStyle;
+        });
+
+        row++;
+
+        // -----------------------------------
+        // MAIN DATA ROWS
+        // -----------------------------------
+        filteredData.forEach((d) => {
+            const arr = [
+                d.date?.split("T")[0],
+                d.day,
+                d.placeOfWork,
+                d.numberOfDoctorCalls,
+                d.numberOfChemistCalls,
+                d.kilometers,
+                d.travelAmount,
+                d.allowance,
+                d.totalAmount,
+            ];
+
+            XLSX.utils.sheet_add_aoa(ws, [arr], { origin: `A${row}` });
+
+            arr.forEach((_, i) => {
+                const cell = XLSX.utils.encode_cell({ r: row - 1, c: i });
+                setCellStyle(cell).s = {
+                    ...normalCell,
+                    alignment: { horizontal: "center" },
+                };
+            });
+
+            row++;
+        });
+
+        // -----------------------------------
+        // TOTAL ROW
+        // -----------------------------------
+        XLSX.utils.sheet_add_aoa(
+            ws,
+            [[
+                "Total",
+                "",
+                "",
+                filteredData.reduce((s, x) => s + (x.numberOfDoctorCalls || 0), 0),
+                filteredData.reduce((s, x) => s + (x.numberOfChemistCalls || 0), 0),
+                filteredData.reduce((s, x) => s + (x.kilometers || 0), 0),
+                filteredData.reduce((s, x) => s + (x.travelAmount || 0), 0),
+                filteredData.reduce((s, x) => s + (x.allowance || 0), 0),
+                filteredData.reduce((s, x) => s + (x.totalAmount || 0), 0),
+            ]],
+            { origin: `A${row}` }
         );
 
-        const totalOtherExpense =
-            otherExpenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+        for (let i = 0; i < 9; i++) {
+            const cell = XLSX.utils.encode_cell({ r: row - 1, c: i });
+            setCellStyle(cell).s = totalStyle;
+        }
 
-        const ws2 = XLSX.utils.json_to_sheet([
-            ...otherExpenses.map(e => ({
-                ExpenseType: e.expenseType,
-                Amount: e.amount,
-            })),
-            { ExpenseType: "TOTAL", Amount: totalOtherExpense },
-        ]);
+        row += 2;
 
+        // -----------------------------------
+        // EXPENSE SECTION HEADER
+        // -----------------------------------
+        const expenseStartCol = 7;
+
+        XLSX.utils.sheet_add_aoa(
+            ws,
+            [["ExpenseType", "Amount"]],
+            { origin: { r: row - 1, c: expenseStartCol } }
+        );
+
+        setCellStyle(XLSX.utils.encode_cell({ r: row - 1, c: expenseStartCol })).s = headerStyle;
+        setCellStyle(XLSX.utils.encode_cell({ r: row - 1, c: expenseStartCol + 1 })).s = headerStyle;
+
+        row++;
+
+        // -----------------------------------
+        // OTHER EXPENSE ROWS
+        // -----------------------------------
+        otherExpenses.forEach((e) => {
+            XLSX.utils.sheet_add_aoa(
+                ws,
+                [[e.expenseType, e.amount]],
+                { origin: { r: row - 1, c: expenseStartCol } }
+            );
+
+            setCellStyle(XLSX.utils.encode_cell({ r: row - 1, c: expenseStartCol })).s =
+                { ...normalCell, alignment: { horizontal: "left" } };
+
+            setCellStyle(XLSX.utils.encode_cell({ r: row - 1, c: expenseStartCol + 1 })).s =
+                { ...normalCell, alignment: { horizontal: "right" } };
+
+            row++;
+        });
+
+        const otherTotal = otherExpenses.reduce((s, x) => s + x.amount, 0);
+        const mainTotal = filteredData.reduce((s, x) => s + x.totalAmount, 0);
+
+        // TOTAL ROW
+        XLSX.utils.sheet_add_aoa(
+            ws,
+            [["TOTAL", otherTotal]],
+            { origin: { r: row - 1, c: expenseStartCol } }
+        );
+
+        setCellStyle(XLSX.utils.encode_cell({ r: row - 1, c: expenseStartCol })).s = totalStyle;
+        setCellStyle(XLSX.utils.encode_cell({ r: row - 1, c: expenseStartCol + 1 })).s = totalStyle;
+
+        row++;
+
+        // -----------------------------------
+        // COLUMN WIDTHS
+        // -----------------------------------
+        ws["!cols"] = [
+            { wch: 15 }, { wch: 12 }, { wch: 18 }, { wch: 14 }, { wch: 14 },
+            { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 14 },
+            {}, {}, // skip until col K
+            { wch: 25 },  // Expense Type
+            { wch: 15 },  // Amount
+        ];
+
+        // -----------------------------------
+        // SAVE FILE
+        // -----------------------------------
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws1, "Work Report");
-        XLSX.utils.book_append_sheet(wb, ws2, "Other Expenses");
-
+        XLSX.utils.book_append_sheet(wb, ws, "Report");
         XLSX.writeFile(wb, "ExpenseReport.xlsx");
     };
 
@@ -99,6 +283,8 @@ const AttendanceReport = () => {
         setSelectedExpenseType("");
         setFilteredData([]);
         setOtherExpenses([]);
+        setSelectedYear("");
+        setSelectedMonth("");
     };
 
     return (
@@ -145,12 +331,54 @@ const AttendanceReport = () => {
                     ))}
                 </select>
 
+                <select
+                    style={dropdown}
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                >
+                    <option value="">Select Month</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+
+                <select
+                    style={dropdown}
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                >
+                    <option value="">Select Year</option>
+                    {Array.from({ length: 6 }).map((_, i) => {
+                        const year = 2023 + i;
+                        return (
+                            <option key={year} value={year}>
+                                {year}
+                            </option>
+                        );
+                    })}
+                </select>
+
+
                 <button style={btnPrimary} onClick={handleGetData}>
                     Get Data
                 </button>
                 <button style={btnSecondary} onClick={handleRefresh}>
                     Refresh
                 </button>
+                {otherExpenses?.length > 0 &&
+                    <button style={btnPrimary} onClick={handleDownloadExcel}>
+                        Download Excel
+                    </button>
+                }
             </div>
 
             {filteredData?.length > 0 ? (
@@ -237,10 +465,6 @@ const AttendanceReport = () => {
                 </div>
             )}
 
-            <button style={btnPrimary} onClick={handleDownloadExcel}>
-                Download Excel
-            </button>
-
             {loading && (
                 <div style={loader}>
                     <LoaderCircle className="animate-spin text-white" size={60} />
@@ -261,7 +485,7 @@ const page = {
 };
 
 const heading = {
-    textAlign: "center",
+    // textAlign: "center",
     marginBottom: 20,
     fontWeight: "bold",
     fontSize: 22,

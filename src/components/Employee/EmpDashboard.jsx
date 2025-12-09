@@ -603,7 +603,7 @@ export default function EmpDashboard() {
                 className={`${isActive("excelUser") && "text-themeblue"
                   } group-hover:text-themeblue font-medium text-lg`}
               >
-                Data Download
+                Expenses Report
               </span>
             )}
           </div>

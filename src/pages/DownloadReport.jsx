@@ -21,7 +21,7 @@ const exportToExcel = (data, fileName = "Data") => {
   });
   saveAs(fileData, `${fileName}.xlsx`);
 };
-  
+
 // Generate columns dynamically
 const generateColumns = (data) => {
   if (data.length === 0) return [];
@@ -179,6 +179,14 @@ function DownloadReport() {
     setFilteredReportData(filteredData);
   }, [searchTerm, reportData]);
 
+  const groupBy = (array, key) => {
+    return array.reduce((result, currentItem) => {
+      (result[currentItem[key]] = result[currentItem[key]] || []).push(currentItem);
+      return result;
+    }, {});
+  };
+
+
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">
       <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center justify-between">
@@ -232,6 +240,7 @@ function DownloadReport() {
             <label>From Date</label>
             <input
               value={fromDate}
+              max={new Date().toISOString().split("T")[0]}
               onChange={(e) => setFromDate(e.target.value)}
               type="date"
               className="p-2 outline-none border rounded-md border-neutral-400"
@@ -245,6 +254,7 @@ function DownloadReport() {
             <label>To Date</label>
             <input
               value={toDate}
+              max={new Date().toISOString().split("T")[0]}
               onChange={(e) => setToDate(e.target.value)}
               type="date"
               className="p-2 outline-none border rounded-md border-neutral-400"

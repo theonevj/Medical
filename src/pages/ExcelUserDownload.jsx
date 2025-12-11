@@ -36,7 +36,7 @@ const AttendanceReport = () => {
     //  chenages
     const loadExpenseTypes = async () => {
         try {
-            const res = await api.get("/UserExpense");
+            const res = await api.get("/ExpenseMaster");
             setExpenseTypes(res?.data);
         } catch (err) {
             console.error(err);
@@ -290,7 +290,6 @@ const AttendanceReport = () => {
     return (
         <div style={page}>
             <h2 style={heading}>Expense Report</h2>
-
             <div style={filterCard}>
                 {user?.isAdmin && (
                     <select
@@ -325,60 +324,48 @@ const AttendanceReport = () => {
                 >
                     <option value="">All Expense Types</option>
                     {expenseTypes?.map((t, index) => (
-                        <option key={t.expenseMasterId + "_" + index} value={t.expenseMasterId}>
-                            {t.expenseMasterName}
+                        <option key={t.name + "_" + index} value={t.expenseId}>
+                            {t.name}
                         </option>
                     ))}
                 </select>
 
-                <select
-                    style={dropdown}
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
+                <div className="relative">
+                    <input
+                        style={dropdown}
+                        type="month"
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                    />
+                    {!selectedMonth && (
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black pointer-events-none">
+                            Select Month & Year
+                        </span>
+                    )}
+                </div>
+
+
+                <button
+                    className="bg-blue-500 text-white p-2  rounded hover:bg-blue-600"
+                    onClick={handleGetData}
                 >
-                    <option value="">Select Month</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
-
-                <select
-                    style={dropdown}
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                >
-                    <option value="">Select Year</option>
-                    {Array.from({ length: 6 }).map((_, i) => {
-                        const year = 2023 + i;
-                        return (
-                            <option key={year} value={year}>
-                                {year}
-                            </option>
-                        );
-                    })}
-                </select>
-
-
-                <button style={btnPrimary} onClick={handleGetData}>
                     Get Data
                 </button>
-                <button style={btnSecondary} onClick={handleRefresh}>
+                <button
+                    className="bg-gray-300 text-black p-2 rounded hover:bg-gray-400"
+                    onClick={handleRefresh}
+                >
                     Refresh
                 </button>
-                {otherExpenses?.length > 0 &&
-                    <button style={btnPrimary} onClick={handleDownloadExcel}>
+
+                {otherExpenses?.length > 0 && (
+                    <button
+                        className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
+                        onClick={handleDownloadExcel}
+                    >
                         Download Excel
                     </button>
-                }
+                )}
             </div>
 
             {filteredData?.length > 0 ? (
@@ -471,7 +458,6 @@ const AttendanceReport = () => {
                 </div>
             )}
         </div>
-        // {}
     );
 };
 
@@ -486,9 +472,9 @@ const page = {
 
 const heading = {
     // textAlign: "center",
-    marginBottom: 20,
-    fontWeight: "bold",
-    fontSize: 22,
+    marginBottom: 10,
+    fontWeight: "500",
+    fontSize: 20,
 };
 
 const filterCard = {
@@ -514,8 +500,8 @@ const dropdown = {
     padding: 10,
     borderRadius: 6,
     border: "1px solid #ccc",
-    flex: 1,
-    minWidth: 150,
+    minWidth: "25%",
+    color: "black",
 };
 
 const btnPrimary = {
@@ -536,8 +522,9 @@ const tableStyle = {
 };
 
 const headerStyle = {
-    backgroundColor: "#16a085",
+    backgroundColor: "#d0cff6ff",
     color: "white",
+    height: 40,
 };
 
 const cell = {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import api from "../api";
-import { Search, Pencil, Trash2, X } from "lucide-react";
+import { Search, Pencil, Trash2, X, LoaderCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
@@ -14,29 +14,27 @@ export default function ExpenseList() {
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
-    const [date, setDate] = useState("");
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
     const [expenseTypes, setExpenseTypes] = useState([]);
     const [editing, setEditing] = useState(null);
-    const [editData, setEditData] = useState({ amount: "", description: "", expenseId: "", expenseDate: "", status: "" });
+    const [editData, setEditData] = useState({ amount: "", description: "", expenseId: "", expenseDate: "", status: "", expenseMasterId: "" });
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentData = filteredExpenses?.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredExpenses?.length / itemsPerPage);
 
     const navigate = useNavigate();
-
-    const groupByName = (data) => {
-        return data.reduce((acc, exp) => {
-            if (!acc[exp.userName]) acc[exp.userName] = [];
-            acc[exp.userName].push(exp);
-            return acc;
-        }, {});
-    };
 
     const fetchExpenses = async () => {
         try {
             setLoading(true);
             const res = await api.get("/UserExpense");
             const myExpenses = res.data.filter((e) => e.userId === user?.id);
-
             setExpenses(myExpenses);
-            setFilteredExpenses(myExpenses);
+            setFilteredExpenses(res.data);
 
         } catch (error) {
             console.error("Fetch Error:", error);
@@ -53,65 +51,82 @@ export default function ExpenseList() {
         let data = [...expenses];
 
         if (status !== "All") data = data.filter((e) => e.status === status);
-        if (date) data = data.filter((e) => e.expenseDate.slice(0, 10) === date);
+        if (fromDate) data = data.filter((e) => e.expenseDate.slice(0, 10) >= fromDate);
+        if (toDate) data = data.filter((e) => e.expenseDate.slice(0, 10) <= toDate);
 
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase();
 
             data = data.filter((e) =>
                 e.description?.toLowerCase().includes(term) ||
-                e.expenseMasterName?.toLowerCase().includes(term)
+                e.expenseMasterName?.toLowerCase().includes(term) ||
+                e.amount.toString().toLowerCase().includes(term) ||
+                e.status?.toLowerCase().includes(term) ||
+                e.expenseDate?.slice(0, 10).toLowerCase().includes(term)
             );
         }
         setFilteredExpenses(data);
-    }, [status, date, searchTerm, expenses]);
-
-    const grouped = groupByName(filteredExpenses);
-    const names = Object.keys(grouped);
+    }, [status, fromDate, toDate, searchTerm, expenses]);
 
     const handleEdit = (exp) => {
         setEditing(exp);
         setEditData({
+            expenseId: exp.expenseId,
             amount: exp.amount,
             description: exp.description,
-            expenseId: exp.expenseId,
             expenseDate: exp.expenseDate,
-            status: exp.status
+            status: exp.status,
+            expenseMasterId: exp.expenseMasterId,
+            expenseMasterName: exp.expenseMasterName,
+            approvalBy: exp.approvalBy,
+            approvalDateTime: exp.approvalDateTime,
+            createdBy: exp.createdBy,
+            updatedBy: exp.updatedBy,
+            isActive: exp.isActive
         });
     };
 
     const saveEdit = async () => {
-        console.log("Editing Data:", editData);
         try {
+            setLoading(true);
             const payload = {
-                UserName: user?.name || "",
+                expenseId: editData.expenseId,
+                userId: user?.id,
+                userName: user?.username,
+                expenseMasterId: editData.expenseMasterId,
+                expenseMasterName: expenseTypes.find(t => t.expenseId == editData.expenseMasterId)?.name || "",
                 amount: editData.amount,
                 description: editData.description,
-                expenseId: editData.expenseId,
                 expenseDate: editData.expenseDate,
-                status: editData.status || "Pending"
+                status: editData.status,
+                approvalBy: null,
+                approvalDateTime: null,
+                createdBy: user?.id,
+                updatedBy: user?.id,
+                isActive: editData.isActive
             };
 
-            await api.post(`/UserExpense/${editing.expenseId}`, payload);
-
-            // Update local state
+            console.log("payload", payload)
+            await api.post(`/UserExpense/${editData.expenseId}`, payload);
             setExpenses(prev =>
                 prev.map(e => e.expenseId === editing.expenseId ? { ...e, ...payload } : e)
             );
-
             setEditing(null);
             toast.success("Expense updated successfully!");
         } catch (err) {
-            console.log(err.response?.data || err);
             toast.error("Failed to update expense!");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure?")) return;
-
         try {
             await api.post(`/UserExpense/delete/${id}`);
+            fetchExpenses();
+            toast.success("Expense deleted successfully!");
             setExpenses((prev) => prev.filter((e) => e.expenseId !== id));
         } catch (err) {
             console.log(err);
@@ -159,129 +174,128 @@ export default function ExpenseList() {
 
     return (
         <div className="p-5">
-            <div className="flex justify-between items-center mb-5">
-                <h1 className="text-2xl font-semibold">Expense Management</h1>
-                <button
-                    onClick={() => navigate("addExpense")}
-                    className="bg-blue-600 text-white px-6 py-2 rounded"
-                >
-                    Add Expense
-                </button>
-            </div>
-
-            <div className="flex flex-wrap gap-4 mb-6">
-                <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="border p-2 rounded"
-                >
-                    <option>All</option>
-                    <option>Pending</option>
-                    <option>Approved</option>
-                    <option>Rejected</option>
-                </select>
-
-                <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="border p-2 rounded"
-                />
-
-                <div className="flex items-center border p-2 rounded">
-                    <Search size={18} />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="ml-2 outline-none"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-
-                <button
-                    onClick={() => {
-                        setStatus("All");
-                        setDate("");
-                        setSearchTerm("");
-                        fetchExpenses();
-                    }}
-                    className="bg-gray-600 text-white px-4 py-2 rounded"
-                >
-                    Refresh
-                </button>
-
-                {filteredExpenses?.length > 0 && (
-                    <button
-                        onClick={downloadExcel}
-                        className="bg-green-600 text-white px-4 py-2 rounded"
+            <h1 className="text-xl font-semibold text-gray-800">Expense Management</h1>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-5 mb-6 gap-4">
+                <div className="flex flex-wrap items-center gap-3">
+                    <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        className="border p-2 rounded-md"
                     >
-                        Download Excel
-                    </button>
-                )}
+                        <option>All</option>
+                        <option>Pending</option>
+                        <option>Approved</option>
+                        <option>Rejected</option>
+                    </select>
 
+                    <input
+                        type="date"
+                        value={fromDate}
+                        max={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        className="border p-2 rounded-md"
+                    />
+
+                    <input
+                        type="date"
+                        value={toDate}
+                        max={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => setToDate(e.target.value)}
+                        className="border p-2 rounded-md"
+                    />
+
+                    <div className="flex items-center border p-2 rounded-md">
+                        <Search size={18} className="text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="ml-2 outline-none"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            setStatus("All");
+                            setFromDate("");
+                            setToDate("");
+                            setSearchTerm("");
+                            fetchExpenses();
+                        }}
+                        className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+                    >
+                        Refresh
+                    </button>
+
+                    {filteredExpenses?.length > 0 && (
+                        <button
+                            onClick={downloadExcel}
+                            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                        >
+                            Download Excel
+                        </button>
+                    )}
+
+                    <button
+                        onClick={() => navigate("addExpense")}
+                        className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+                    >
+                        Add
+                    </button>
+                </div>
             </div>
 
-            {loading ? (
-                <p>Loading...</p>
-            ) : names.length === 0 ? (
+            {currentData?.length === 0 ? (
                 <p>No expenses found.</p>
             ) : (
-                names.map((name) => (
-                    <div key={name} className="mb-8">
-                        <h2 className="text-xl font-bold mb-2">{name}</h2>
+                <table className="w-full border">
+                    <thead>
+                        <tr className="bg-blue-50">
+                            <th className="border p-2">Date</th>
+                            <th className="border p-2">Type</th>
+                            <th className="border p-2">Description</th>
+                            <th className="border p-2">Amount</th>
+                            <th className="border p-2">Status</th>
+                            <th className="border p-2 text-center">Actions</th>
+                        </tr>
+                    </thead>
 
-                        <table className="w-full border">
-                            <thead>
-                                <tr className="bg-gray-200">
-                                    <th className="border p-2">Date</th>
-                                    <th className="border p-2">Type</th>
-                                    <th className="border p-2">Description</th>
-                                    <th className="border p-2">Amount</th>
-                                    <th className="border p-2">Status</th>
-                                    <th className="border p-2 text-center">Actions</th>
-                                </tr>
-                            </thead>
+                    <tbody>
+                        {currentData?.map((exp) => (
+                            <tr key={exp.expenseId}>
+                                <td className="border p-2">{exp.expenseDate?.slice(0, 10)}</td>
+                                <td className="border p-2">{exp.expenseMasterName}</td>
+                                <td className="border p-2">{exp.description}</td>
+                                <td className="border p-2">₹{exp.amount}</td>
+                                <td className="border p-2">{exp.status}</td>
+                                <td className="border p-2 text-center">
+                                    {exp.status === "Pending" ? (
+                                        <div className="flex justify-center gap-3">
+                                            <button
+                                                onClick={() => handleEdit(exp)}
+                                                className="text-blue-600"
+                                            >
+                                                <Pencil size={18} />
+                                            </button>
 
-                            <tbody>
-                                {grouped[name].map((exp) => (
-                                    <tr key={exp.expenseId}>
-                                        <td className="border p-2">
-                                            {exp.expenseDate.slice(0, 10)}
-                                        </td>
-                                        <td className="border p-2">{exp.expenseMasterName}</td>
-                                        <td className="border p-2">{exp.description}</td>
-                                        <td className="border p-2">₹{exp.amount}</td>
-                                        <td className="border p-2">{exp.status}</td>
-
-                                        <td className="border p-2 text-center">
-                                            {exp.status === "Pending" ? (
-                                                <div className="flex justify-center gap-3">
-                                                    <button
-                                                        onClick={() => handleEdit(exp)}
-                                                        className="text-blue-600"
-                                                    >
-                                                        <Pencil size={18} />
-                                                    </button>
-
-                                                    <button
-                                                        onClick={() => handleDelete(exp.expenseId)}
-                                                        className="text-red-600"
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                "—"
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                ))
+                                            <button
+                                                onClick={() => handleDelete(exp.expenseId)}
+                                                className="text-red-600"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        "—"
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             )}
+
 
             {editing && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/50">
@@ -295,7 +309,6 @@ export default function ExpenseList() {
 
                         <h2 className="text-lg font-bold mb-4">Edit Expense</h2>
 
-                        {/* Amount */}
                         <label>Amount</label>
                         <input
                             className="border p-2 w-full rounded mb-3"
@@ -306,7 +319,6 @@ export default function ExpenseList() {
                             }
                         />
 
-                        {/* Description */}
                         <label>Description</label>
                         <textarea
                             className="border p-2 w-full rounded mb-3"
@@ -317,18 +329,18 @@ export default function ExpenseList() {
                             }
                         />
 
-                        {/* Expense Type */}
                         <label>Expense Type</label>
                         <select
-                            value={editData.expenseId || ""}
+                            value={editData.expenseMasterId || ""}
                             onChange={(e) =>
-                                setEditData({ ...editData, expenseId: e.target.value })
+                                setEditData({ ...editData, expenseMasterId: e.target.value })
                             }
                             className="border p-2 w-full rounded mb-3"
                         >
                             <option value="" disabled>
                                 -- Select Expense Type --
                             </option>
+
                             {expenseTypes?.map((type) => (
                                 <option key={type.expenseId} value={type.expenseId}>
                                     {type.name}
@@ -336,11 +348,11 @@ export default function ExpenseList() {
                             ))}
                         </select>
 
-                        {/* Date */}
                         <label>Date</label>
                         <input
                             type="date"
                             className="border p-2 w-full rounded mb-4"
+                            max={new Date().toISOString().split("T")[0]}
                             value={editData.expenseDate?.slice(0, 10)}
                             onChange={(e) =>
                                 setEditData({ ...editData, expenseDate: e.target.value })
@@ -349,14 +361,45 @@ export default function ExpenseList() {
 
                         <button
                             className="bg-blue-600 text-white px-4 py-2 rounded w-full"
-                            onClick={saveEdit}
+                            onClick={() => saveEdit()}
                         >
-                            Save
+                            {loading ? "loading" : "Save Changes"}
                         </button>
                     </div>
                 </div>
+            )
+            }
+
+            {filteredExpenses?.length > itemsPerPage && (
+                <div className="flex justify-center items-center gap-3 mt-4">
+                    <button
+                        className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage(prev => prev - 1)}
+                    >
+                        Prev
+                    </button>
+
+                    <span className="font-semibold">
+                        Page {currentPage} of {totalPages}
+                    </span>
+
+                    <button
+                        className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage(prev => prev + 1)}
+                    >
+                        Next
+                    </button>
+                </div>
+
             )}
 
-        </div>
+            {loading &&
+                <div className="flex items-center gap-2 bg-gray-100">
+                    <LoaderCircle className="animate-spin" />
+                    <span>Loading...</span>
+                </div>}
+        </div >
     );
 }

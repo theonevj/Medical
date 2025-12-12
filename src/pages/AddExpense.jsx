@@ -57,6 +57,7 @@ const AddExpense = () => {
                 });
             }
             toast.success("Files Uploaded Successfully");
+            setLastCreatedExpenseId(null)
             setProof([]);
         } catch (err) {
             console.error(err);
@@ -72,7 +73,6 @@ const AddExpense = () => {
             toast.error("Please fill all fields before saving!");
             return;
         }
-
         const expenseData = {
             expenseId: 0,
             userId: user?.id,
@@ -186,6 +186,7 @@ const AddExpense = () => {
                         <input
                             type="date"
                             value={expenseDate}
+                            max={new Date().toISOString().split("T")[0]}
                             onKeyDown={(e) => e.preventDefault()}
                             onChange={(e) => setExpenseDate(e.target.value)}
                             className="w-[40%] border border-gray-300 rounded-xl px-4 py-3 shadow-sm"

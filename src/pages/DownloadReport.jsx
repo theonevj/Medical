@@ -10,8 +10,53 @@ import { toast } from "react-toastify";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
+// const exportToExcel = (data, fileName = "Data") => {
+//   const worksheet = XLSX.utils.json_to_sheet(data);
+//   const workbook = XLSX.utils.book_new();
+//   XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+//   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+//   const fileData = new Blob([excelBuffer], {
+//     type: "application/octet-stream",
+//   });
+//   saveAs(fileData, `${fileName}.xlsx`);
+// };
+
 const exportToExcel = (data, fileName = "Data") => {
-  const worksheet = XLSX.utils.json_to_sheet(data);
+  const groupedData = {};
+
+  data?.forEach((item) => {
+    const name = item["Dr/Chemist"];
+    const date = item["MTP date"];
+    const className = item["ClassName"];
+    const employeeName = item["Name"];
+    const speciality = item["Speciality"];
+
+    if (!groupedData[name]) {
+      groupedData[name] = {
+        doctorName: name,
+        className,
+        employeeName,
+        speciality,
+        visitCount: 0,
+        allDates: []
+      };
+    }
+
+    groupedData[name].visitCount += 1;
+    groupedData[name].allDates.push(date);
+  });
+
+  const finalData = Object.values(groupedData).map((row) => ({
+    "Dr/Chemist": row.doctorName,
+    "Name": row.employeeName,
+    "Class": row.className,
+    "Speciality": row.speciality,
+    "Visit": row.visitCount,
+    "All Dates": row.allDates.join(", ")
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(finalData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
@@ -22,7 +67,6 @@ const exportToExcel = (data, fileName = "Data") => {
   saveAs(fileData, `${fileName}.xlsx`);
 };
 
-// Generate columns dynamically
 const generateColumns = (data) => {
   if (data.length === 0) return [];
   return Object.keys(data[0]).map((key) => ({
@@ -178,14 +222,6 @@ function DownloadReport() {
     });
     setFilteredReportData(filteredData);
   }, [searchTerm, reportData]);
-
-  const groupBy = (array, key) => {
-    return array.reduce((result, currentItem) => {
-      (result[currentItem[key]] = result[currentItem[key]] || []).push(currentItem);
-      return result;
-    }, {});
-  };
-
 
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">

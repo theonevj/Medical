@@ -4,6 +4,7 @@ import { LoaderCircle } from "lucide-react";
 import XLSX from "xlsx-js-style";
 import { useSelector } from "react-redux";
 import { saveAs } from "file-saver";
+import { toast } from "react-toastify";
 
 const AttendanceReport = () => {
     const [users, setUsers] = useState([]);
@@ -44,17 +45,30 @@ const AttendanceReport = () => {
     };
 
     const handleGetData = async () => {
+        if (user?.isAdmin && !selectedUser) {
+            toast.error("Please select a user.");
+            return;
+        }
         try {
             setLoading(true);
             const body = {
-                userid: user?.isAdmin ? selectedUser ? Number(selectedUser) : 0 : user?.id,
-                expensestatus: selectedStatus === "All" ? "" : selectedStatus,
-                expenseId: selectedExpenseType ? Number(selectedExpenseType) : 0,
-                month: selectedMonth ? Number(selectedMonth) : 0,
-                year: selectedYear ? Number(selectedYear) : 0,
+                userid: user?.isAdmin
+                    ? selectedUser
+                        ? Number(selectedUser)
+                        : 0
+                    : user?.id,
+
+                expensestatus: "string",
+
+                expenseId: selectedExpenseType
+                    ? Number(selectedExpenseType)
+                    : 0,
+
+                expensemmYYYY: selectedMonth
+                    ? `${selectedMonth}-01`
+                    : null
             };
             const res = await api.post("/ExpenseMaster/GetExpense", body);
-            console.log("res ", res?.data)
             setOtherExpenses(res.data.expenseData || []);
             setFilteredData(res.data.workExpenseReport || []);
         } catch (err) {
@@ -64,39 +78,6 @@ const AttendanceReport = () => {
             setLoading(false);
         }
     };
-
-    // const handleDownloadExcel = () => {
-    //     const ws1 = XLSX.utils.json_to_sheet(
-    //         filteredData.map(d => ({
-    //             Date: d.date?.split("T")[0],
-    //             Day: d.day,
-    //             Place: d.placeOfWork,
-    //             DoctorCalls: d.numberOfDoctorCalls,
-    //             ChemistCalls: d.numberOfChemistCalls,
-    //             Kilometers: d.kilometers,
-    //             TravelAmount: d.travelAmount,
-    //             Allowance: d.allowance,
-    //             TotalAmount: d.totalAmount,
-    //         }))
-    //     );
-
-    //     const totalOtherExpense =
-    //         otherExpenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
-
-    //     const ws2 = XLSX.utils.json_to_sheet([
-    //         ...otherExpenses.map(e => ({
-    //             ExpenseType: e.expenseType,
-    //             Amount: e.amount,
-    //         })),
-    //         { ExpenseType: "TOTAL", Amount: totalOtherExpense },
-    //     ]);
-
-    //     const wb = XLSX.utils.book_new();
-    //     XLSX.utils.book_append_sheet(wb, ws1, "Work Report");
-    //     XLSX.utils.book_append_sheet(wb, ws2, "Other Expenses");
-
-    //     XLSX.writeFile(wb, "ExpenseReport.xlsx");
-    // };
 
     const handleDownloadExcel = () => {
         const ws = XLSX.utils.aoa_to_sheet([]);
@@ -140,7 +121,7 @@ const AttendanceReport = () => {
         // -----------------------------------
         const headers = [
             "Date", "Day", "Place", "DoctorCalls", "ChemistCalls",
-            "Kilometers", "TravelAmount", "Allowance", "TotalAmount"
+            "TravelAmount", "Allowance", "TotalAmount"
         ];
 
         XLSX.utils.sheet_add_aoa(ws, [headers], { origin: `A${row}` });
@@ -162,7 +143,7 @@ const AttendanceReport = () => {
                 d.placeOfWork,
                 d.numberOfDoctorCalls,
                 d.numberOfChemistCalls,
-                d.kilometers,
+                // d.kilometers,
                 d.travelAmount,
                 d.allowance,
                 d.totalAmount,
@@ -181,9 +162,6 @@ const AttendanceReport = () => {
             row++;
         });
 
-        // -----------------------------------
-        // TOTAL ROW
-        // -----------------------------------
         XLSX.utils.sheet_add_aoa(
             ws,
             [[
@@ -192,7 +170,7 @@ const AttendanceReport = () => {
                 "",
                 filteredData.reduce((s, x) => s + (x.numberOfDoctorCalls || 0), 0),
                 filteredData.reduce((s, x) => s + (x.numberOfChemistCalls || 0), 0),
-                filteredData.reduce((s, x) => s + (x.kilometers || 0), 0),
+                // filteredData.reduce((s, x) => s + (x.kilometers || 0), 0),
                 filteredData.reduce((s, x) => s + (x.travelAmount || 0), 0),
                 filteredData.reduce((s, x) => s + (x.allowance || 0), 0),
                 filteredData.reduce((s, x) => s + (x.totalAmount || 0), 0),
@@ -210,7 +188,7 @@ const AttendanceReport = () => {
         // -----------------------------------
         // EXPENSE SECTION HEADER
         // -----------------------------------
-        const expenseStartCol = 7;
+        const expenseStartCol = 6;
 
         XLSX.utils.sheet_add_aoa(
             ws,
@@ -257,9 +235,6 @@ const AttendanceReport = () => {
 
         row++;
 
-        // -----------------------------------
-        // COLUMN WIDTHS
-        // -----------------------------------
         ws["!cols"] = [
             { wch: 15 }, { wch: 12 }, { wch: 18 }, { wch: 14 }, { wch: 14 },
             { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 14 },
@@ -283,90 +258,91 @@ const AttendanceReport = () => {
         setSelectedExpenseType("");
         setFilteredData([]);
         setOtherExpenses([]);
-        setSelectedYear("");
-        setSelectedMonth("");
+
     };
+
+    useEffect(() => {
+        const today = new Date();
+        const currentMonth = today.toISOString().slice(0, 7); // yyyy-mm
+        setSelectedMonth(currentMonth);
+        setSelectedYear(today.getFullYear());
+    }, []);
+
+    const workTotal = filteredData.reduce(
+        (acc, curr) => acc + (curr.totalAmount || 0),
+        0
+    );
+
+    const otherTotal = otherExpenses.reduce(
+        (acc, curr) => acc + (curr.amount || 0),
+        0
+    );
+
+    const grandTotal = workTotal + otherTotal;
+
 
     return (
         <div style={page}>
             <h2 style={heading}>Expense Report</h2>
-            <div style={filterCard}>
+            <div className="bg-white p-4 rounded-lg shadow-sm border flex flex-wrap gap-4 items-end">
+
                 {user?.isAdmin && (
-                    <select
-                        style={dropdown}
-                        value={selectedUser}
-                        onChange={(e) => setSelectedUser(e.target.value)}
-                    >
-                        <option value="">Select User</option>
-                        {users?.map((u) => (
-                            <option key={u.id} value={u.id}>
-                                {u?.firstName} {u?.lastName}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="flex flex-col">
+                        <label className="text-sm font-semibold mb-1">Select User</label>
+                        <select
+                            className="border p-2 rounded-md w-48"
+                            value={selectedUser}
+                            onChange={(e) => setSelectedUser(e.target.value)}
+                        >
+                            <option value="">-- Select User --</option>
+                            {users?.map((u) => (
+                                <option key={u.id} value={u.id}>
+                                    {u?.firstName} {u?.lastName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 )}
 
-                {/* <select
-                    style={dropdown}
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                >
-                    <option value="All">All</option>
-                    <option value="Pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                </select> */}
-
-                {/* <select
-                    style={dropdown}
-                    value={selectedExpenseType}
-                    onChange={(e) => setSelectedExpenseType(e.target.value)}
-                >
-                    <option value="">All Expense Types</option>
-                    {expenseTypes?.map((t, index) => (
-                        <option key={t.name + "_" + index} value={t.expenseId}>
-                            {t.name}
-                        </option>
-                    ))}
-                </select> */}
-
-                <div className="relative">
+                <div className="flex flex-col">
+                    <label className="text-sm font-semibold mb-1">Select Month</label>
                     <input
-                        style={dropdown}
                         type="month"
+                        className="border p-2 rounded-md w-48"
                         value={selectedMonth}
                         onChange={(e) => setSelectedMonth(e.target.value)}
+                        required
                     />
-                    {!selectedMonth && (
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black pointer-events-none">
-                            Select Month & Year
-                        </span>
-                    )}
                 </div>
 
-
-                <button
-                    className="bg-blue-500 text-white p-2  rounded hover:bg-blue-600"
-                    onClick={handleGetData}
-                >
-                    Get Data
-                </button>
-                <button
-                    className="bg-gray-300 text-black p-2 rounded hover:bg-gray-400"
-                    onClick={handleRefresh}
-                >
-                    Refresh
-                </button>
-
-                {otherExpenses?.length > 0 && (
+                <div className="flex gap-3">
                     <button
-                        className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-                        onClick={handleDownloadExcel}
+                        disabled={!selectedMonth}
+                        className={`px-4 py-2 rounded text-white 
+                ${selectedMonth ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-300 cursor-not-allowed"}`}
+                        onClick={handleGetData}
                     >
-                        Download Excel
+                        Get Data
                     </button>
-                )}
+
+                    <button
+                        className="px-4 py-2 rounded bg-gray-400 text-white hover:bg-gray-500"
+                        onClick={handleRefresh}
+                    >
+                        Refresh
+                    </button>
+
+                    {otherExpenses?.length > 0 && (
+                        <button
+                            className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+                            onClick={handleDownloadExcel}
+                        >
+                            Download Excel
+                        </button>
+                    )}
+                </div>
             </div>
+
 
             {filteredData?.length > 0 ? (
                 <div style={card}>
@@ -378,7 +354,7 @@ const AttendanceReport = () => {
                                 <th>Place</th>
                                 <th>Doctor Calls</th>
                                 <th>Chemist Calls</th>
-                                <th>KMs</th>
+                                {/* <th>KMs</th> */}
                                 <th>Travel</th>
                                 <th>Allowance</th>
                                 <th>Total</th>
@@ -403,12 +379,16 @@ const AttendanceReport = () => {
                                     <td style={cell}>{r?.placeOfWork}</td>
                                     <td style={cell}>{r?.numberOfDoctorCalls}</td>
                                     <td style={cell}>{r?.numberOfChemistCalls}</td>
-                                    <td style={cell}>{r?.kilometers}</td>
+                                    {/* <td style={cell}>{r?.kilometers}</td> */}
                                     <td style={cell}>{r?.travelAmount}</td>
                                     <td style={cell}>{r?.allowance}</td>
                                     <td style={cell}>{r?.totalAmount}</td>
                                 </tr>
                             ))}
+                            <tr style={{ background: "#e1f0ff", fontWeight: "bold" }}>
+                                <td style={cell1} colSpan={7}>TOTAL</td>
+                                <td style={cell}>{workTotal}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -439,12 +419,13 @@ const AttendanceReport = () => {
                                 </tr>
                             ))}
                             <tr style={{ fontWeight: "bold", background: "#e1fff0" }}>
-                                <td style={cell}>TOTAL</td>
+                                <td style={cell}>Grand Total</td>
                                 <td style={cell}>
-                                    {otherExpenses.reduce(
+                                    {/* {otherExpenses.reduce(
                                         (acc, curr) => acc + (curr.amount || 0),
                                         0
-                                    )}
+                                    )} */}
+                                    {grandTotal}
                                 </td>
                             </tr>
                         </tbody>
@@ -492,6 +473,7 @@ const card = {
     background: "white",
     padding: 15,
     borderRadius: 8,
+    marginTop: 20,
     marginBottom: 25,
     border: "1px solid #ddd",
 };
@@ -522,8 +504,8 @@ const tableStyle = {
 };
 
 const headerStyle = {
-    backgroundColor: "#d0cff6ff",
-    color: "white",
+    backgroundColor: "#eef4ff",
+    color: "black",
     height: 40,
 };
 
@@ -531,6 +513,13 @@ const cell = {
     border: "1px solid #ccc",
     padding: 8,
     textAlign: "center",
+};
+
+const cell1 = {
+    border: "1px solid #ccc",
+    padding: 5,
+    textAlign: "Right",
+    left: 10,
 };
 
 const noDataBox = {
@@ -541,6 +530,7 @@ const noDataBox = {
     borderRadius: 8,
     color: "#777",
     border: "1px solid #eee",
+    marginTop: 20,
 };
 
 const loader = {

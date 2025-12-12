@@ -306,7 +306,7 @@ const AttendanceReport = () => {
                     </select>
                 )}
 
-                <select
+                {/* <select
                     style={dropdown}
                     value={selectedStatus}
                     onChange={(e) => setSelectedStatus(e.target.value)}
@@ -315,9 +315,9 @@ const AttendanceReport = () => {
                     <option value="Pending">Pending</option>
                     <option value="approved">Approved</option>
                     <option value="rejected">Rejected</option>
-                </select>
+                </select> */}
 
-                <select
+                {/* <select
                     style={dropdown}
                     value={selectedExpenseType}
                     onChange={(e) => setSelectedExpenseType(e.target.value)}
@@ -328,7 +328,7 @@ const AttendanceReport = () => {
                             {t.name}
                         </option>
                     ))}
-                </select>
+                </select> */}
 
                 <div className="relative">
                     <input

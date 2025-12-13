@@ -38,12 +38,12 @@ const exportToExcel = (data, fileName = "Data") => {
         className,
         employeeName,
         speciality,
-        visitCount: 0,
+        // visitCount: 0,
         allDates: []
       };
     }
 
-    groupedData[name].visitCount += 1;
+    // groupedData[name].visitCount += 1;
     groupedData[name].allDates.push(date);
   });
 
@@ -52,7 +52,7 @@ const exportToExcel = (data, fileName = "Data") => {
     "Name": row.employeeName,
     "Class": row.className,
     "Speciality": row.speciality,
-    "Visit": row.visitCount,
+    // "Visit": row.visitCount,
     "All Dates": row.allDates.join(", ")
   }));
 

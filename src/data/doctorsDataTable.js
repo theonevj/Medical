@@ -200,6 +200,13 @@ export const filterDoctorColumns = (handleOpenUpdateData, handleOpenConfirmPopUp
     minWidth: 150,
   },
   {
+    field: 'routeName',
+    headerClassName: 'super-app-theme--header',
+    headerName: 'Route Name',
+    flex: 1.2,
+    minWidth: 150,
+  },
+  {
     field: 'className',
     headerClassName: 'super-app-theme--header',
     headerName: 'Class',
@@ -242,13 +249,7 @@ export const filterDoctorColumns = (handleOpenUpdateData, handleOpenConfirmPopUp
       <span>{params.row.gender === "M" ? "Male" : "Female"}</span>
     )
   },
-  {
-    field: 'routeName',
-    headerClassName: 'super-app-theme--header',
-    headerName: 'Route Name',
-    flex: 1.2,
-    minWidth: 150,
-  },
+
   {
     field: 'addressLine1',
     headerClassName: 'super-app-theme--header',
@@ -364,6 +365,20 @@ export const docMapColumn = [
     minWidth: 150,
   },
   {
+    field: 'routeName',
+    headerClassName: 'super-app-theme--header',
+    headerName: 'Route Name',
+    flex: 1.2,
+    minWidth: 150,
+  },
+  {
+    field: 'doctorArea',
+    headerClassName: 'super-app-theme--header',
+    headerName: 'Docter Area',
+    flex: 0.8,
+    minWidth: 120,
+  },
+  {
     field: 'className',
     headerClassName: 'super-app-theme--header',
     headerName: 'Class',
@@ -403,13 +418,7 @@ export const docMapColumn = [
     flex: 0.8,
     minWidth: 120,
   },
-  {
-    field: 'routeName',
-    headerClassName: 'super-app-theme--header',
-    headerName: 'Route Name',
-    flex: 1.2,
-    minWidth: 150,
-  },
+
   {
     field: 'addressLine1',
     headerClassName: 'super-app-theme--header',
@@ -431,13 +440,7 @@ export const docMapColumn = [
     flex: 0.8,
     minWidth: 120,
   },
-  {
-    field: 'doctorArea',
-    headerClassName: 'super-app-theme--header',
-    headerName: 'Docter Area',
-    flex: 0.8,
-    minWidth: 120,
-  },
+
   {
     field: 'vfreq',
     headerClassName: 'super-app-theme--header',

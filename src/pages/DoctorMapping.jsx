@@ -30,19 +30,17 @@ export default function DoctorMapping() {
   const [doctor, setDoctor] = useState([]);
   const [filterDoctor, setFilterDoctor] = useState([]);
 
-  // selectedDoctor will store doctor objects (some with doc_no when mapped on server)
   const [selectedDoctor, setSelectedDoctor] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedEmpIdx, setSelectedEmpIdx] = useState([]); // [id]
-  // const [selctedDocIdx, setSelectedDocIdx] = useState([]); // drCode list of mapped doctors
   const [selectedDocIdx, setSelectedDocIdx] = useState([]); // correct spelling
 
   const [userSearch, setUserSearch] = useState("");
   const [doctorSearch, setDoctorSearch] = useState("");
   const [headQuater, setHeadQuater] = useState([]);
   const [selectedHeadQuater, setSelectedHeadQuater] = useState("");
-
   const [openUnmapModal, setOpenUnmapModal] = useState(false);
+  const [unmapSearch, setUnmapSearch] = useState("");
 
   // --- fetchers ---
   const fetchHeadQuater = async () => {
@@ -287,7 +285,6 @@ export default function DoctorMapping() {
     setSelectedDocIdx([]);
   };
 
-  // rows for mapped doctors table — use selectedDoctor so doc_no is available for server-synced rows
   const mappedTableRows = selectedDoctor;
 
   return (
@@ -306,7 +303,6 @@ export default function DoctorMapping() {
         </span>
       </div>
 
-      {/* Employee dropdown */}
       <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center gap-2">
         <span>Employee:</span>
         <select value={selectedEmpIdx[0] || ""} onChange={(e) => handleSelectEmployee(e.target.value)} className="rounded-md border-neutral-200 border p-1 outline-none">
@@ -346,7 +342,7 @@ export default function DoctorMapping() {
                 width: 140,
                 renderCell: (params) => (
                   <button onClick={() => handleUnmapDoctor(params.row)} className="text-red-500 hover:underline">
-                    Unmap
+                    ❌
                   </button>
                 ),
               },
@@ -370,11 +366,26 @@ export default function DoctorMapping() {
       <Modal open={openUnmapModal} onClose={() => setOpenUnmapModal(false)}>
         <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "70%", bgcolor: "background.paper", boxShadow: 24, borderRadius: 2, p: 3 }}>
           <Typography variant="h6" mb={2}>Unmapped Doctors</Typography>
+          <input
+            type="text"
+            placeholder="Search doctors..."
+            value={unmapSearch}
+            onChange={(e) => setUnmapSearch(e.target.value)}
+            className="flex  px-3 w-[30%]  py-2 border border-gray-300 rounded-md mb-2 w-full focus:outline-none focus:border-blue-500"
+          />
           <Box sx={{ height: 420 }}>
             <DataGrid
               // rows={filteredDoctors.filter((doc) => !selctedDocIdx.includes(doc.drCode))}
-              rows={filteredDoctors.filter((doc) => !selectedDocIdx.includes(doc.drCode))}
-
+              // rows={filteredDoctors.filter((doc) => !selectedDocIdx.includes(doc.drCode))}
+              rows={filteredDoctors
+                .filter((doc) => !selectedDocIdx.includes(doc.drCode))
+                .filter((doc) => {
+                  if (!unmapSearch) return true;
+                  const text = unmapSearch.toLowerCase();
+                  return Object.values(doc).some((val) =>
+                    String(val).toLowerCase().includes(text)
+                  );
+                })}
               getRowId={(row) => row.drCode}
               pageSizeOptions={[5, 10]}
               disableRowSelectionOnClick
@@ -391,13 +402,21 @@ export default function DoctorMapping() {
                 },
                 ...docMapColumn,
               ]}
+              // slots={{
+              //   noRowsOverlay: () => (
+              //     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#666" }}>
+              //       All doctors are mapped 🎉
+              //     </Box>
+              //   ),
+              // }}
               slots={{
                 noRowsOverlay: () => (
                   <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#666" }}>
-                    All doctors are mapped 🎉
+                    {unmapSearch ? "No doctor is available" : "All doctors are mapped 🎉"}
                   </Box>
                 ),
               }}
+
             />
           </Box>
 

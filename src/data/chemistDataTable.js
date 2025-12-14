@@ -195,6 +195,13 @@ export const empChemistColumn = (handleOpenUpdateData, handleOpenConfirmPopUp) =
     minWidth: 180, // Minimum width to prevent shrinking
   },
   {
+    field: 'routeName',
+    headerClassName: 'super-app-theme--header',
+    headerName: 'Route Name',
+    flex: 0.5, // Proportional width
+    minWidth: 150, // Minimum width to prevent shrinking
+  },
+  {
     field: 'mobileNo',
     headerClassName: 'super-app-theme--header',
     headerName: 'Mobile No',
@@ -262,13 +269,7 @@ export const empChemistColumn = (handleOpenUpdateData, handleOpenConfirmPopUp) =
     flex: 0.5, // Proportional width
     minWidth: 150, // Minimum width to prevent shrinking
   },
-  {
-    field: 'routeName',
-    headerClassName: 'super-app-theme--header',
-    headerName: 'Route Name',
-    flex: 0.5, // Proportional width
-    minWidth: 150, // Minimum width to prevent shrinking
-  },
+
   {
     field: 'dob',
     headerClassName: 'super-app-theme--header',

@@ -201,6 +201,13 @@ export const filterDoctorColumns = (handleOpenUpdateData, handleOpenConfirmPopUp
         minWidth: 150,
     },
     {
+        field: 'routeName',
+        headerClassName: 'super-app-theme--header',
+        headerName: 'Route Name',
+        flex: 1.2,
+        minWidth: 150,
+    },
+    {
         field: 'className',
         headerClassName: 'super-app-theme--header',
         headerName: 'Class',
@@ -243,13 +250,7 @@ export const filterDoctorColumns = (handleOpenUpdateData, handleOpenConfirmPopUp
             <span>{params.row.gender === "M" ? "Male" : "Female"}</span>
         )
     },
-    {
-        field: 'routeName',
-        headerClassName: 'super-app-theme--header',
-        headerName: 'Route Name',
-        flex: 1.2,
-        minWidth: 150,
-    },
+
     {
         field: 'addressLine1',
         headerClassName: 'super-app-theme--header',

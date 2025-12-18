@@ -14,10 +14,10 @@ const styles = {
     contentWrapper: {
         maxWidth: "1200px",
         margin: "0 auto",
-        padding: "30px",
-        background: "rgba(255, 255, 255, 0.9)",
-        borderRadius: "20px",
-        boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
+        padding: "4px",
+        // background: "rgba(255, 255, 255, 0.9)",
+        // borderRadius: "20px",
+        // boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
         backdropFilter: "blur(6px)",
     },
     heading: {
@@ -42,10 +42,10 @@ const styles = {
     th: {
         padding: "14px",
         textAlign: "left",
-        background: "#e2e5ebff",
+        background: "#dfe7f3ff",
         color: "black",
         textTransform: "uppercase",
-        fontSize: "13px",
+        fontSize: "12px",
         letterSpacing: "0.7px",
     },
     td: {
@@ -374,7 +374,7 @@ const Headquarter = () => {
             <AddModal />
 
             <div style={styles.contentWrapper}>
-                <div
+                {/* <div
                     style={{
                         display: "flex",
                         justifyContent: "space-between",
@@ -399,59 +399,75 @@ const Headquarter = () => {
                     >
                         + Add New Headquarter
                     </button>
+                </div> */}
+                <div className="bg-white rounded-md shadow px-4 py-3 flex justify-between items-center">
+                    <h1 className="text-gray-600 font-medium text-lg">
+                        Headquarter Management
+                    </h1>
+
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setIsAdding(true)}
+                            disabled={!!editingHQ || isAdding}
+                            className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-1.5 rounded-md"
+                        >
+                            + Add Headquarter
+                        </button>
+                    </div>
                 </div>
 
 
-                <table style={styles.table}>
-                    <thead>
-                        <tr>
-                            {/* <th style={styles.th}>Date</th> */}
-                            <th style={styles.th}>Name</th>
-                            <th style={styles.th}>City/Location</th>
-                            <th style={styles.th}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {headquarters?.slice(0).reverse().map((hq) => (
-                            <tr
-                                key={hq.hqid}
-                                onMouseOver={(e) =>
-                                    (e.currentTarget.style.backgroundColor = "#f3f4f6")
-                                }
-                                onMouseOut={(e) =>
-                                    (e.currentTarget.style.backgroundColor = "#fff")
-                                }
-                            >
-                                <td style={styles.td}>{hq.hqName}</td>
-                                <td style={styles.td}>{hq.location}</td>
-                                <td style={styles.td}>
-                                    <button
-                                        style={{
-                                            ...styles.actionButton,
-                                            backgroundColor: "#f59e0b",
-                                            color: "white",
-                                        }}
-                                        onClick={() => handleEdit(hq)}
-                                        disabled={!!editingHQ || isAdding}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        style={{
-                                            ...styles.actionButton,
-                                            backgroundColor: "#ef4444",
-                                            color: "white",
-                                        }}
-                                        onClick={() => deleteHeadquarter(hq.hqid)}
-                                        disabled={!!editingHQ || isAdding}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
+                <div className="bg-white rounded-md shadow p-4 mt-3">
+                    <table className="w-full  border-collapse">
+                        <thead>
+                            <tr>
+                                <th style={styles.th}>Name</th>
+                                <th style={styles.th}>City/Location</th>
+                                <th style={styles.th}>Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {headquarters?.slice(0).reverse().map((hq) => (
+                                <tr
+                                    key={hq.hqid}
+                                    onMouseOver={(e) =>
+                                        (e.currentTarget.style.backgroundColor = "#f3f4f6")
+                                    }
+                                    onMouseOut={(e) =>
+                                        (e.currentTarget.style.backgroundColor = "#fff")
+                                    }
+                                >
+                                    <td style={styles.td}>{hq.hqName}</td>
+                                    <td style={styles.td}>{hq.location}</td>
+                                    <td style={styles.td}>
+                                        <button
+                                            style={{
+                                                ...styles.actionButton,
+                                                backgroundColor: "#f59e0b",
+                                                color: "white",
+                                            }}
+                                            onClick={() => handleEdit(hq)}
+                                            disabled={!!editingHQ || isAdding}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            style={{
+                                                ...styles.actionButton,
+                                                backgroundColor: "#ef4444",
+                                                color: "white",
+                                            }}
+                                            onClick={() => deleteHeadquarter(hq.hqid)}
+                                            disabled={!!editingHQ || isAdding}
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

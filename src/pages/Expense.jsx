@@ -535,8 +535,8 @@ export default function ExpenseList() {
     };
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
-            <h1 className="text-2xl font-semibold text-gray-800 mb-4">Expense Management</h1>
+        <div className="p-6 bg-gray-50 min-h-screen bg-white">
+            <h1 className="text-xl font-semibold text-gray-800 mb-4">Expense Management</h1>
 
             {/* Filters */}
             <div className="bg-white p-4 rounded-xl shadow flex flex-wrap items-center gap-3 mb-6">
@@ -663,9 +663,8 @@ export default function ExpenseList() {
             </div>
 
             {/* Pagination */}
-            {/* Pagination */}
             {filteredExpenses?.length > 0 && (
-                <div className="flex justify-end items-center bg-white p-3 gap-5 rounded-xl shadow mt-4 text-sm border">
+                <div className="flex justify-end items-center bg-white p-3 gap-5 rounded-xl mt-4 text-sm border">
                     {/* Rows per page */}
                     <div className="flex items-center gap-2">
                         <span className="text-gray-600">Rows per page:</span>
@@ -674,7 +673,7 @@ export default function ExpenseList() {
                             onChange={(e) => {
                                 const newSize = Number(e.target.value);
                                 setCurrentPage(1);
-                                setItemsPerPage(newSize); // Update your itemsPerPage dynamically
+                                setItemsPerPage(newSize);
                             }}
                             className="border px-2 py-1 rounded"
                         >

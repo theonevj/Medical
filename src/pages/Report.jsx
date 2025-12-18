@@ -13,6 +13,7 @@ import { getUserReport } from '../data/EmployeeDataTable'
 import { getProductReport } from '../data/productDataTable';
 
 import { LoaderCircle } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 const exportToExcel = (data, fileName = "Data") => {
    const worksheet = XLSX.utils.json_to_sheet(data);
@@ -87,11 +88,11 @@ function Report() {
       if (validateData()) {
          setLoading(true)
          try {
-            console.log('selected user----->', selectedUser)
             const response = await api.get(`/Report/Report?ReportType=${reportType}&HQ=${selectedHeadQuater}&fromDate=${fromDate}&userid=${selectedUser}`)
             let data = response.data.data
             setReportData(data.map((item, index) => ({ ...item, id: index + 1 })))
          } catch (err) {
+            toast.error(err.response?.data?.message || 'Error fetching report data')
             console.log(err)
          } finally {
             setLoading(false)

@@ -32,11 +32,18 @@ export default function MyDashboard() {
   const [monthlyAvgChecmist, setMonthlyAvgChecmist] = useState(0);
   const [viewType, setViewType] = useState("month");
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [formattedDate, setFormattedDate] = useState("N/A");
+  const [selectedSummary, setSelectedSummary] = useState(null);
 
   const localizer = momentLocalizer(moment);
   const views = ["month", "agenda"];
   const [events, setEvents] = useState([]);
   const [showStp, setShowStp] = useState(false);
+  const [showPopUp, setShowPopUp] = useState(false);
+  const [mtpDetails, setMtpDetails] = useState([]);
+  const [mtpLoader, setMtpLoader] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const getMonthYear = (date) => {
     let month = date.getMonth() + 1;
@@ -78,11 +85,6 @@ export default function MyDashboard() {
     fetchCalenderData(currentDate);
   }, []);
 
-  const [showPopUp, setShowPopUp] = useState(false);
-  const [mtpDetails, setMtpDetails] = useState([]);
-  const [mtpLoader, setMtpLoader] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-
   useEffect(() => {
     const fetchMtpDetails = async () => {
       setMtpLoader(true);
@@ -116,7 +118,6 @@ export default function MyDashboard() {
       items?.vfreq?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const [formattedDate, setFormattedDate] = useState("N/A");
   useEffect(() => {
     if (mtpDetails?.length > 0 && mtpDetails[0]?.mtpdate) {
       const [day, month, year] = mtpDetails[0].mtpdate.split("/");
@@ -257,48 +258,152 @@ export default function MyDashboard() {
     return () => clearTimeout(timer);
   }, []);
 
+  const mtpSummary = [
+    {
+      label: "Today",
+      date: "2025-12-17",
+      count: 5,
+      total: 40,
+      employees: [
+        { name: "Lucky", date: "16-12-2025" },
+        { name: "Bhagvan", date: "16-12-2025" },
+      ],
+    },
+    {
+      label: "Yesterday",
+      date: "2025-12-16",
+      count: 20,
+      total: 40,
+      employees: [
+        { name: "Lucky", date: "15-12-2025" },
+      ],
+    },
+  ];
+
   return (
     <div className="h-full overflow-y-scroll ">
       <div className="xl:gap-3 md:gap-2 gap-2 grid mb-2 lg:mb-4  grid-cols-3 md:grid-cols-3 lg:grid-cols-5">
-        {dashboardCardsData.map((card, index) => (
+        {dashboardCardsData?.map((card, index) => (
+          // <div
+          //   key={index}
+          //   className={`relative flex flex-col p-4 rounded-lg bg-gradient-to-r ${card.gradient}  overflow-hidden`}
+          // >
+          //   {card.icon && (
+          //     <span
+          //       className={`absolute top-8 right-6 ${card.textColor} text-md md:text-lg  xl:text-3xl hidden lg:inline`}
+          //     >
+          //       {card.icon}
+          //     </span>
+          //   )}
+          //   <h1
+          //     className={`md:text-lg  xl:text-2xl font-bold ${card.textColor} text-center lg:text-start`}
+          //   >
+          //     {card.title}
+          //   </h1>
+          //   {card.dailyCount && card.monthlyCount && (
+          //     <div
+          //       className={`flex justify-between items-end mt-3 lg:mt-5 ${card.textColor}`}
+          //     >
+          //       <div className="flex flex-col gap-1">
+          //         <span className="text-lg font-semibold">Daily Avg</span>
+          //         <span className="md:text-lg xl:text-3xl font-semibold text-center">
+          //           {card.dailyCount}
+          //         </span>
+          //       </div>
+          //       <div className="flex flex-col gap-1">
+          //         <span className="text-lg font-semibold">Monthly Avg</span>
+          //         <span className="md:text-lg xl:text-3xl font-semibold text-center">
+          //           {card.monthlyCount}
+          //         </span>
+          //       </div>
+          //     </div>
+          //   )}
+          //   {card.count && (
+          //     <div className="flex justify-center items-center">
+          //       <span
+          //         className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-none ${card.textColor}`}
+          //       >
+          //         {card.count}
+          //       </span>
+          //     </div>
+          //   )}
+
+          //   <div className="mt-auto">
+          //     <Link to={card.link}>
+          //       <span className={`text-base transition ${card.textColor}`}>
+          //         {card.linkText}
+          //       </span>
+          //     </Link>
+          //   </div>
+          // </div>
           <div
             key={index}
-            className={`relative flex flex-col p-4 rounded-lg bg-gradient-to-r ${card.gradient}  overflow-hidden`}
+            className={`
+    relative flex flex-col
+    p-3
+    rounded-lg
+    bg-gradient-to-r ${card.gradient}
+    overflow-hidden
+    h-[100px] md:h-[120px]
+  `}
           >
             {card.icon && (
               <span
-                className={`absolute top-8 right-6 ${card.textColor} text-md md:text-lg  xl:text-3xl hidden lg:inline`}
+                className={`
+        absolute top-3 right-3
+        ${card.textColor}
+        text-sm md:text-base xl:text-xl
+        hidden lg:inline
+      `}
               >
                 {card.icon}
               </span>
             )}
+
             <h1
-              className={`md:text-lg  xl:text-2xl font-bold ${card.textColor} text-center lg:text-start`}
+              className={`
+      text-sm md:text-base xl:text-lg
+      font-semibold
+      ${card.textColor}
+      text-center lg:text-start
+    `}
             >
               {card.title}
             </h1>
+
             {card.dailyCount && card.monthlyCount && (
               <div
-                className={`flex justify-between items-end mt-3 lg:mt-5 ${card.textColor}`}
+                className={`
+        flex justify-between items-end
+        mt-2
+        ${card.textColor}
+      `}
               >
-                <div className="flex flex-col gap-1">
-                  <span className="text-lg font-semibold">Daily Avg</span>
-                  <span className="md:text-lg xl:text-3xl font-semibold text-center">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs font-medium">Daily Avg</span>
+                  <span className="text-sm md:text-base font-semibold">
                     {card.dailyCount}
                   </span>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-lg font-semibold">Monthly Avg</span>
-                  <span className="md:text-lg xl:text-3xl font-semibold text-center">
+
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs font-medium">Monthly Avg</span>
+                  <span className="text-sm md:text-base font-semibold">
                     {card.monthlyCount}
                   </span>
                 </div>
               </div>
             )}
+
             {card.count && (
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center mt-1">
                 <span
-                  className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-none ${card.textColor}`}
+                  className={`
+          text-2xl sm:text-3xl md:text-4xl lg:text-5xl
+          font-extrabold
+          leading-none
+          ${card.textColor}
+        `}
                 >
                   {card.count}
                 </span>
@@ -307,7 +412,13 @@ export default function MyDashboard() {
 
             <div className="mt-auto">
               <Link to={card.link}>
-                <span className={`text-base transition ${card.textColor}`}>
+                <span
+                  className={`
+          text-xs md:text-sm
+          transition
+          ${card.textColor}
+        `}
+                >
                   {card.linkText}
                 </span>
               </Link>
@@ -317,7 +428,7 @@ export default function MyDashboard() {
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-4 lg:hidden">
-        {dashboardCardsDataMobileView.map((card, index) => (
+        {dashboardCardsDataMobileView?.map((card, index) => (
           <div
             key={index}
             className={`relative flex flex-col p-4 rounded-lg bg-gradient-to-r ${card.gradient}  overflow-hidden`}
@@ -358,202 +469,321 @@ export default function MyDashboard() {
         ))}
       </div>
 
-      <div className="w-full relative mb-4 lg:h-[800px] h-[400px] md:[600px]">
-        <Calendar
-          selectable
-          localizer={localizer}
-          events={events}
-          views={views}
-          onView={(view) => {
-            setViewType(view);
-          }}
-          view={viewType}
-          defaultView="month"
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: "100%" }}
-          onSelectEvent={handleSelectSlot}
-          onNavigate={handleNavigate}
-          date={currentDate}
-          eventPropGetter={(event) => {
-            let backgroundColor = "transparent";
+      <div className="relative overflow-hidden mt-4">
+        <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-200 pr-2">
+          <h1 className="text-base font-semibold text-gray-800 tracking-wide">
+            MTP Details
+          </h1>
 
-            return {
-              style: {
-                backgroundColor,
-                borderRadius: "px",
-                opacity: 1,
-                color: event.color || "white",
-                width: "100%",
-                height: "100%",
-                margin: 0,
-                padding: "4px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                textOverflow: "ellipsis",
-                fontWeight: "bold",
-                fontSize: "14px",
-              },
-            };
-          }}
-          dayPropGetter={(date) => {
-            const event = events.find(
-              (event) =>
-                new Date(event.start).toDateString() === date.toDateString()
-            );
-            if (!event || !event.title) return {};
-            let backgroundColor = "";
-            const title = event.title;
-            if (title.startsWith("Week Off")) {
-              backgroundColor = "#FAFAFA";
-            } else if (title.startsWith("Leave - Sick")) {
-              backgroundColor = "#7BAE56";
-            } else if (title.startsWith("Holiday")) {
-              backgroundColor = "#FFFBE6";
-            } else if (title.startsWith("Absent")) {
-              backgroundColor = "#FFF1F0";
-            } else if (title.startsWith("Present")) {
-              backgroundColor = "#E6F7FF";
-            } else {
-              backgroundColor = "";
-            }
-            return {
-              style: {
-                backgroundColor,
-              },
-            };
-          }}
-          components={{
-            event: ({ event }) => (
-              <div className="">
-                <div className="flex justify-between items-center font-semibold lg:font-bold">
-                  {event.title}
-                </div>
+          <div className="flex items-center gap-4 translate-x-3">
+            <button
+              onClick={() => setIsCollapsed((prev) => !prev)}
+              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              {isCollapsed ? "Expand" : "Collapse"}
+              <span className="text-lg">
+                {isCollapsed ? "▾" : "▴"}
+              </span>
+            </button>
 
-                {(event.stpname || event.stptype) && (
-                  <div className="text-[12px] font-normal  whitespace-normal break-words hidden lg:block">
-                    <p className="flex  break-words">{event.stpname}</p>
-                    <p>
-                      {event.stptype === "0" ||
-                        event.stptype === "1" ||
-                        (event.stptype === "2" && "Tour Type: ")}
-                      {event.title === "Present" &&
-                        (event.stptype === "0"
-                          ? "Local"
-                          : event.stptype === "1"
-                            ? "Outstation"
-                            : event.stptype === "2"
-                              ? "Ex - Station"
-                              : "")}
-                    </p>
-                  </div>
-                )}
-              </div>
-            ),
-          }}
-        />
-
-        {showPopUp && selectedEvent && (
-          <div className="fixed z-50 inset-0 flex justify-center items-center bg-black bg-opacity-40">
-            <div className="w-5/6 max-h-[90vh] z-50 rounded-md overflow-hidden shadow-sm bg-white border flex flex-col">
-              <div className="flex bg-neutral-400 text-black p-4 border-b border-neutral-200 justify-between items-center">
-                <h1 className="font-medium text-lg">MTP Details</h1>
-                <button
-                  className="text-red-500 hover:text-red-600"
-                  onClick={() => setShowPopUp(false)}
-                >
-                  <X />
-                </button>
-              </div>
-              <div className="p-4 space-x-4 gap-3  bg-neutral-100 flex flex-col md:flex-row md:justify-between md:items-center">
-                <div className="lg:leading-7 gap-3 lg:gap-4  flex flex-col md:flex-row md:justify-between md:items-center">
-                  <p className="font-semibold text-gray-500 text-md text-nowrap">
-                    <span className="font-bold ">Date:-</span> {formattedDate}
-                  </p>
-                  <p className="font-semibold text-md text-gray-500 text-nowrap">
-                    <span className="font-bold">STP:-</span>{" "}
-                    {filteredDetails.length > 0 && filteredDetails[0].stp}
-                  </p>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-[300px] mr-4 px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400 shadow-sm "
-                />
-              </div>
-              <div className="flex-1 overflow-auto bg-neutral-100 py-2">
-                {mtpLoader ? (
-                  <div className="flex justify-center items-center w-full h-full">
-                    <LoaderCircle className="animate-spin" />
-                  </div>
-                ) : filteredDetails.length > 0 ? (
-                  <table className="w-full border border-neutral-300 shadow-lg rounded-lg mb-4">
-                    <thead className="bg-neutral-400 text-black">
-                      <tr>
-                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
-                          Id
-                        </th>
-                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
-                          Doctor
-                        </th>
-                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
-                          Speciality
-                        </th>
-                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
-                          Qualification
-                        </th>
-                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
-                          Doctor Area
-                        </th>
-                        <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
-                          Products
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredDetails.map((item, index) => (
-                        <tr
-                          key={index}
-                          className="hover:bg-indigo-100 odd:bg-neutral-100 even:bg-white transition duration-200 ease-in-out text-start"
-                        >
-                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
-                            {index + 1}
-                          </td>
-                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
-                            {item?.drName || "N/A"}
-                          </td>
-                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
-                            {item?.speciality || "N/A"}
-                          </td>
-                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
-                            {item?.qualification || "N/A"}
-                          </td>
-                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
-                            {item?.doctorArea || "N/A"}
-                          </td>
-                          <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
-                            {item?.products.split(",").map((p, index) => (
-                              <span key={index} className="mr-4">
-                                {p.trim()},
-                              </span>
-                            ))}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="flex justify-center items-center w-full h-full">
-                    <p className="text-neutral-500">No records found</p>
-                  </div>
-                )}
-              </div>
-            </div>
+            <button
+              onClick={() => setShowPopUp(false)}
+              className="text-gray-400 hover:text-red-500 transition"
+            >
+              <X size={18} />
+            </button>
           </div>
-        )}
+        </div>
+      </div>
+
+      {!isCollapsed && (
+        <>
+          <div className="w-full relative mb-4 lg:h-[800px] h-[400px] md:[600px] mt-4">
+            <Calendar
+              selectable
+              localizer={localizer}
+              events={events}
+              views={views}
+              onView={(view) => {
+                setViewType(view);
+              }}
+              view={viewType}
+              defaultView="month"
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: "100%" }}
+              onSelectEvent={handleSelectSlot}
+              onNavigate={handleNavigate}
+              date={currentDate}
+              eventPropGetter={(event) => {
+                let backgroundColor = "transparent";
+
+                return {
+                  style: {
+                    backgroundColor,
+                    borderRadius: "px",
+                    opacity: 1,
+                    color: event.color || "white",
+                    width: "100%",
+                    height: "100%",
+                    margin: 0,
+                    padding: "4px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textOverflow: "ellipsis",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                  },
+                };
+              }}
+              dayPropGetter={(date) => {
+                const event = events.find(
+                  (event) =>
+                    new Date(event.start).toDateString() === date.toDateString()
+                );
+                if (!event || !event.title) return {};
+                let backgroundColor = "";
+                const title = event.title;
+                if (title.startsWith("Week Off")) {
+                  backgroundColor = "#FAFAFA";
+                } else if (title.startsWith("Leave - Sick")) {
+                  backgroundColor = "#7BAE56";
+                } else if (title.startsWith("Holiday")) {
+                  backgroundColor = "#FFFBE6";
+                } else if (title.startsWith("Absent")) {
+                  backgroundColor = "#FFF1F0";
+                } else if (title.startsWith("Present")) {
+                  backgroundColor = "#E6F7FF";
+                } else {
+                  backgroundColor = "";
+                }
+                return {
+                  style: {
+                    backgroundColor,
+                  },
+                };
+              }}
+              components={{
+                event: ({ event }) => (
+                  <div className="">
+                    <div className="flex justify-between items-center font-semibold lg:font-bold">
+                      {event.title}
+                    </div>
+
+                    {(event.stpname || event.stptype) && (
+                      <div className="text-[12px] font-normal  whitespace-normal break-words hidden lg:block">
+                        <p className="flex  break-words">{event.stpname}</p>
+                        <p>
+                          {event.stptype === "0" ||
+                            event.stptype === "1" ||
+                            (event.stptype === "2" && "Tour Type: ")}
+                          {event.title === "Present" &&
+                            (event.stptype === "0"
+                              ? "Local"
+                              : event.stptype === "1"
+                                ? "Outstation"
+                                : event.stptype === "2"
+                                  ? "Ex - Station"
+                                  : "")}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ),
+              }}
+            />
+
+            {showPopUp && selectedEvent && (
+              <div className="fixed z-50 inset-0 flex justify-center items-center bg-black bg-opacity-40">
+                <div className="w-5/6 max-h-[90vh] z-50 rounded-md overflow-hidden shadow-sm bg-white border flex flex-col">
+                  <div className="flex bg-neutral-400 text-black p-4 border-b border-neutral-200 justify-between items-center">
+                    <h1 className="font-medium text-lg">MTP Details</h1>
+                    <button
+                      className="text-red-500 hover:text-red-600"
+                      onClick={() => setShowPopUp(false)}
+                    >
+                      <X />
+                    </button>
+                  </div>
+                  <div className="p-4 space-x-4 gap-3  bg-neutral-100 flex flex-col md:flex-row md:justify-between md:items-center">
+                    <div className="lg:leading-7 gap-3 lg:gap-4  flex flex-col md:flex-row md:justify-between md:items-center">
+                      <p className="font-semibold text-gray-500 text-md text-nowrap">
+                        <span className="font-bold ">Date:-</span> {formattedDate}
+                      </p>
+                      <p className="font-semibold text-md text-gray-500 text-nowrap">
+                        <span className="font-bold">STP:-</span>{" "}
+                        {filteredDetails.length > 0 && filteredDetails[0].stp}
+                      </p>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-[300px] mr-4 px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400 shadow-sm "
+                    />
+                  </div>
+                  <div className="flex-1 overflow-auto bg-neutral-100 py-2">
+                    {mtpLoader ? (
+                      <div className="flex justify-center items-center w-full h-full">
+                        <LoaderCircle className="animate-spin" />
+                      </div>
+                    ) : filteredDetails.length > 0 ? (
+                      <table className="w-full border border-neutral-300 shadow-lg rounded-lg mb-4">
+                        <thead className="bg-neutral-400 text-black">
+                          <tr>
+                            <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                              Id
+                            </th>
+                            <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                              Doctor
+                            </th>
+                            <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                              Speciality
+                            </th>
+                            <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                              Qualification
+                            </th>
+                            <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                              Doctor Area
+                            </th>
+                            <th className="border border-neutral-300 p-3 text-left text-sm font-semibold uppercase tracking-wider">
+                              Products
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredDetails.map((item, index) => (
+                            <tr
+                              key={index}
+                              className="hover:bg-indigo-100 odd:bg-neutral-100 even:bg-white transition duration-200 ease-in-out text-start"
+                            >
+                              <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
+                                {index + 1}
+                              </td>
+                              <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
+                                {item?.drName || "N/A"}
+                              </td>
+                              <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
+                                {item?.speciality || "N/A"}
+                              </td>
+                              <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
+                                {item?.qualification || "N/A"}
+                              </td>
+                              <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
+                                {item?.doctorArea || "N/A"}
+                              </td>
+                              <td className="border border-neutral-300 p-3 text-neutral-700 align-top">
+                                {item?.products.split(",").map((p, index) => (
+                                  <span key={index} className="mr-4">
+                                    {p.trim()},
+                                  </span>
+                                ))}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="flex justify-center items-center w-full h-full">
+                        <p className="text-neutral-500">No records found</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+
+        {/* LEFT : SUMMARY LIST */}
+        <div className="lg:col-span-1 bg-white rounded-xl shadow border overflow-hidden">
+          <div className="px-5 py-4 border-b bg-gray-50">
+            <h2 className="font-semibold text-gray-800 text-sm uppercase tracking-wide">
+              MTP Not Report Summary
+            </h2>
+          </div>
+
+          <div className="divide-y">
+            {mtpSummary.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => setSelectedSummary(item)}
+                className={`px-5 py-4 cursor-pointer flex justify-between items-center transition
+            ${selectedSummary?.label === item.label
+                    ? "bg-indigo-50"
+                    : "hover:bg-gray-50"
+                  }`}
+              >
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    {item.label}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Not Reported MTP
+                  </p>
+                </div>
+
+                <span className="text-sm font-semibold text-red-600">
+                  {item.count} / {item.total}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT : DETAILS PANEL */}
+        <div className="lg:col-span-2 bg-white rounded-xl shadow border overflow-hidden">
+          {!selectedSummary ? (
+            <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+              Select a summary to view employee details
+            </div>
+          ) : (
+            <>
+              <div className="px-5 py-4 border-b bg-gray-50 flex justify-between items-center">
+                <h3 className="font-semibold text-gray-800 text-sm">
+                  {selectedSummary.label} – Employee Details
+                </h3>
+                <span className="text-xs text-gray-500">
+                  {selectedSummary.count} Not Reported
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100 text-gray-600">
+                    <tr>
+                      <th className="px-5 py-3 text-left font-medium">Employee</th>
+                      <th className="px-5 py-3 text-left font-medium">
+                        Last Report Date
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {selectedSummary.employees.map((emp, index) => (
+                      <tr
+                        key={index}
+                        className="border-t hover:bg-indigo-50 transition"
+                      >
+                        <td className="px-5 py-3 font-medium text-gray-800">
+                          {emp.name}
+                        </td>
+                        <td className="px-5 py-3 text-gray-600">
+                          {emp.date}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* 

@@ -110,7 +110,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-lightgray">
-      {/* Navbar */}
       <div className="fixed bg-white z-40 top-0 right-0 left-0 md:h-24 h-20 flex items-center">
         <div
           className={`${isMenuOpen ? "md:w-72" : "md:w-28"
@@ -155,11 +154,6 @@ export default function Dashboard() {
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="relative flex cursor-pointer items-center gap-3"
               >
-                {/* <img
-                  className="w-12 h-12 rounded-full"
-                  src={PERSON}
-                  alt="profile"
-                ></img> */}
                 <div className="w-12 h-12 rounded-full flex justify-center items-center  bg-blue-600 text-gray-200 font-bold">
                   {user.firstName[0].toUpperCase()}
                   {user.lastName[0].toUpperCase()}
@@ -203,7 +197,6 @@ export default function Dashboard() {
       </div>
       {/* Main content */}
       <div className="w-full relative flex md:mt-24 mt-20">
-        {/* Sidebar For Web screen */}
         <div
           className={`${isMenuOpen ? "w-72" : "w-28"
             } z-40 md:block overflow-scroll hidden transition-all duration-300 shadow-lg bg-white`}

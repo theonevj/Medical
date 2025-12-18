@@ -41,11 +41,8 @@ function AddMtp() {
   const [searchTerm, setSearchTerm] = useState("");
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const [openUser, setOpenUser] = useState(false);
-
   const userdropdownref = useRef(null);
-
   const productdropdownref = useRef(null);
-
   let docchem = [...doctors, ...chemist];
 
   const handleClickOutside = (event) => {
@@ -303,6 +300,8 @@ function AddMtp() {
           })),
         };
 
+        console.log("Submitting MTP:", obj);
+
         const response = await api.post("/STPMTP/addMTP", obj);
 
         if (response.data.statusCode === 500) {
@@ -513,7 +512,6 @@ function AddMtp() {
             </div>
             <div className="flex flex-col gap-2">
               <label className="font-medium">Work With</label>
-
               <div className="relative w-full">
                 <div
                   onClick={() => setOpenUser((prev) => !prev)}
@@ -521,7 +519,12 @@ function AddMtp() {
                 >
                   <input
                     type="text"
-                    value={userSearchTerm}
+                    // value={userSearchTerm}
+                    value={
+                      userSearchTerm?.length > 0
+                        ? userSearchTerm
+                        : formData.user.map(u => u.codeName).join(", ")
+                    }
                     onChange={(e) => setUserSearchTerm(e.target.value)}
                     placeholder="Search..."
                     className="px-4 border-none rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400  "
@@ -619,7 +622,12 @@ function AddMtp() {
                 >
                   <input
                     type="text"
-                    value={searchTerm}
+                    // value={searchTerm}
+                    value={
+                      searchTerm.length > 0
+                        ? searchTerm
+                        : formData.product.map(p => p.productName).join(", ")
+                    }
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search..."
                     className="px-4 border-none rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400  "

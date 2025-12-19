@@ -149,7 +149,7 @@ const GetExpense = () => {
 
     return (
         <div className="min-h-screen bg-[#f4f5f7] p-4"> <div className="text-gray-800 p-2 mb-2">
-            <h1 className="text-xl font-semibold tracking-wide">Expense Records</h1>
+            {/* <h1 className="text-xl font-semibold tracking-wide">Expense Records</h1> */}
         </div>
             <div className="bg-white p-4 rounded-2xl shadow-md border border-gray-200 flex flex-wrap gap-3 items-end mb-4">
                 <div>

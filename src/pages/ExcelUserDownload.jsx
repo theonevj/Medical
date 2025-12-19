@@ -284,37 +284,38 @@ const AttendanceReport = () => {
     return (
         <div style={page}>
             {/* <h2 style={heading}>Expense Report</h2> */}
-            <div className="bg-white p-4 rounded-lg shadow-sm border flex flex-wrap gap-4 items-end">
+            <div className="bg-white p-4 rounded-lg shadow-sm border flex justify-between flex-wrap gap-4 items-end">
 
-                {user?.isAdmin && (
+                <div className="flex block md:flex-row gap-4">
+                    {user?.isAdmin && (
+                        <div className="flex flex-col">
+                            <label className="text-sm font-semibold mb-1">Select User</label>
+                            <select
+                                className="border p-2 rounded-md w-48"
+                                value={selectedUser}
+                                onChange={(e) => setSelectedUser(e.target.value)}
+                            >
+                                <option value="">-- Select User --</option>
+                                {users?.map((u) => (
+                                    <option key={u.id} value={u.id}>
+                                        {u?.firstName} {u?.lastName}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
                     <div className="flex flex-col">
-                        <label className="text-sm font-semibold mb-1">Select User</label>
-                        <select
+                        <label className="text-sm font-semibold mb-1">Select Month</label>
+                        <input
+                            type="month"
                             className="border p-2 rounded-md w-48"
-                            value={selectedUser}
-                            onChange={(e) => setSelectedUser(e.target.value)}
-                        >
-                            <option value="">-- Select User --</option>
-                            {users?.map((u) => (
-                                <option key={u.id} value={u.id}>
-                                    {u?.firstName} {u?.lastName}
-                                </option>
-                            ))}
-                        </select>
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            required
+                        />
                     </div>
-                )}
-
-                <div className="flex flex-col">
-                    <label className="text-sm font-semibold mb-1">Select Month</label>
-                    <input
-                        type="month"
-                        className="border p-2 rounded-md w-48"
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(e.target.value)}
-                        required
-                    />
                 </div>
-
                 <div className="flex gap-3">
                     <button
                         disabled={!selectedMonth}

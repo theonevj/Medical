@@ -708,6 +708,10 @@ function App() {
         },
       ],
     },
+    {
+      path: "/errorlogs",
+      element: <ErrorLogs />
+    }
   ]);
 
   return (

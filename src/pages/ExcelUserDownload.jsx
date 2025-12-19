@@ -283,7 +283,7 @@ const AttendanceReport = () => {
 
     return (
         <div style={page}>
-            <h2 style={heading}>Expense Report</h2>
+            {/* <h2 style={heading}>Expense Report</h2> */}
             <div className="bg-white p-4 rounded-lg shadow-sm border flex flex-wrap gap-4 items-end">
 
                 {user?.isAdmin && (

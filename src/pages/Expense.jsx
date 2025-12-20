@@ -536,71 +536,85 @@ export default function ExpenseList() {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen bg-white">
-            <h1 className="text-xl font-semibold text-gray-800 mb-4">Expense Management</h1>
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-xl font-semibold text-gray-800">
+                    Expense Management
+                </h1>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center border rounded-lg p-2 w-60">
+                        <Search size={18} className="text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="ml-2 outline-none w-full"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    <button
+                        onClick={() => navigate("addExpense")}
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                    >
+                        Add
+                    </button>
+                </div>
+            </div>
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-xl shadow flex flex-wrap items-center gap-3 mb-6">
-                <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="border rounded-lg p-2 w-32"
-                >
-                    <option>All</option>
-                    <option>Pending</option>
-                    <option>Approved</option>
-                    <option>Rejected</option>
-                </select>
+            <div className="bg-white p-4 rounded-xl shadow flex justify-between items-center mb-6 flex-wrap gap-4">
+                {/* Left Filters */}
+                <div className="flex items-center gap-3 flex-wrap">
+                    <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        className="border rounded-lg p-2 w-32"
+                    >
+                        <option>All</option>
+                        <option>Pending</option>
+                        <option>Approved</option>
+                        <option>Rejected</option>
+                    </select>
 
-                <input
-                    type="date"
-                    value={fromDate}
-                    max={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setFromDate(e.target.value)}
-                    className="border rounded-lg p-2"
-                />
-                <input
-                    type="date"
-                    value={toDate}
-                    max={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setToDate(e.target.value)}
-                    className="border rounded-lg p-2"
-                />
-
-                <div className="flex items-center border rounded-lg p-2 w-60">
-                    <Search size={18} className="text-gray-400" />
                     <input
-                        type="text"
-                        placeholder="Search..."
-                        className="ml-2 outline-none w-full"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        type="date"
+                        value={fromDate}
+                        max={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        className="border rounded-lg p-2"
+                    />
+
+                    <input
+                        type="date"
+                        value={toDate}
+                        max={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => setToDate(e.target.value)}
+                        className="border rounded-lg p-2"
                     />
                 </div>
 
-                <button
-                    onClick={() => {
-                        setStatus("All");
-                        setFromDate("");
-                        setToDate("");
-                        setSearchTerm("");
-                        fetchExpenses();
-                    }}
-                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-                >
-                    Refresh
-                </button>
-                <button
-                    onClick={downloadExcel}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-                >
-                    Download Excel
-                </button>
-                <button
-                    onClick={() => navigate("addExpense")}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-                >
-                    Add
-                </button>
+                {/* Right Buttons */}
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => {
+                            setStatus("All");
+                            setFromDate("");
+                            setToDate("");
+                            setSearchTerm("");
+                            fetchExpenses();
+                        }}
+                        className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                    >
+                        Refresh
+                    </button>
+
+                    <button
+                        onClick={downloadExcel}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                    >
+                        Download Excel
+                    </button>
+                </div>
             </div>
 
             {/* Table */}
@@ -713,7 +727,6 @@ export default function ExpenseList() {
                     </div>
                 </div>
             )}
-
 
             {/* Loading */}
             {loading && (

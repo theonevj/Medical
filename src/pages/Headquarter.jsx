@@ -14,7 +14,7 @@ const styles = {
     contentWrapper: {
         maxWidth: "1200px",
         margin: "0 auto",
-        padding: "4px",
+        padding: "2px",
         // background: "rgba(255, 255, 255, 0.9)",
         // borderRadius: "20px",
         // boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
@@ -129,6 +129,9 @@ const Headquarter = () => {
     const [error, setError] = useState(null);
     const [editingHQ, setEditingHQ] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
+    const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
         fetchData();
@@ -365,6 +368,16 @@ const Headquarter = () => {
         );
     };
 
+    const filteredHeadquarters = headquarters.filter((hq) =>
+        hq.hqName?.toLowerCase().includes(search.toLowerCase()) ||
+        hq.location?.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const indexOfLast = currentPage * rowsPerPage;
+    const indexOfFirst = indexOfLast - rowsPerPage;
+    const paginatedHQ = filteredHeadquarters.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(filteredHeadquarters.length / rowsPerPage);
+
     if (loading) return <div style={styles.container}>Loading Headquarters...</div>;
     if (error) return <div style={styles.container}>Error: {error}</div>;
 
@@ -374,38 +387,24 @@ const Headquarter = () => {
             <AddModal />
 
             <div style={styles.contentWrapper}>
-                {/* <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "20px",
-                    }}
-                >
-                    <h1 style={{ ...styles.heading, borderBottom: "none", marginBottom: 0 }}>
-                        Headquarter Management
-                    </h1>
 
-                    <button
-                        style={styles.addButton}
-                        onClick={() => setIsAdding(true)}
-                        disabled={!!editingHQ || isAdding}
-                        onMouseOver={(e) =>
-                            (e.currentTarget.style.transform = "scale(1.05)")
-                        }
-                        onMouseOut={(e) =>
-                            (e.currentTarget.style.transform = "scale(1)")
-                        }
-                    >
-                        + Add New Headquarter
-                    </button>
-                </div> */}
                 <div className="bg-white rounded-md shadow px-4 py-3 flex justify-between items-center">
                     <h1 className="text-gray-600 font-medium text-lg">
                         Headquarter Management
                     </h1>
 
                     <div className="flex items-center gap-3">
+                        <input
+                            type="text"
+                            placeholder="Search headquarter..."
+                            value={search}
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            className="border px-3 py-1.5 rounded-md text-sm w-64"
+                        />
+
                         <button
                             onClick={() => setIsAdding(true)}
                             disabled={!!editingHQ || isAdding}
@@ -418,58 +417,113 @@ const Headquarter = () => {
 
 
                 <div className="bg-white rounded-md shadow p-4 mt-3">
-                    <table className="w-full  border-collapse">
-                        <thead>
-                            <tr>
+                    <table className="w-full   border-collapse">
+                        <thead className="bg-blue-50 text-gray-700">
+                            <tr >
                                 <th style={styles.th}>Name</th>
                                 <th style={styles.th}>City/Location</th>
                                 <th style={styles.th}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {headquarters?.slice(0).reverse().map((hq) => (
-                                <tr
-                                    key={hq.hqid}
-                                    onMouseOver={(e) =>
-                                        (e.currentTarget.style.backgroundColor = "#f3f4f6")
-                                    }
-                                    onMouseOut={(e) =>
-                                        (e.currentTarget.style.backgroundColor = "#fff")
-                                    }
-                                >
-                                    <td style={styles.td}>{hq.hqName}</td>
-                                    <td style={styles.td}>{hq.location}</td>
-                                    <td style={styles.td}>
-                                        <button
-                                            style={{
-                                                ...styles.actionButton,
-                                                backgroundColor: "#f59e0b",
-                                                color: "white",
-                                            }}
-                                            onClick={() => handleEdit(hq)}
-                                            disabled={!!editingHQ || isAdding}
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            style={{
-                                                ...styles.actionButton,
-                                                backgroundColor: "#ef4444",
-                                                color: "white",
-                                            }}
-                                            onClick={() => deleteHeadquarter(hq.hqid)}
-                                            disabled={!!editingHQ || isAdding}
-                                        >
-                                            Delete
-                                        </button>
+                            {paginatedHQ && paginatedHQ.length > 0 ? (
+                                paginatedHQ.slice(0).reverse().map((hq) => (
+                                    <tr
+                                        key={hq.hqid}
+                                        onMouseOver={(e) =>
+                                            (e.currentTarget.style.backgroundColor = "#f3f4f6")
+                                        }
+                                        onMouseOut={(e) =>
+                                            (e.currentTarget.style.backgroundColor = "#fff")
+                                        }
+                                    >
+                                        <td style={styles.td}>{hq.hqName}</td>
+                                        <td style={styles.td}>{hq.location}</td>
+                                        <td style={styles.td}>
+                                            <button
+                                                style={{
+                                                    ...styles.actionButton,
+                                                    backgroundColor: "#f59e0b",
+                                                    color: "white",
+                                                }}
+                                                onClick={() => handleEdit(hq)}
+                                                disabled={!!editingHQ || isAdding}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                style={{
+                                                    ...styles.actionButton,
+                                                    backgroundColor: "#ef4444",
+                                                    color: "white",
+                                                }}
+                                                onClick={() => deleteHeadquarter(hq.hqid)}
+                                                disabled={!!editingHQ || isAdding}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))) : (
+                                <tr>
+                                    <td
+                                        colSpan={3}
+                                        style={{
+                                            textAlign: "center",
+                                            padding: "20px",
+                                            color: "#6b7280",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        No headquarters found
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
+            {
+                paginatedHQ?.length > 0 && (
+                    <div className="flex justify-end items-center gap-4 mt-4 text-sm">
+                        <span>Rows per page</span>
+
+                        <select
+                            value={rowsPerPage}
+                            onChange={(e) => {
+                                setRowsPerPage(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}
+                            className="border rounded px-2 py-1"
+                        >
+                            {[5, 10, 20].map((n) => (
+                                <option key={n} value={n}>{n}</option>
+                            ))}
+                        </select>
+
+                        <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage((p) => p - 1)}
+                            className="px-2"
+                        >
+                            ‹
+                        </button>
+
+                        <span>
+                            {currentPage} / {totalPages || 1}
+                        </span>
+
+                        <button
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage((p) => p + 1)}
+                            className="px-2"
+                        >
+                            ›
+                        </button>
+                    </div>
+                )
+            }
+        </div >
     );
 };
 

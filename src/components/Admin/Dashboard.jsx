@@ -552,6 +552,31 @@ export default function Dashboard() {
           </div>
 
           <div
+            onClick={() => handleNavigate("presentationDetails")}
+            className={`group flex ${isActive("presentationDetails") &&
+              "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("presentationDetails")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <Beaker className="w-5 h-5"></Beaker>
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("presentationDetails") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium  text-lg`}
+              >
+                Presentation Details
+              </span>
+            )}
+          </div>
+
+
+          <div
             onClick={() => handleNavigate("doctormapping")}
             className={`group flex ${isActive("doctormapping") &&
               "bg-blue-50 border-r-2 border-themeblue"

@@ -28,6 +28,7 @@ import AddExpense from "./pages/AddExpense";
 import GetExpense from "./pages/GetExpense";
 import ErrorLogs from "./pages/ErrorLogs";
 import ProductMaster from "./pages/ProductMaster";
+import PresentationDetails from "./pages/PresentationDetails";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -394,6 +395,16 @@ function App() {
           ),
         },
         {
+          path: "presentationDetails",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <PresentationDetails></PresentationDetails>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
           path: "doctormapping",
           element: (
             <ProtectedRoute requiredRole="admin">
@@ -692,6 +703,16 @@ function App() {
             <ProtectedRoute requiredRole="employee">
               <Suspense fallback={<div>Loading...</div>}>
                 <ExpenseForm></ExpenseForm>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "presentationDetails",
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <Suspense fallback={<div>Loading...</div>}>
+                <PresentationDetails></PresentationDetails>
               </Suspense>
             </ProtectedRoute>
           ),

@@ -13,7 +13,6 @@ import { columns, empColumns, fetchTeam } from '../data/EmployeeDataTable';
 import SearchIcon from '@mui/icons-material/Search';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 
-
 function MyTeam() {
   const { user } = useSelector((state) => state.auth);
   const [searchQuery, setSearchQuery] = useState('')
@@ -24,6 +23,7 @@ function MyTeam() {
 
   const [openConfirmPopUp, setOpenConfirmPopUp] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+  const [showTree, setShowTree] = useState(false);
 
   const fetchData = async () => {
     setLoader(true)
@@ -36,13 +36,32 @@ function MyTeam() {
       setLoader(false)
     }
   }
+  // useEffect(() => {
+  //   if (searchQuery) {
+  //     setFilteredData(() => users.filter((emp) => (emp.firstName + emp.lastName).toLowerCase().includes(searchQuery.trim().toLowerCase())))
+  //   } else {
+  //     setFilteredData(users)
+  //   }
+  // }, [searchQuery, users])
+
   useEffect(() => {
-    if (searchQuery) {
-      setFilteredData(() => users.filter((emp) => (emp.firstName + emp.lastName).toLowerCase().includes(searchQuery.trim().toLowerCase())))
+    const query = searchQuery.trim().toLowerCase();
+    if (query) {
+      setFilteredData(
+        users.filter((emp) =>
+          Object.values(emp).some(
+            (val) =>
+              val !== null &&
+              val !== undefined &&
+              val.toString().toLowerCase().includes(query)
+          )
+        )
+      );
     } else {
-      setFilteredData(users)
+      setFilteredData(users);
     }
-  }, [searchQuery, users])
+  }, [searchQuery, users]);
+
 
   const handleNavigateToEdit = (data) => {
     console.log(data)
@@ -83,7 +102,6 @@ function MyTeam() {
 
   let filterColumns = user.isAdmin ? columns : empColumns
 
-
   return (
     <>
       {
@@ -108,9 +126,26 @@ function MyTeam() {
               <span><SearchIcon></SearchIcon></span>
               <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className='outline-none bg-transparent' placeholder='Search Member...' type='text'></input>
             </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() =>
+                  navigate('/admin/myteam/employeeTreeScreen')}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md"
+              >
+                Tree View
+              </button>
+
+              <span
+                onClick={fetchData}
+                className="cursor-pointer md:w-9 md:h-9 w-8 h-8 border border-slate-200 flex justify-center items-center rounded-md"
+              >
+                <AutorenewIcon />
+              </span>
+            </div>
             <span onClick={fetchData} className='cursor-pointer md:w-9 md:h-9 w-8 h-8 border border-slate-200 flex justify-center items-center rounded-md'><AutorenewIcon></AutorenewIcon></span>
           </div>
         </div>
+
         <div className='h-full py-4 px-3 custom-shadow rounded-md bg-white'>
           <Box sx={{
             height: "100%",
@@ -129,7 +164,13 @@ function MyTeam() {
                   },
                 },
               }}
-              pageSizeOptions={[5, 10]}
+              pageSizeOptions={[
+                5,
+                10,
+                20,
+                50,
+                { value: filteredData?.length, label: 'All' }
+              ]}
               disableRowSelectionOnClick
             />
           </Box>

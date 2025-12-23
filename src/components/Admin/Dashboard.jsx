@@ -575,7 +575,6 @@ export default function Dashboard() {
             )}
           </div>
 
-
           <div
             onClick={() => handleNavigate("doctormapping")}
             className={`group flex ${isActive("doctormapping") &&

@@ -29,6 +29,7 @@ import GetExpense from "./pages/GetExpense";
 import ErrorLogs from "./pages/ErrorLogs";
 import ProductMaster from "./pages/ProductMaster";
 import PresentationDetails from "./pages/PresentationDetails";
+import EmployeeTreeScreen from "./pages/EmployeeTreeScreen";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -477,6 +478,16 @@ function App() {
             </ProtectedRoute>
           ),
         },
+        {
+          path: "MyTeam/employeeTreeScreen",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <EmployeeTreeScreen></EmployeeTreeScreen>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
       ],
     },
     {
@@ -572,6 +583,16 @@ function App() {
             <ProtectedRoute requiredRole="employee">
               <Suspense fallback={<div>Loading...</div>}>
                 <MyTeam></MyTeam>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "MyTeam/employeeTreeScreen",
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <Suspense fallback={<div>Loading...</div>}>
+                <EmployeeTreeScreen></EmployeeTreeScreen>
               </Suspense>
             </ProtectedRoute>
           ),

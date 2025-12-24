@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logout } from "../../redux/actions/authActions";
 import { BiTrip } from "react-icons/bi";
-
-//Importing components
 import NotificationBar from "../NotificationBar";
 
 //importing images

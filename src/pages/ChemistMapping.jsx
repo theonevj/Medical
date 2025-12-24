@@ -342,3 +342,320 @@ function ChemistMapping() {
 }
 
 export default ChemistMapping;
+
+
+
+// import React, { useState, useEffect } from "react";
+// import { DataGrid } from "@mui/x-data-grid";
+// import Box from "@mui/material/Box";
+// import { toast } from "react-toastify";
+// import { useSelector } from "react-redux";
+// import DownloadIcon from "@mui/icons-material/Download";
+// import AutorenewIcon from "@mui/icons-material/Autorenew";
+// import { LoaderCircle } from "lucide-react";
+
+// import { chemistMapColumns, getAllChemist } from "../data/chemistDataTable";
+// import { empMapColumns, fetchAllUsers } from "../data/EmployeeDataTable";
+// import api from "../api";
+
+// const prepareObj = (chemistList, employee) => {
+//   return chemistList.map((chemist) => ({
+//     chemistCode: chemist.chemistCode,
+//     employeeCode: employee.id,
+//   }));
+// };
+
+// function ChemistMapping() {
+//   const { user } = useSelector((state) => state.auth);
+
+//   const [loading, setLoading] = useState(false);
+//   const [saveLoader, setSaveLoader] = useState(false);
+//   const [users, setUsers] = useState([]);
+//   const [filterUsers, setFilterUsers] = useState([]);
+//   const [filterChemist, setFilterChemist] = useState([]);
+//   const [userSearch, setUserSearch] = useState("");
+//   const [chemistSearch, setChemistSearch] = useState("");
+//   const [chemist, setChemist] = useState([]);
+//   const [selectedChemist, setSelectedChemist] = useState([]);
+//   const [selectedEmployee, setSelectedEmployee] = useState([]);
+//   const [selectedEmpIdx, setSelectedEmpIdx] = useState([]);
+//   const [selectedChemIdx, setSelectedChemIdx] = useState([]);
+//   const [headQuater, setHeadQuater] = useState([]);
+//   const [selectedHeadQuater, setSelectedHeadQuater] = useState("");
+
+//   // Pagination state for DataGrid
+//   const [paginationModel, setPaginationModel] = useState({
+//     page: 0,
+//     pageSize: 10,
+//   });
+
+//   const fetchHeadQuater = async () => {
+//     try {
+//       const response = await api.get("Headquarters");
+//       setHeadQuater(response.data);
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
+
+//   const getEmpChemistMapping = async () => {
+//     try {
+//       const response = await api.get(
+//         `/ChemistMapping/GetAllByUserID?userID=${selectedEmpIdx[0]}`
+//       );
+//       const data = response.data.data.result;
+//       setSelectedChemIdx(data.map((item) => item.chemistCode));
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (selectedEmpIdx.length > 0) {
+//       getEmpChemistMapping();
+//     } else {
+//       setSelectedChemIdx([]);
+//       setSelectedChemist([]);
+//     }
+//   }, [selectedEmpIdx]);
+
+//   const getChemistData = async () => {
+//     try {
+//       setLoading(true);
+//       const data = await getAllChemist();
+//       setChemist(data.map((item) => ({ ...item, id: item.chemistCode })));
+//     } catch (err) {
+//       console.log(err);
+//       toast.error(err.response?.data?.message || "Something went wrong.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const fetchData = async () => {
+//     setLoading(true);
+//     try {
+//       const users = await fetchAllUsers();
+//       setUsers(users);
+//     } catch (err) {
+//       console.log(err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const fetchAllData = () => {
+//     getChemistData();
+//     fetchData();
+//   };
+
+//   useEffect(() => {
+//     if (selectedHeadQuater) {
+//       setFilterChemist(
+//         chemist.filter((item) => Number(item.headquarter) === Number(selectedHeadQuater))
+//       );
+//       setFilterUsers(
+//         users.filter((item) => Number(item.headQuater) === Number(selectedHeadQuater))
+//       );
+//     } else {
+//       setFilterChemist(chemist);
+//       setFilterUsers(users);
+//     }
+//   }, [selectedHeadQuater, chemist, users]);
+
+//   useEffect(() => {
+//     fetchAllData();
+//     fetchHeadQuater();
+//   }, []);
+
+//   const mappedUsers = filterUsers.map((items) => ({
+//     ...items,
+//     empname: `${items.firstName} ${items.lastName}`.toLowerCase(),
+//   }));
+
+//   // Global search for employees
+//   const filteredEmployee = mappedUsers.filter((items) => {
+//     const query = userSearch.toLowerCase();
+//     return Object.values(items).some(
+//       (val) => val && val.toString().toLowerCase().includes(query)
+//     );
+//   });
+
+//   // Global search for chemists
+//   const filteredChemist = filterChemist?.filter((items) => {
+//     const query = chemistSearch.toLowerCase();
+//     return Object.values(items).some(
+//       (val) => val && val.toString().toLowerCase().includes(query)
+//     );
+//   });
+
+//   const handleSelectChemist = (newChemist) => {
+//     setSelectedChemIdx(newChemist);
+//     setSelectedChemist(
+//       chemist.filter((item) => newChemist.includes(item.chemistCode))
+//     );
+//   };
+
+//   const handleSelectEmployee = (newEmployee) => {
+//     setSelectedEmpIdx(newEmployee);
+//     setSelectedEmployee(users.find((item) => item.id === newEmployee[0]));
+//   };
+
+//   const handleSave = async () => {
+//     const mappingObj = {
+//       chemistsMappingList: prepareObj(selectedChemist, selectedEmployee),
+//       employeeCode: user.id,
+//       isActive: 1,
+//       createdBy: 0,
+//     };
+//     try {
+//       setSaveLoader(true);
+//       await api.post("/ChemistMapping/AddChemistMapping", mappingObj);
+//       setSelectedChemist([]);
+//       setSelectedEmployee([]);
+//       setSelectedEmpIdx([]);
+//       setSelectedChemIdx([]);
+//       toast.success("New chemist mapping created successfully.");
+//     } catch (err) {
+//       console.log(err);
+//       toast.error("Something went wrong.");
+//     } finally {
+//       setSaveLoader(false);
+//     }
+//   };
+
+//   const mappedChemists = filterChemist
+//     .filter((c) => selectedChemIdx.includes(c.chemistCode))
+//     .filter((c) => {
+//       const query = chemistSearch.toLowerCase();
+//       return Object.values(c).some(
+//         (val) => val && val.toString().toLowerCase().includes(query)
+//       );
+//     });
+
+//   return (
+//     <div className="flex h-full flex-col gap-3 md:gap-4">
+//       <div className="bg-white custom-shadow rounded-md py-3 px-3 flex items-center justify-between">
+//         <div className="flex items-center gap-2">
+//           <span>HeadQuater:</span>
+//           <select
+//             value={selectedHeadQuater}
+//             onChange={(e) => setSelectedHeadQuater(e.target.value)}
+//             className="rounded-md border p-1"
+//           >
+//             <option value="">All HeadQuarter</option>
+//             {headQuater.map((hq) => (
+//               <option key={hq.hqid} value={hq.hqid}>
+//                 {hq.hqName}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <span
+//           onClick={fetchAllData}
+//           className="cursor-pointer w-8 h-8 border flex justify-center items-center rounded-md"
+//         >
+//           <AutorenewIcon />
+//         </span>
+//       </div>
+
+//       {/* Employee select */}
+//       <div className="bg-white custom-shadow rounded-md py-3 px-3 flex items-center gap-2">
+//         <span>Employee:</span>
+//         <select
+//           value={selectedEmpIdx[0] || ""}
+//           onChange={(e) =>
+//             handleSelectEmployee(e.target.value ? [Number(e.target.value)] : [])
+//           }
+//           className="rounded-md border p-1"
+//         >
+//           <option value="">Select Employee</option>
+//           {filterUsers.map((emp) => (
+//             <option key={emp.id} value={emp.id}>
+//               {emp.firstName} {emp.lastName} ({emp.designationName})
+//             </option>
+//           ))}
+//         </select>
+//       </div>
+
+//       {/* Chemists DataGrid */}
+//       <div className="bg-white custom-shadow rounded-md py-4 px-3">
+//         <div className="flex justify-between items-center mb-2 gap-2 flex-wrap">
+//           <h1 className="font-medium text-lg">Mapped Chemists</h1>
+//           <div className="flex gap-2 items-center">
+//             <input
+//               type="text"
+//               value={chemistSearch}
+//               onChange={(e) => setChemistSearch(e.target.value)}
+//               placeholder="Search Chemist..."
+//               className="px-3 py-2 border rounded-md"
+//             />
+//             <button
+//               onClick={handleSave}
+//               disabled={selectedChemist?.length === 0 || selectedEmployee.length === 0}
+//               className={`px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap ${selectedChemist?.length === 0 || selectedEmployee.length === 0
+//                 ? "bg-gray-400 cursor-not-allowed"
+//                 : "bg-green-600 hover:bg-green-700 text-white"
+//                 }`}
+//             >
+//               <DownloadIcon fontSize="small" />
+//               Save
+//             </button>
+//           </div>
+//         </div>
+
+//         <Box sx={{ height: 400 }}>
+//           <DataGrid
+//             rows={mappedChemists}
+//             getRowId={(row) => row.chemistCode}
+//             columns={chemistMapColumns}
+//             loading={loading}
+//             pagination
+//             paginationModel={paginationModel}
+//             onPaginationModelChange={setPaginationModel}
+//             pageSizeOptions={[
+//               5,
+//               10,
+//               20,
+//               { value: mappedChemists.length, label: "All" },
+//             ]}
+//             slots={{
+//               noRowsOverlay: () => (
+//                 <Box
+//                   sx={{
+//                     display: "flex",
+//                     justifyContent: "center",
+//                     alignItems: "center",
+//                     height: "100%",
+//                     color: "#666",
+//                   }}
+//                 >
+//                   No chemist mapped
+//                 </Box>
+//               ),
+//             }}
+//           />
+//         </Box>
+//       </div>
+
+//       {/* Loading overlay */}
+//       {loading && (
+//         <div className="absolute inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+//           <div className="bg-white p-4 rounded-md flex flex-col items-center gap-2">
+//             <LoaderCircle className="animate-spin" size={48} />
+//             <span>Loading...</span>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="flex place-content-center items-center rounded-md custom-shadow p-2 bg-white">
+//         <button disabled={selectedChemist.length === 0 || !selectedEmployee} onClick={handleSelectChemist} className="bg-themeblue disabled:bg-gray-400 disabled:cursor-not-allowed rounded-md hover:bg-blue-800 transition-all duration-300 text-white w-44 p-2">
+//           {saveLoader ? <div className="flex items-center gap-2"><LoaderCircle className="animate-spin" />Saving..</div> : <span>Map Selected Doctors</span>}
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default ChemistMapping;

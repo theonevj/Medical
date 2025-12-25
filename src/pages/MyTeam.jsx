@@ -134,13 +134,6 @@ function MyTeam() {
               >
                 Tree View
               </button>
-
-              <span
-                onClick={fetchData}
-                className="cursor-pointer md:w-9 md:h-9 w-8 h-8 border border-slate-200 flex justify-center items-center rounded-md"
-              >
-                <AutorenewIcon />
-              </span>
             </div>
             <span onClick={fetchData} className='cursor-pointer md:w-9 md:h-9 w-8 h-8 border border-slate-200 flex justify-center items-center rounded-md'><AutorenewIcon></AutorenewIcon></span>
           </div>
@@ -165,7 +158,6 @@ function MyTeam() {
                 },
               }}
               pageSizeOptions={[
-                5,
                 10,
                 20,
                 50,

@@ -344,30 +344,24 @@
 // export default ChemistMapping;
 
 
-
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import DownloadIcon from "@mui/icons-material/Download";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import { LoaderCircle } from "lucide-react";
-
 import { chemistMapColumns, getAllChemist } from "../data/chemistDataTable";
 import { empMapColumns, fetchAllUsers } from "../data/EmployeeDataTable";
 import api from "../api";
-
 const prepareObj = (chemistList, employee) => {
   return chemistList.map((chemist) => ({
     chemistCode: chemist.chemistCode,
     employeeCode: employee.id,
   }));
 };
-
 function ChemistMapping() {
   const { user } = useSelector((state) => state.auth);
-
   const [loading, setLoading] = useState(false);
   const [saveLoader, setSaveLoader] = useState(false);
   const [users, setUsers] = useState([]);
@@ -382,22 +376,30 @@ function ChemistMapping() {
   const [selectedChemIdx, setSelectedChemIdx] = useState([]);
   const [headQuater, setHeadQuater] = useState([]);
   const [selectedHeadQuater, setSelectedHeadQuater] = useState("");
-
   // Pagination state for DataGrid
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
-
-  const fetchHeadQuater = async () => {
+  const fetchHeadQuater = async (empId) => {
+    if (!empId) {
+      setHeadQuater([]);
+      return;
+    }
     try {
-      const response = await api.get("Headquarters");
-      setHeadQuater(response.data);
+      setLoading(true);
+      const res = await api.get("/User/GetAllHQByUser", {
+        params: { userID: empId },
+      });
+      setHeadQuater(res?.data?.data || []);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      toast.error("Failed to fetch headquarters");
+    } finally {
+      setLoading(false);
     }
   };
-
+  ;
   // const getEmpChemistMapping = async () => {
   //   setLoading(true);
   //   try {
@@ -413,28 +415,22 @@ function ChemistMapping() {
   //     setLoading(false);
   //   }
   // };
-
   const getEmpChemistMapping = async () => {
     if (!selectedEmpIdx || selectedEmpIdx.length === 0) {
       setSelectedChemIdx([]);
       setSelectedChemist([]);
       return;
     }
-
     try {
       setLoading(true);
       const response = await api.get(
         `/ChemistMapping/GetAllByUserID?userID=${selectedEmpIdx[0]}`
       );
-
       const data = response.data?.data?.result || [];
-
       setSelectedChemIdx(data.map((item) => item.chemistCode));
-
       const mappedChemists = chemist.filter((c) =>
         data.some((mapped) => mapped.chemistCode === c.chemistCode)
       );
-
       setSelectedChemist(mappedChemists);
     } catch (err) {
       console.error(err);
@@ -444,7 +440,6 @@ function ChemistMapping() {
     }
   };
 
-
   // useEffect(() => {
   //   if (selectedEmpIdx.length > 0) {
   //     getEmpChemistMapping();
@@ -453,7 +448,6 @@ function ChemistMapping() {
   //     setSelectedChemist([]);
   //   }
   // }, [selectedEmpIdx]);
-
   useEffect(() => {
     if (selectedEmpIdx.length > 0) {
       getEmpChemistMapping();
@@ -475,7 +469,6 @@ function ChemistMapping() {
       setLoading(false);
     }
   };
-
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -487,36 +480,38 @@ function ChemistMapping() {
       setLoading(false);
     }
   };
-
   const fetchAllData = () => {
     getChemistData();
     fetchData();
   };
-
   useEffect(() => {
     if (selectedHeadQuater) {
+      //   setFilterChemist(
+      //     chemist.filter((item) => Number(item.headquarter) === Number(selectedHeadQuater))
+      //   );
+      //   setFilterUsers(
+      //     users.filter((item) => Number(item.headQuater) === Number(selectedHeadQuater))
+      //   );
+      // } else {
+      //   setFilterChemist(chemist);
+      //   setFilterUsers(users);
+      // }
       setFilterChemist(
         chemist.filter((item) => Number(item.headquarter) === Number(selectedHeadQuater))
-      );
-      setFilterUsers(
-        users.filter((item) => Number(item.headQuater) === Number(selectedHeadQuater))
-      );
+      )
     } else {
       setFilterChemist(chemist);
       setFilterUsers(users);
     }
   }, [selectedHeadQuater, chemist, users]);
-
   useEffect(() => {
     fetchAllData();
-    fetchHeadQuater();
+    // fetchHeadQuater();
   }, []);
-
   const mappedUsers = filterUsers.map((items) => ({
     ...items,
     empname: `${items.firstName} ${items.lastName}`.toLowerCase(),
   }));
-
   // Global search for employees
   const filteredEmployee = mappedUsers.filter((items) => {
     const query = userSearch.toLowerCase();
@@ -524,7 +519,6 @@ function ChemistMapping() {
       (val) => val && val.toString().toLowerCase().includes(query)
     );
   });
-
   // Global search for chemists
   const filteredChemist = filterChemist?.filter((items) => {
     const query = chemistSearch.toLowerCase();
@@ -532,7 +526,6 @@ function ChemistMapping() {
       (val) => val && val.toString().toLowerCase().includes(query)
     );
   });
-
   // const handleSelectChemist = (newChemist) => {
   //   console.log("newChemist:-", newChemist);
   //   setSelectedChemIdx(newChemist);
@@ -540,7 +533,6 @@ function ChemistMapping() {
   //     chemist.filter((item) => newChemist.includes(item.chemistCode))
   //   );
   // };
-
   const handleSelectChemist = (newChemist) => {
     setSelectedChemIdx(newChemist);
     setSelectedChemist(
@@ -548,26 +540,25 @@ function ChemistMapping() {
     );
   };
 
-
   // const handleSelectEmployee = (newEmployee) => {
   //   setSelectedEmpIdx(newEmployee);
   //   setSelectedEmployee(users.find((item) => item.id === newEmployee[0]));
   // };
 
-
   const handleSelectEmployee = (val) => {
     const arr = val ? [Number(val)] : [];
-
+    const emp = arr.length ? users.find((u) => u.id === arr[0]) : null;
     setSelectedEmpIdx(arr);
     setSelectedEmployee(
       arr.length ? users.find((u) => u.id === arr[0]) : null
     );
-
     // reset chemists on employee change
     setSelectedChemIdx([]);
     setSelectedChemist([]);
+    if (emp) {
+      fetchHeadQuater(emp.id);
+    }
   };
-
   const handleSave = async () => {
     const mappingObj = {
       chemistsMappingList: prepareObj(selectedChemist, selectedEmployee),
@@ -590,7 +581,6 @@ function ChemistMapping() {
       setSaveLoader(false);
     }
   };
-
   const mappedChemists = filterChemist
     .filter((c) => selectedChemIdx.includes(c.chemistCode))
     .filter((c) => {
@@ -600,9 +590,28 @@ function ChemistMapping() {
       );
     });
 
+  // GET DATA
+  const handleGetData = () => {
+    if (!selectedEmpIdx.length || !selectedHeadQuater) return;
+    getChemistData();
+    setFilterChemist(
+      chemist.filter(
+        (item) => Number(item.headquarter) === Number(selectedHeadQuater)
+      )
+    );
+  };
+  const handleRefresh = () => {
+    setSelectedEmpIdx([]);
+    setSelectedEmployee(null);
+    setSelectedHeadQuater("");
+    setSelectedChemIdx([]);
+    setSelectedChemist([]);
+    fetchAllData();
+  };
+
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">
-      <div className="bg-white custom-shadow rounded-md py-3 px-3 flex items-center justify-between">
+      {/* <div className="bg-white custom-shadow rounded-md py-3 px-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span>HeadQuater:</span>
           <select
@@ -618,7 +627,6 @@ function ChemistMapping() {
             ))}
           </select>
         </div>
-
         <span
           onClick={fetchAllData}
           className="cursor-pointer w-8 h-8 border flex justify-center items-center rounded-md"
@@ -626,8 +634,6 @@ function ChemistMapping() {
           <AutorenewIcon />
         </span>
       </div>
-
-      {/* Employee select */}
       <div className="bg-white custom-shadow rounded-md py-3 px-3 flex items-center gap-2">
         <span>Employee:</span>
         <select
@@ -644,8 +650,57 @@ function ChemistMapping() {
             </option>
           ))}
         </select>
+      </div> */}
+      <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="min-w-[80px]">Employee:</span>
+          <select
+            value={selectedEmpIdx[0] || ""}
+            onChange={(e) => handleSelectEmployee(e.target.value)}
+            className="w-[260px] rounded-md border border-neutral-200 p-2 outline-none"
+          >
+            <option value="">Select Employee</option>
+            {filterUsers.map((emp) => (
+              <option key={emp.id} value={emp.id}>
+                {emp.firstName} {emp.lastName} ({emp.designationName})
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* HEADQUARTER */}
+        <div className="flex items-center gap-2">
+          <span>HeadQuarter:</span>
+          <select
+            value={selectedHeadQuater}
+            disabled={!selectedEmpIdx.length}
+            onChange={(e) => setSelectedHeadQuater(e.target.value)}
+            className="rounded-md border-neutral-200 border p-1 outline-none disabled:bg-gray-100"
+          >
+            <option value="">Select HeadQuarter</option>
+            {headQuater?.map((hq) => (
+              <option key={hq.codeID} value={hq.codeID}>
+                {hq.codeName}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* GET DATA */}
+        <button
+          disabled={!selectedEmpIdx.length || !selectedHeadQuater}
+          onClick={handleGetData}
+          className="bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-md"
+        >
+          Get Data
+        </button>
+        {/* REFRESH */}
+        <button
+          // onClick={handleRefresh}
+          className="border px-4 py-2 rounded-md flex items-center gap-1"
+        >
+          <AutorenewIcon fontSize="small" />
+          Refresh
+        </button>
       </div>
-
       <DataGrid
         rows={filteredChemist}
         getRowId={(row) => row.chemistCode}
@@ -657,7 +712,6 @@ function ChemistMapping() {
         }
         loading={loading}
       />
-
 
       {/* Chemists DataGrid */}
       <div className="bg-white custom-shadow rounded-md py-4 px-3">
@@ -673,7 +727,6 @@ function ChemistMapping() {
             />
           </div>
         </div>
-
         <Box sx={{ height: 400 }}>
           <DataGrid
             rows={mappedChemists}
@@ -707,7 +760,6 @@ function ChemistMapping() {
           />
         </Box>
       </div>
-
       <div className="flex place-content-center items-center rounded-md custom-shadow p-2 bg-white">
         <button disabled={selectedChemist.length === 0 || !selectedEmployee} onClick={handleSelectChemist} className="bg-themeblue disabled:bg-gray-400 disabled:cursor-not-allowed rounded-md hover:bg-blue-800 transition-all duration-300 text-white w-44 p-2">
           {saveLoader ? <div className="flex items-center gap-2"><LoaderCircle className="animate-spin" />Saving..</div> : <span>Map Selected Doctors</span>}
@@ -727,9 +779,7 @@ function ChemistMapping() {
           <span>Map Selected Chemists</span>
         )}
       </button> */}
-
     </div>
   );
 }
-
 export default ChemistMapping;

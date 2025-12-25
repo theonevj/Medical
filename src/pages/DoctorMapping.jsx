@@ -43,12 +43,22 @@ export default function DoctorMapping() {
   const [unmapSearch, setUnmapSearch] = useState("");
 
   // --- fetchers ---
-  const fetchHeadQuater = async () => {
+  const fetchHeadQuater = async (empId) => {
+    if (!empId) {
+      setHeadQuater([]);
+      return;
+    }
     try {
-      const res = await api.get("Headquarters");
-      setHeadQuater(res.data);
+      setLoading(true);
+      const res = await api.get("/User/GetAllHQByUser", {
+        params: { userID: empId },
+      });
+      setHeadQuater(res?.data?.data || []);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to fetch headquarters");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,14 +91,12 @@ export default function DoctorMapping() {
   const fetchAllData = () => {
     fetchAllDoctors();
     fetchData();
-    fetchHeadQuater();
   };
 
   useEffect(() => {
     fetchAllData();
   }, []);
 
-  // --- get mapped doctors for employee ---
   const getEmpDoctorChemistMapping = async () => {
     if (!selectedEmpIdx || selectedEmpIdx.length === 0) {
       setSelectedDocIdx([]);
@@ -121,27 +129,57 @@ export default function DoctorMapping() {
     }
   };
 
-  useEffect(() => {
-    if (selectedEmpIdx.length > 0) getEmpDoctorChemistMapping();
-    else {
-      setSelectedDocIdx([]);
-      setSelectedDoctor([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedEmpIdx, doctor]); // include doctor in deps so mapping attaches doc objects after doctors fetched
+  // useEffect(() => {
+  //   if (selectedEmpIdx.length > 0) getEmpDoctorChemistMapping();
+  //   else {
+  //     setSelectedDocIdx([]);
+  //     setSelectedDoctor([]);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedEmpIdx, doctor]);
 
-  // filter lists by HQ
+  const handleGetData = () => {
+    if (!selectedEmpIdx.length || !selectedHeadQuater) {
+      toast.warn("Please select Employee and HeadQuarter");
+      return;
+    }
+    getEmpDoctorChemistMapping();
+  };
+
+  const handleRefresh = () => {
+    setSelectedEmpIdx([]);
+    setSelectedEmployee(null);
+    setSelectedHeadQuater("");
+    setSelectedDoctor([]);
+    setSelectedDocIdx([]);
+    fetchAllData();
+  };
+
+  // useEffect(() => {
+  //   if (selectedHeadQuater) {
+  //     setFilterDoctor(doctor.filter((it) => Number(it.headquarter) === Number(selectedHeadQuater)));
+  //     setFilterUsers(users.filter((it) => Number(it.headQuater) === Number(selectedHeadQuater)));
+  //   } else {
+  //     setFilterDoctor(doctor);
+  //     setFilterUsers(users);
+  //   }
+  // }, [selectedHeadQuater, doctor, users]);
+
+  // --- Headquarter filter effect ---
+
   useEffect(() => {
     if (selectedHeadQuater) {
       setFilterDoctor(doctor.filter((it) => Number(it.headquarter) === Number(selectedHeadQuater)));
-      setFilterUsers(users.filter((it) => Number(it.headQuater) === Number(selectedHeadQuater)));
+      // setFilterUsers(users.filter((it) => Number(it.headQuater) === Number(selectedHeadQuater)));
     } else {
       setFilterDoctor(doctor);
       setFilterUsers(users);
     }
+    // Remove employee reset! Employee stays selected
   }, [selectedHeadQuater, doctor, users]);
 
-  // Search + HQ filtered doctor list
+
+
   const filteredDoctors = doctor
     .filter((doc) => {
       if (selectedHeadQuater) {
@@ -169,6 +207,7 @@ export default function DoctorMapping() {
         doc?.phone?.toLowerCase()?.includes(search)
       );
     });
+
   const filteredMappedDoctors = selectedDoctor.filter((doc) => {
     if (!doctorSearch) return true;
     const search = doctorSearch.toLowerCase();
@@ -224,10 +263,9 @@ export default function DoctorMapping() {
       setSaveLoader(true);
       await api.post("/DoctorMapping/AddDoctorMapping", mappingObj);
       toast.success("Doctors mapped successfully!");
-      // refresh server mapping so we get doc_no populated
       await getEmpDoctorChemistMapping();
-      // clear local queued ones (they will be reloaded from server)
       setSelectedDoctor([]);
+      handleRefresh();
     } catch (err) {
       console.error(err);
       toast.error("Failed to map doctors.");
@@ -278,11 +316,15 @@ export default function DoctorMapping() {
   // --- helper: set selected employee ---
   const handleSelectEmployee = (val) => {
     const arr = val ? [Number(val)] : [];
+    const emp = arr.length ? users.find((u) => u.id === arr[0]) : null;
+    setSelectedEmployee(emp);
     setSelectedEmpIdx(arr);
     setSelectedEmployee(arr.length ? users.find((u) => u.id === arr[0]) : null);
-    // clear any queued doctors
     setSelectedDoctor([]);
     setSelectedDocIdx([]);
+    if (emp) {
+      fetchHeadQuater(emp.id);
+    }
   };
 
   const mappedTableRows = selectedDoctor;
@@ -290,7 +332,14 @@ export default function DoctorMapping() {
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">
       {/* Headquarter */}
-      <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center justify-between">
+      {/* <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span>Employee:</span>
+          <select value={selectedEmpIdx[0] || ""} onChange={(e) => handleSelectEmployee(e.target.value)} className="rounded-md border-neutral-200 border p-1 outline-none">
+            <option value="">Select Employee</option>
+            {filterUsers.map((emp) => <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName} ({emp.designationName})</option>)}
+          </select>
+        </div>
         <div className="flex items-center gap-2">
           <span>HeadQuater:</span>
           <select value={selectedHeadQuater} onChange={(e) => setSelectedHeadQuater(e.target.value)} className="rounded-md border-neutral-200 border p-1 outline-none">
@@ -301,14 +350,62 @@ export default function DoctorMapping() {
         <span onClick={fetchAllData} className="cursor-pointer md:w-9 md:h-9 w-8 h-8 border border-slate-200 flex justify-center items-center rounded-md">
           <AutorenewIcon />
         </span>
-      </div>
+      </div> */}
 
-      <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center gap-2">
-        <span>Employee:</span>
-        <select value={selectedEmpIdx[0] || ""} onChange={(e) => handleSelectEmployee(e.target.value)} className="rounded-md border-neutral-200 border p-1 outline-none">
-          <option value="">Select Employee</option>
-          {filterUsers.map((emp) => <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName} ({emp.designationName})</option>)}
-        </select>
+      <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 flex items-center gap-3">
+
+        <div className="flex items-center gap-2">
+          <span className="min-w-[80px]">Employee:</span>
+
+          <select
+            value={selectedEmpIdx[0] || ""}
+            onChange={(e) => handleSelectEmployee(e.target.value)}
+            className="w-[260px] rounded-md border border-neutral-200 p-2 outline-none"
+          >
+            <option value="">Select Employee</option>
+            {filterUsers.map((emp) => (
+              <option key={emp.id} value={emp.id}>
+                {emp.firstName} {emp.lastName} ({emp.designationName})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* HEADQUARTER */}
+        <div className="flex items-center gap-2">
+          <span>HeadQuarter:</span>
+          <select
+            value={selectedHeadQuater}
+            disabled={!selectedEmpIdx.length}
+            onChange={(e) => setSelectedHeadQuater(e.target.value)}
+            className="rounded-md border-neutral-200 border p-1 outline-none disabled:bg-gray-100"
+          >
+            <option value="">Select HeadQuarter</option>
+            {headQuater?.map((hq) => (
+              <option key={hq.codeID} value={hq.codeID}>
+                {hq.codeName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* GET DATA */}
+        <button
+          disabled={!selectedEmpIdx.length || !selectedHeadQuater}
+          onClick={handleGetData}
+          className="bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-md"
+        >
+          Get Data
+        </button>
+
+        {/* REFRESH */}
+        <button
+          onClick={handleRefresh}
+          className="border px-4 py-2 rounded-md flex items-center gap-1"
+        >
+          <AutorenewIcon fontSize="small" />
+          Refresh
+        </button>
       </div>
 
       {/* Doctors area */}
@@ -317,11 +414,11 @@ export default function DoctorMapping() {
           <h1 className="mb-2 font-medium text-lg">Doctors</h1>
           <div className="flex gap-2">
             <input type="text" value={doctorSearch} onChange={(e) => setDoctorSearch(e.target.value)} placeholder="Search Doctor..." className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
-
-            <button onClick={() => exportToExcel(mappedTableRows, "Mapped_Doctors")} className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md">
-              Download
-            </button>
-
+            {selectedEmployee &&
+              <button onClick={() => exportToExcel(mappedTableRows, "Mapped_Doctors")} className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md">
+                Download
+              </button>
+            }
             <button onClick={() => {
               if (!selectedEmployee) { toast.warn("Select an employee first."); return; }
               setOpenUnmapModal(true);
@@ -395,8 +492,8 @@ export default function DoctorMapping() {
                   headerName: "Action",
                   width: 120,
                   renderCell: (params) => (
-                    <button onClick={() => handleMapDoctor(params.row)} className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md">
-                      Map
+                    <button onClick={() => handleMapDoctor(params.row)} className="text-bold text-green-500  px-3 py-1 rounded-md">
+                      ✓
                     </button>
                   ),
                 },

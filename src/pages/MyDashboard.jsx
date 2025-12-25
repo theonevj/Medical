@@ -44,6 +44,11 @@ export default function MyDashboard() {
   const [mtpDetails, setMtpDetails] = useState([]);
   const [mtpLoader, setMtpLoader] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [mtpSummary, setMtpSummary] = useState([]);
+  const [summaryDetails, setSummaryDetails] = useState([]);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [flagRptYn, setFlagRptYn] = useState(0); // 0 = Not Reported, 1 = Reported
+
 
   const getMonthYear = (date) => {
     let month = date.getMonth() + 1;
@@ -258,27 +263,117 @@ export default function MyDashboard() {
     return () => clearTimeout(timer);
   }, []);
 
-  const mtpSummary = [
-    {
-      label: "Today",
-      date: "2025-12-17",
-      count: 5,
-      total: 40,
-      employees: [
-        { name: "Lucky", date: "16-12-2025" },
-        { name: "Bhagvan", date: "16-12-2025" },
-      ],
-    },
-    {
-      label: "Yesterday",
-      date: "2025-12-16",
-      count: 20,
-      total: 40,
-      employees: [
-        { name: "Lucky", date: "15-12-2025" },
-      ],
-    },
-  ];
+  const fetchMtpSummary = async () => {
+    try {
+      const payload = {
+        reqDate: moment().format("YYYY-MM-DD"), // 2025-12-24
+        flagrptyn: 1,
+      };
+      const res = await api.post("/STPMTP/UserMPTSummary", payload);
+      const formatted = res.data.data.map((item) => ({
+        label: moment(item.mtpdate).format("DD MMM YYYY"),
+        date: moment(item.mtpdate).format("YYYY-MM-DD"),
+        count: item.reportedMTP,
+        total: item.userCnt,
+      }));
+
+      setMtpSummary(formatted);
+    } catch (err) {
+      toast.error("Failed to load MTP summary");
+    }
+  };
+
+  useEffect(() => {
+    fetchMtpSummary();
+  }, []);
+
+  const fetchSummaryDetails = async (date, flag) => {
+    setSummaryLoading(true);
+    try {
+      const res = await api.post("/STPMTP/UserMPTSummaryDetails", {
+        reqDate: date,
+        flagrptyn: flag,
+      });
+
+      setSummaryDetails(res.data.data);
+    } catch (err) {
+      toast.error("Failed to load employee details");
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
+  const handleDownload = () => {
+    if (!summaryDetails || summaryDetails.length === 0) {
+      toast.warning("No data to download");
+      return;
+    }
+
+    const headers = [
+      "Full Name",
+      "Phone Number",
+      "Designation",
+      "Email",
+      "Reported",
+      "Date",
+    ];
+
+    const rows = summaryDetails.map((emp) => [
+      emp.fullName,
+      emp.phonenumber,
+      emp.designation,
+      emp.email,
+      flagRptYn === 1 ? "Yes" : "No",
+      selectedSummary.date,
+    ]);
+
+    const csvContent =
+      [headers, ...rows]
+        .map((row) =>
+          row
+            .map((cell) =>
+              `"${String(cell ?? "").replace(/"/g, '""')}"`
+            )
+            .join(",")
+        )
+        .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `MTP_Employee_Report_${selectedSummary.date}_${flagRptYn === 1 ? "Reported" : "Not_Reported"
+      }.csv`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
+
+  // const mtpSummary = [
+  //   {
+  //     label: "Today",
+  //     date: "2025-12-17",
+  //     count: 5,
+  //     total: 40,
+  //     employees: [
+  //       { name: "Lucky", date: "16-12-2025" },
+  //       { name: "Bhagvan", date: "16-12-2025" },
+  //     ],
+  //   },
+  //   {
+  //     label: "Yesterday",
+  //     date: "2025-12-16",
+  //     count: 20,
+  //     total: 40,
+  //     employees: [
+  //       { name: "Lucky", date: "15-12-2025" },
+  //     ],
+  //   },
+  // ];
 
   return (
     <div className="h-full overflow-y-scroll ">
@@ -698,21 +793,25 @@ export default function MyDashboard() {
         </>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4 items-start">
 
-        {/* LEFT : SUMMARY LIST */}
         <div className="lg:col-span-1 bg-white rounded-xl shadow border overflow-hidden">
           <div className="px-5 py-4 border-b bg-gray-50">
             <h2 className="font-semibold text-gray-800 text-sm uppercase tracking-wide">
-              MTP Not Report Summary
+              MTP Report Summary
             </h2>
           </div>
 
           <div className="divide-y">
-            {mtpSummary.map((item, index) => (
+            {mtpSummary?.map((item, index) => (
               <div
                 key={index}
-                onClick={() => setSelectedSummary(item)}
+                onClick={() => {
+                  setSelectedSummary(item);
+                  setFlagRptYn(0);
+                  fetchSummaryDetails(item.date, 0);
+                }}
+
                 className={`px-5 py-4 cursor-pointer flex justify-between items-center transition
             ${selectedSummary?.label === item.label
                     ? "bg-indigo-50"
@@ -724,7 +823,7 @@ export default function MyDashboard() {
                     {item.label}
                   </p>
                   <p className="text-xs text-gray-500">
-                    Not Reported MTP
+                    Reported MTP
                   </p>
                 </div>
 
@@ -735,50 +834,114 @@ export default function MyDashboard() {
             ))}
           </div>
         </div>
-
-        {/* RIGHT : DETAILS PANEL */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow border overflow-hidden">
           {!selectedSummary ? (
-            <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+            <div className="p-20 flex items-center justify-center text-black text-sm">
               Select a summary to view employee details
             </div>
+
           ) : (
             <>
               <div className="px-5 py-4 border-b bg-gray-50 flex justify-between items-center">
                 <h3 className="font-semibold text-gray-800 text-sm">
-                  {selectedSummary.label} – Employee Details
+                  {selectedSummary?.label} – Employee Details
                 </h3>
-                <span className="text-xs text-gray-500">
-                  {selectedSummary.count} Not Reported
-                </span>
+
+                <div className="flex items-center gap-4">
+                  <span className="text-xs font-medium text-gray-600">Reported:</span>
+
+                  <label className="flex items-center gap-1 cursor-pointer text-xs">
+                    <input
+                      type="radio"
+                      name="reported"
+                      value="0"
+                      checked={flagRptYn === 0}
+                      onChange={() => {
+                        setFlagRptYn(0);
+                        fetchSummaryDetails(selectedSummary.date, 0);
+                      }}
+                      className="accent-red-500"
+                    />
+                    <span className="text-gray-700">No</span>
+                  </label>
+
+                  <label className="flex items-center gap-1 cursor-pointer text-xs">
+                    <input
+                      type="radio"
+                      name="reported"
+                      value="1"
+                      checked={flagRptYn === 1}
+                      onChange={() => {
+                        setFlagRptYn(1);
+                        fetchSummaryDetails(selectedSummary.date, 1);
+                      }}
+                      className="accent-green-500"
+                    />
+                    <span className="text-gray-700">Yes</span>
+                  </label>
+                  <button
+                    onClick={handleDownload}
+                    disabled={summaryDetails.length === 0}
+                    className="flex items-center gap-1 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                  >
+                    ⬇ Download
+                  </button>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-100 text-gray-600">
                     <tr>
-                      <th className="px-5 py-3 text-left font-medium">Employee</th>
+                      <th className="px-5 py-3 text-left font-medium">Full Name</th>
                       <th className="px-5 py-3 text-left font-medium">
-                        Last Report Date
+                        Phone Number
+                      </th>
+                      <th className="px-5 py-3 text-left font-medium">
+                        Designation
+                      </th>
+                      <th className="px-5 py-3 text-left font-medium">
+                        Email
                       </th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {selectedSummary.employees.map((emp, index) => (
-                      <tr
-                        key={index}
-                        className="border-t hover:bg-indigo-50 transition"
-                      >
-                        <td className="px-5 py-3 font-medium text-gray-800">
-                          {emp.name}
-                        </td>
-                        <td className="px-5 py-3 text-gray-600">
-                          {emp.date}
+                    {summaryLoading ? (
+                      <tr>
+                        <td colSpan="3" className="text-center py-6 text-gray-400">
+                          Loading...
                         </td>
                       </tr>
-                    ))}
+                    ) : summaryDetails.length === 0 ? (
+                      <tr>
+                        <td colSpan="3" className="text-center py-6 text-gray-400">
+                          No records found
+                        </td>
+                      </tr>
+                    ) : (
+                      summaryDetails.map((emp, index) => (
+                        <tr
+                          key={index}
+                          className="border-t hover:bg-indigo-50 transition"
+                        >
+                          <td className="px-5 py-3 font-medium text-gray-800">
+                            {emp.fullName}
+                          </td>
+                          <td className="px-5 py-3 text-gray-600">
+                            {emp.phonenumber}
+                          </td>
+                          <td className="px-5 py-3 text-gray-600">
+                            {emp.designation}
+                          </td>
+                          <td className="px-5 py-3 text-gray-600">
+                            {emp.email}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
+
                 </table>
               </div>
             </>

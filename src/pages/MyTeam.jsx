@@ -165,7 +165,6 @@ function MyTeam() {
                 },
               }}
               pageSizeOptions={[
-                5,
                 10,
                 20,
                 50,

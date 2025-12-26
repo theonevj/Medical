@@ -319,9 +319,11 @@ function EditEmp() {
             <input
               name="phoneNumber"
               onChange={handleChange}
-              type="number"
+              type="tel"
               value={formData.phoneNumber}
               id="phoneNumber"
+              maxLength={10}
+              inputMode="numeric"
               className="p-2 outline-none border-b-2 border-gray-200"
               placeholder="Ex. 72626..."
             ></input>

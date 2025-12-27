@@ -230,7 +230,6 @@ export default function DoctorMapping() {
   });
   // --- Map single doctor (UI only) ---
   const handleMapDoctor = (doc) => {
-    // add to selectedDoctor locally (no doc_no yet)
     setSelectedDoctor((prev) => {
       if (!prev.some((d) => d.drCode === doc.drCode)) {
         return [...prev, doc];

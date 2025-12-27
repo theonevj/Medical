@@ -430,10 +430,6 @@ function AddStourPlan() {
     };
 
     setPlaces((prev) => [...prev, newPlaceObj]);
-
-    setFromHQ('');
-    setToHQ('');
-    setViaHQ('');
   };
 
   const validateData = () => {
@@ -476,6 +472,9 @@ function AddStourPlan() {
         setFromHQ('')
         setToHQ('')
         setViaHQ('')
+        setFromHQ('');
+        setToHQ('');
+        setViaHQ('');
         toast.success("Tour plan added successfully.")
       } catch (err) {
         console.log(err)

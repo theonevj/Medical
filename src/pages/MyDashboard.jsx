@@ -795,7 +795,7 @@ export default function MyDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4 items-start">
 
-        <div className="lg:col-span-1 bg-white rounded-xl shadow border overflow-hidden">
+        <div className="overflow-x-auto max-h-[300px] overflow-y-auto border rounded-lg">
           <div className="px-5 py-4 border-b bg-gray-50">
             <h2 className="font-semibold text-gray-800 text-sm uppercase tracking-wide">
               MTP Report Summary
@@ -889,7 +889,7 @@ export default function MyDashboard() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[300px] overflow-y-auto border rounded-lg">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-100 text-gray-600">
                     <tr>

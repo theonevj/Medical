@@ -130,9 +130,9 @@ function UpdateStourPlan() {
 
         const obj = {
           tourId: id,
-         
+
           headQuarter: Number(selectedHeadQuater),
-           tourName: tourPlanName,
+          tourName: tourPlanName,
           tourType: tourType,
           perKm: perKm,
           lstAllowance: selectedAllowance,

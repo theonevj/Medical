@@ -30,6 +30,7 @@ import ErrorLogs from "./pages/ErrorLogs";
 import ProductMaster from "./pages/ProductMaster";
 import PresentationDetails from "./pages/PresentationDetails";
 import EmployeeTreeScreen from "./pages/EmployeeTreeScreen";
+import MessageInfo from "./pages/MessageInfo";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -478,6 +479,17 @@ function App() {
             </ProtectedRoute>
           ),
         },
+        {
+          path: "messageInfo",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <MessageInfo></MessageInfo>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        // MessageInfo
         {
           path: "MyTeam/employeeTreeScreen",
           element: (

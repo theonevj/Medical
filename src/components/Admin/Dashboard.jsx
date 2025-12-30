@@ -10,7 +10,7 @@ import LOGO from "../../assets/ELVIRA LOGO.png";
 import PERSON from "../../assets/asset4.jpg";
 
 //import icons
-import { Download } from "lucide-react";
+import { Download, MessageCircle } from "lucide-react";
 
 import { useLocation, Outlet, useNavigate } from "react-router-dom";
 
@@ -713,7 +713,30 @@ export default function Dashboard() {
             )}
           </div>
 
-
+          <div
+            onClick={() => handleNavigate("messageInfo")}
+            className={`group flex ${isActive("messageInfo") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("messageInfo")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <MessageCircle
+                style={{ fontSize: "1.5rem" }}
+              ></MessageCircle >
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("messageInfo") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
+              >
+                Message Info
+              </span>
+            )}
+          </div>
           {/* <div
             onClick={() => handleNavigate("errorlogs")}
             className={`group flex ${isActive("errorlogs") && "bg-blue-50 border-r-2 border-themeblue"

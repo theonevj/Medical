@@ -470,7 +470,7 @@ function App() {
           ),
         },
         {
-          path: "excelUser",
+          path: "expensereport",
           element: (
             <ProtectedRoute requiredRole="admin">
               <Suspense fallback={<div>Loading...</div>}>
@@ -721,9 +721,9 @@ function App() {
           ),
         },
         {
-          path: "excelUser",
+          path: "expensereport",
           element: (
-            <ProtectedRoute requiredRole="excelUser">
+            <ProtectedRoute requiredRole="expensereport">
               <Suspense fallback={<div>Loading...</div>}>
                 <ExcelUserDownload></ExcelUserDownload>
               </Suspense>

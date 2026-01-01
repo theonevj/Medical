@@ -914,7 +914,7 @@ export default function ChemistMapping() {
     try {
       setLoading(true);
       const res = await api.get(
-        `/ChemistMapping/GetAllByUserID?userID=${selectedEmpIdx[0]}`
+        `/ChemistMapping/GetAllByUserID?userID=${selectedEmpIdx[0]}&hqid=${selectedHeadQuater}`
       );
       const data = res?.data?.data?.result || [];
 
@@ -1010,6 +1010,7 @@ export default function ChemistMapping() {
       await api.post("/ChemistMapping/AddChemistMapping", payload);
       toast.success("Chemists mapped successfully");
       await getEmpChemistMapping();
+      handleRefresh();
     } catch {
       toast.error("Mapping failed");
     } finally {
@@ -1146,11 +1147,10 @@ export default function ChemistMapping() {
             Download
           </button>
 
-          {/* ADD / UNMAPPED */}
           <button
             onClick={() => {
-              if (!selectedEmployee) {
-                toast.warn("Select employee first");
+              if (!selectedEmployee || !selectedHeadQuater) {
+                toast.warn("Select Employee & HeadQuarter");
                 return;
               }
               setOpenUnmapModal(true);
@@ -1234,7 +1234,7 @@ export default function ChemistMapping() {
                   renderCell: (p) => (
                     <button
                       onClick={() => handleMapChemist(p.row)}
-                      className="text-green-600 font-bold"
+                      className="text-green-600 font-bold hover:bg-green-100 howver:border-green-400 hover:border"
                     >
                       ✓
                     </button>

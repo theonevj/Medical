@@ -584,12 +584,12 @@ export default function EmpDashboard() {
           )}
 
           <div
-            onClick={() => handleNavigate("excelUser")}
-            className={`group flex ${isActive("excelUser") && "bg-blue-50 border-r-2 border-themeblue"
+            onClick={() => handleNavigate("expensereport")}
+            className={`group flex ${isActive("expensereport") && "bg-blue-50 border-r-2 border-themeblue"
               } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
           >
             <span
-              className={`${isActive("excelUser")
+              className={`${isActive("expensereport")
                 ? "text-themeblue"
                 : "text-gray-700 group-hover:text-themeblue"
                 } `}
@@ -600,7 +600,7 @@ export default function EmpDashboard() {
             </span>
             {isMenuOpen && (
               <span
-                className={`${isActive("excelUser") && "text-themeblue"
+                className={`${isActive("expensereport") && "text-themeblue"
                   } group-hover:text-themeblue font-medium text-lg`}
               >
                 Expenses Report

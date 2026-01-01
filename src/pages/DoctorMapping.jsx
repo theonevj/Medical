@@ -106,13 +106,10 @@ export default function DoctorMapping() {
     try {
       setLoading(true);
       const response = await api.get(
-        `/DoctorMapping/GetAllByUserID?userID=${selectedEmpIdx[0]}`
+        `/DoctorMapping/GetAllByUserID?userID=${selectedEmpIdx[0]}&hqid=${selectedHeadQuater}`
       );
       const data = response.data?.data?.result || [];
-      // selctedDocIdx is drCode list
       setSelectedDocIdx(data.map((item) => item.drCode));
-
-      // Merge with doctor list and attach doc_no (mapping id) where present
       const mappedDocs = doctor
         .filter((d) => data.some((mapped) => mapped.drCode === d.drCode))
         .map((d) => {
@@ -414,12 +411,13 @@ export default function DoctorMapping() {
           <div className="flex gap-2">
             <input type="text" value={doctorSearch} onChange={(e) => setDoctorSearch(e.target.value)} placeholder="Search Doctor..." className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
             {selectedEmployee &&
-              <button onClick={() => exportToExcel(mappedTableRows, "Mapped_Doctors")} className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md">
+              <button onClick={() => exportToExcel(mappedTableRows, "Mapped_Doctors")}
+                className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md">
                 Download
               </button>
             }
             <button onClick={() => {
-              if (!selectedEmployee) { toast.warn("Select an employee first."); return; }
+              if (!selectedEmployee || !selectedHeadQuater) { toast.warn("Select Employee & HeadQuarter"); return; }
               setOpenUnmapModal(true);
             }} className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md">
               Add / Show Unmapped
@@ -491,7 +489,8 @@ export default function DoctorMapping() {
                   headerName: "Action",
                   width: 120,
                   renderCell: (params) => (
-                    <button onClick={() => handleMapDoctor(params.row)} className="text-bold text-green-500  px-3 py-1 rounded-md">
+                    <button onClick={() => handleMapDoctor(params.row)}
+                      className="text-green-600 font-bold hover:bg-green-100 howver:border-green-400 hover:border">
                       ✓
                     </button>
                   ),

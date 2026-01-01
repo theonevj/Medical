@@ -164,7 +164,7 @@ const AddExpense = () => {
                                     let val = e.target.value;
                                     if (/[^0-9]/.test(val)) return;
                                     if (val.length > 4) return;
-                                    if (Number(val) > 1000) return;
+                                    if (Number(val) > 3000) return;
                                     setAmount(val);
                                 }}
                                 onKeyDown={(e) => {
@@ -173,7 +173,7 @@ const AddExpense = () => {
                                     }
                                 }}
                                 className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm"
-                                placeholder="Enter amount (max 1000)"
+                                placeholder="Enter amount (max 3000)"
                             />
 
                         </div>

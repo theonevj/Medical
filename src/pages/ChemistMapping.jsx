@@ -890,17 +890,42 @@ export default function ChemistMapping() {
 
   /* ================= HQ FILTER ================= */
 
+  // useEffect(() => {
+  //   if (selectedHeadQuater) {
+  //     setFilterChemist(
+  //       chemist.filter(
+  //         (c) => Number(c.headquarter) === Number(selectedHeadQuater)
+  //       )
+  //     );
+  //   } else {
+  //     setFilterChemist(chemist);
+  //   }
+  // }, [selectedHeadQuater, chemist]);
+
   useEffect(() => {
-    if (selectedHeadQuater) {
-      setFilterChemist(
-        chemist.filter(
-          (c) => Number(c.headquarter) === Number(selectedHeadQuater)
-        )
-      );
-    } else {
-      setFilterChemist(chemist);
-    }
-  }, [selectedHeadQuater, chemist]);
+    console.log("HQ CHANGED", selectedHeadQuater);
+    const fetchChemistByHQ = async () => {
+      if (!selectedHeadQuater) {
+        setFilterChemist([]);
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        const res = await api.get(
+          `/Chemist/GetAllChemist?hqid=${selectedHeadQuater}`,);
+        setFilterChemist(res?.data?.data || []);
+
+      } catch (error) {
+        console.log("Failed to fetch chemist", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChemistByHQ();
+  }, [selectedHeadQuater]);
 
   /* ================= GET MAPPED ================= */
 

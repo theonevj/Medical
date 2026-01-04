@@ -890,17 +890,38 @@ export default function ChemistMapping() {
 
   /* ================= HQ FILTER ================= */
 
-  useEffect(() => {
-    if (selectedHeadQuater) {
-      setFilterChemist(
-        chemist.filter(
-          (c) => Number(c.headquarter) === Number(selectedHeadQuater)
-        )
-      );
-    } else {
-      setFilterChemist(chemist);
-    }
-  }, [selectedHeadQuater, chemist]);
+  // useEffect(() => {
+  //   if (selectedHeadQuater) {
+  //     setFilterChemist(
+  //       chemist.filter(
+  //         (c) => Number(c.headquarter) === Number(selectedHeadQuater)
+  //       )
+  //     );
+  //   } else {
+  //     setFilterChemist(chemist);
+  //   }
+  // }, [selectedHeadQuater, chemist]);
+
+  // useEffect(() => {
+  //   const fetchChemistByHQ = async () => {
+  //     if (!selectedHeadQuater) {
+  //       setFilterChemist([]);
+  //       return;
+  //     }
+
+  //     try {
+  //       setLoading(true);
+  //       const res = await api.get(
+  //         `/Chemist/GetAllChemist?hqid=${selectedHeadQuater}`,);
+  //       setFilterChemist(res?.data?.data || []);
+  //     } catch (error) {
+  //       console.log("Failed to fetch chemist", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchChemistByHQ();
+  // }, [selectedHeadQuater]);
 
   /* ================= GET MAPPED ================= */
 
@@ -950,22 +971,50 @@ export default function ChemistMapping() {
     if (emp) fetchHeadQuater(emp.id);
   };
 
-  const handleGetData = () => {
+  // const handleGetData = () => {
+  //   if (!selectedEmpIdx.length || !selectedHeadQuater) {
+  //     toast.warn("Select Employee & HeadQuarter");
+  //     return;
+  //   }
+  //   getEmpChemistMapping();
+  // };
+
+  const handleGetData = async () => {
     if (!selectedEmpIdx.length || !selectedHeadQuater) {
       toast.warn("Select Employee & HeadQuarter");
       return;
     }
-    getEmpChemistMapping();
+
+    try {
+      setLoading(true);
+      await getEmpChemistMapping();
+      const res = await api.get(
+        `/Chemist/GetAllChemist?hqid=${selectedHeadQuater}`
+      );
+      setFilterChemist(res?.data?.data || []);
+
+    } catch (e) {
+      toast.error("Failed to load data");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRefresh = () => {
-    setSelectedEmpIdx([]);
-    setSelectedEmployee(null);
-    setSelectedHeadQuater("");
-    setSelectedChemist([]);
-    setSelectedChemIdx([]);
-    fetchAllData();
+  const handleRefresh = async () => {
+    try {
+      setSelectedEmpIdx([]);
+      setSelectedEmployee(null);
+      setSelectedHeadQuater("");
+      setSelectedChemist([]);
+      setSelectedChemIdx([]);
+      setFilterChemist([]);
+      await fetchAllData();
+    } catch (e) {
+      console.error("Refresh failed", e);
+      toast.error("Session expired, please login again");
+    }
   };
+
 
   /* ================= MAP / UNMAP ================= */
 
@@ -1009,7 +1058,7 @@ export default function ChemistMapping() {
       setSaveLoader(true);
       await api.post("/ChemistMapping/AddChemistMapping", payload);
       toast.success("Chemists mapped successfully");
-      await getEmpChemistMapping();
+      // await getEmpChemistMapping();
       handleRefresh();
     } catch {
       toast.error("Mapping failed");
@@ -1035,7 +1084,7 @@ export default function ChemistMapping() {
         `/ChemistMapping/DeleteChemistMapping?chem_map_no=${row.chem_map_no}&updateby=${user.id}`
       );
       toast.success("Chemist unmapped");
-      await getEmpChemistMapping();
+      // await getEmpChemistMapping();
     } finally {
       setLoading(false);
     }

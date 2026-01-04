@@ -511,44 +511,182 @@ function StourPlan() {
 
   /* ================= CARD VIEW (UNCHANGED UI) ================= */
 
+  // const CardView = (
+  //   <div className="h-full gap-4 w-full grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 items-start">
+  //     {[...stpPlan]?.reverse().map((stp, index) => (
+  //       <button
+  //         onClick={() => {
+  //           modalShow(stp.tourID);
+  //         }}
+  //       >
+  //         <div
+  //           key={index}
+  //           className="flex  bg-white rounded-lg  shadow flex-col"
+  //         >
+  //           <div className="flex justify-between items-center rounded-t-lg bg-gradient-to-r from-blue-50 to-blue-100 p-4 text-white relative">
+  //             <div className="flex items-center w-[50%]">
+  //               <div className="w-5 h-5 mr-1">
+  //                 <Route className="w-5 h-5 text-blue-800 font-bold" />
+  //               </div>
+  //               <h1
+  //                 title={stp.tourName}
+  //                 className="truncate text-blue-800 font-bold cursor-pointer"
+  //               >
+  //                 {stp.tourName
+  //                   .split("-")
+  //                   .map((i) => i.trim())
+  //                   .map((i) => i.slice(0, 3).toUpperCase())
+  //                   .join(" → ")}
+  //               </h1>
+  //             </div>
+
+  //             <span
+  //               className={`${stp.tourType === 0
+  //                 ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
+  //                 : stp.tourType === 1
+  //                   ? "bg-indigo-100 text-indigo-700 border border-indigo-300"
+  //                   : "bg-sky-100 text-sky-700 border border-sky-300"
+  //                 } inline-flex items-center px-3 py-1 rounded-full text-sm font-medium hover:opacity-90 transition-opacity duration-150 cursor-pointer`}
+  //             >
+  //               <Car className="w-4 h-4 mr-1" />
+  //               {stp.tourType === 0
+  //                 ? "Local"
+  //                 : stp.tourType === 1
+  //                   ? "Out Station"
+  //                   : "Ex-Station"}
+  //             </span>
+  //           </div>
+  //           <div className="flex gap-3 flex-col p-3 mx-3">
+  //             <div className="flex flex-col md:flex-col lg:flex-row justify-between items-start gap-4">
+  //               {stp?.tourLocation && (
+  //                 <div className="flex items-start space-x-3 sm:flex-1">
+  //                   <MapPin className="w-5 h-5 text-gray-500" />
+  //                   <div className="flex flex-col">
+  //                     <p className="text-sm font-medium text-gray-900 text-left">
+  //                       Location:
+  //                     </p>
+  //                     <p
+  //                       className="text-sm text-gray-600 truncate"
+  //                       title={stp?.tourLocation}
+  //                     >
+  //                       {stp?.tourLocation}
+  //                     </p>
+  //                   </div>
+  //                 </div>
+  //               )}
+
+  //               {stp.addedDate && (
+  //                 <div className="flex lg:justify-end items-start space-x-3 sm:flex-1">
+  //                   <CalendarDays className="w-5 h-5 text-gray-500" />
+  //                   <div className="flex flex-col">
+  //                     <p className="text-sm font-medium text-gray-900 text-left">
+  //                       Added On:
+  //                     </p>
+  //                     <p className="text-sm text-gray-600">
+  //                       {getDate(stp.addedDate)}
+  //                     </p>
+  //                   </div>
+  //                 </div>
+  //               )}
+  //             </div>
+
+  //             <div className="flex justify-start items-start  space-x-3">
+  //               <Navigation className="w-5 h-5 text-gray-500 " />
+  //               <div className="flex flex-col md:flex-col lg:flex-row justify-between items-start">
+  //                 <p className="text-sm font-medium text-gray-900 text-left">
+  //                   Distance:
+  //                 </p>
+  //                 <p className="text-sm text-gray-600 text-left">
+  //                   {stp?.tourAllowance?.split(",")}
+  //                 </p>
+  //               </div>
+  //             </div>
+
+  //             <div className="border-t pt-3">
+  //               <div className="flex justify-between items-center">
+  //                 {stp?.tourAllowance && (
+  //                   <div className="flex items-center space-x-2">
+  //                     <IndianRupee className="w-4 h-4 text-gray-500 flex-shrink-0" />
+  //                     <div className="flex-1 min-w-0">
+  //                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+  //                         Allowance
+  //                       </p>
+  //                       <p
+  //                         className="text-sm text-gray-900 font-medium truncate"
+  //                         title={stp.perKm}
+  //                       >
+  //                         {stp.perKm}
+  //                       </p>
+  //                     </div>
+  //                   </div>
+  //                 )}
+  //                 {stp?.status && (
+  //                   <div className="flex items-center space-x-2">
+  //                     {stp.status === "Approved" ? (
+  //                       <CircleCheck className="w-4 h-4 text-green-500 flex-shrink-0" />
+  //                     ) : stp.status === "Pending" ? (
+  //                       <Clock className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+  //                     ) : (
+  //                       <CircleX className="w-4 h-4 text-red-500 flex-shrink-0" />
+  //                     )}
+
+  //                     <div className="flex-1 min-w-0">
+  //                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+  //                         status
+  //                       </p>
+  //                       <p
+  //                         className="text-sm text-gray-900 font-medium truncate"
+  //                         title={stp.status}
+  //                       >
+  //                         {stp.status}
+  //                       </p>
+  //                     </div>
+  //                   </div>
+  //                 )}
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </button>
+  //     ))}
+  //   </div>
+  // );
+
   const CardView = (
-    <div className="h-full gap-4 w-full grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 items-start">
+    <div className="h-full gap-6 w-full grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 items-start">
       {[...stpPlan]?.reverse().map((stp, index) => (
-        <button
-          onClick={() => {
-            modalShow(stp.tourID);
-          }}
+        <div
+          key={index}
+          onClick={() => modalShow(stp.tourID)}
+          className="cursor-pointer"
         >
-          <div
-            key={index}
-            className="flex  bg-white rounded-lg  shadow flex-col"
-          >
-            <div className="flex justify-between items-center rounded-t-lg bg-gradient-to-r from-blue-50 to-blue-100 p-4 text-white relative">
-              <div className="flex items-center w-[50%]">
-                <div className="w-5 h-5 mr-1">
-                  <Route className="w-5 h-5 text-blue-800 font-bold" />
-                </div>
+          <div className="flex bg-white rounded-lg shadow hover:shadow-md transition flex-col">
+
+            {/* HEADER */}
+            <div className="flex justify-between items-center rounded-t-lg bg-gradient-to-r from-blue-50 to-blue-100 p-4">
+              <div className="flex items-center w-[60%]">
+                <Route className="w-5 h-5 mr-1 text-blue-800" />
                 <h1
                   title={stp.tourName}
-                  className="truncate text-blue-800 font-bold cursor-pointer"
+                  className="truncate text-blue-800 font-bold"
                 >
                   {stp.tourName
                     .split("-")
-                    .map((i) => i.trim())
-                    .map((i) => i.slice(0, 3).toUpperCase())
+                    .map((i) => i.trim().slice(0, 3).toUpperCase())
                     .join(" → ")}
                 </h1>
               </div>
 
               <span
-                className={`${stp.tourType === 0
-                  ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
-                  : stp.tourType === 1
-                    ? "bg-indigo-100 text-indigo-700 border border-indigo-300"
-                    : "bg-sky-100 text-sky-700 border border-sky-300"
-                  } inline-flex items-center px-3 py-1 rounded-full text-sm font-medium hover:opacity-90 transition-opacity duration-150 cursor-pointer`}
+                className={`px-3 py-1 rounded-full text-sm font-medium border
+                ${stp.tourType === 0
+                    ? "bg-emerald-100 text-emerald-700 border-emerald-300"
+                    : stp.tourType === 1
+                      ? "bg-indigo-100 text-indigo-700 border-indigo-300"
+                      : "bg-sky-100 text-sky-700 border-sky-300"
+                  }`}
               >
-                <Car className="w-4 h-4 mr-1" />
+                {/* <Car className="w-4 h-4 inline mr-1" /> */}
                 {stp.tourType === 0
                   ? "Local"
                   : stp.tourType === 1
@@ -556,31 +694,32 @@ function StourPlan() {
                     : "Ex-Station"}
               </span>
             </div>
-            <div className="flex gap-3 flex-col p-3 mx-3">
-              <div className="flex flex-col md:flex-col lg:flex-row justify-between items-start gap-4">
+
+            {/* BODY */}
+            <div className="flex gap-4 flex-col p-4">
+
+              {/* LOCATION + DATE */}
+              <div className="flex flex-col gap-4">
                 {stp?.tourLocation && (
-                  <div className="flex items-start space-x-3 sm:flex-1">
-                    <MapPin className="w-5 h-5 text-gray-500" />
-                    <div className="flex flex-col">
-                      <p className="text-sm font-medium text-gray-900 text-left">
-                        Location:
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-gray-500 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        Location
                       </p>
-                      <p
-                        className="text-sm text-gray-600 truncate"
-                        title={stp?.tourLocation}
-                      >
-                        {stp?.tourLocation}
+                      <p className="text-sm text-gray-600 truncate">
+                        {stp.tourLocation}
                       </p>
                     </div>
                   </div>
                 )}
 
                 {stp.addedDate && (
-                  <div className="flex lg:justify-end items-start space-x-3 sm:flex-1">
-                    <CalendarDays className="w-5 h-5 text-gray-500" />
-                    <div className="flex flex-col">
-                      <p className="text-sm font-medium text-gray-900 text-left">
-                        Added On:
+                  <div className="flex items-start gap-3">
+                    <CalendarDays className="w-5 h-5 text-gray-500 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        Added On
                       </p>
                       <p className="text-sm text-gray-600">
                         {getDate(stp.addedDate)}
@@ -590,64 +729,47 @@ function StourPlan() {
                 )}
               </div>
 
-              <div className="flex justify-start items-start  space-x-3">
-                <Navigation className="w-5 h-5 text-gray-500 " />
-                <div className="flex flex-col md:flex-col lg:flex-row justify-between items-start">
-                  <p className="text-sm font-medium text-gray-900 text-left">
-                    Distance:
-                  </p>
-                  <p className="text-sm text-gray-600 text-left">
-                    {stp?.tourAllowance?.split(",")}
+              {/* DISTANCE */}
+              <div className="flex items-start gap-3">
+                <Navigation className="w-5 h-5 text-gray-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Distance</p>
+                  <p className="text-sm text-gray-500 line-clamp-1">
+                    {stp?.tourAllowance?.split(",").join(", ")}
                   </p>
                 </div>
               </div>
 
-              <div className="border-t pt-3">
-                <div className="flex justify-between items-center">
-                  {stp?.tourAllowance && (
-                    <div className="flex items-center space-x-2">
-                      <IndianRupee className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                          Allowance
-                        </p>
-                        <p
-                          className="text-sm text-gray-900 font-medium truncate"
-                          title={stp.perKm}
-                        >
-                          {stp.perKm}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {stp?.status && (
-                    <div className="flex items-center space-x-2">
-                      {stp.status === "Approved" ? (
-                        <CircleCheck className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      ) : stp.status === "Pending" ? (
-                        <Clock className="w-4 h-4 text-yellow-500 flex-shrink-0" />
-                      ) : (
-                        <CircleX className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      )}
+              {/* FOOTER */}
+              <div className="border-t pt-3 flex justify-between items-center">
 
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                          status
-                        </p>
-                        <p
-                          className="text-sm text-gray-900 font-medium truncate"
-                          title={stp.status}
-                        >
-                          {stp.status}
-                        </p>
-                      </div>
+                {stp?.tourAllowance && (
+                  <div className="flex items-center gap-2">
+                    <IndianRupee className="w-4 h-4 text-gray-500" />
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase">Allowance</p>
+                      <p className="text-sm font-medium">{stp.perKm}</p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {stp?.status && (
+                  <div className="flex items-center gap-2">
+                    {stp.status === "Approved" ? (
+                      <CircleCheck className="w-4 h-4 text-green-500" />
+                    ) : stp.status === "Pending" ? (
+                      <Clock className="w-4 h-4 text-yellow-500" />
+                    ) : (
+                      <CircleX className="w-4 h-4 text-red-500" />
+                    )}
+                    <span className="text-sm font-medium">{stp.status}</span>
+                  </div>
+                )}
               </div>
+
             </div>
           </div>
-        </button>
+        </div>
       ))}
     </div>
   );

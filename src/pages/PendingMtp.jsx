@@ -430,7 +430,7 @@ import api from "../api";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useSelector } from "react-redux";
-import { CalendarCheck2 } from "lucide-react";
+import { CalendarCheck } from "lucide-react";
 import { toast } from "react-toastify";
 
 import NODATA from "../assets/computer.png";
@@ -464,6 +464,8 @@ const PendingMtp = () => {
 
   const [date, setDate] = useState(new Date());
   const [openDate, setOpenDate] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedMtp, setSelectedMtp] = useState(null);
 
   /* ---------------- API ---------------- */
   const fetchMtp = async () => {
@@ -484,21 +486,39 @@ const PendingMtp = () => {
 
   /* ---------------- ACTIONS ---------------- */
   const approveMtp = async (id) => {
-    await api.post(`/STPMTP/${id}/approve`, {
-      approvedBy: user?.id,
-      Description: "Approved",
-    });
-    toast.success("Approved");
-    fetchMtp();
+    try {
+      setLoading(true);
+      await api.post(`/STPMTP/${id}/approve`, {
+        approvedBy: user?.id,
+        Description: "Approved",
+      });
+      toast.success("Approved");
+      setOpenModal(false);
+      fetchMtp();
+    } catch {
+      toast.error("Failed to approve MTP");
+    } finally {
+      setLoading(false);
+    }
+
   };
 
   const rejectMtp = async (id) => {
-    await api.post(`/STPMTP/${id}/reject`, {
-      approvedBy: user?.id,
-      Description: "Rejected",
-    });
-    toast.success("Rejected");
-    fetchMtp();
+    try {
+      setLoading(true);
+      await api.post(`/STPMTP/${id}/reject`, {
+        approvedBy: user?.id,
+        Description: "Rejected",
+      });
+      toast.success("Rejected");
+      setOpenModal(false);
+      fetchMtp();
+    }
+    catch {
+      toast.error("Failed to reject MTP");
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ---------------- FILTER ---------------- */
@@ -506,11 +526,65 @@ const PendingMtp = () => {
     (item) => item?.status?.toLowerCase() === status.toLowerCase()
   );
 
+
+  const MtpViewModal = ({ open, onClose, data }) => {
+    console.log("Modal Data:", data);
+    if (!open || !data) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+        <div className="bg-white w-[420px] rounded-md shadow-lg relative p-4">
+
+          {/* HEADER */}
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-lg">
+              Details for STP ID: {data?.stpID}
+            </h3>
+            <button onClick={onClose} className="text-xl">✕</button>
+          </div>
+
+          {/* TABLE */}
+          <table className="w-full text-sm border">
+            <tbody>
+              <tr>
+                <td className="border p-2 font-medium">Date</td>
+                <td className="border p-2">{formatLongDate(data?.insertDate)}</td>
+              </tr>
+              <tr>
+                <td className="border p-2 font-medium">TOUR</td>
+                <td className="border p-2">{data?.stpName}</td>
+              </tr>
+              <tr>
+                <td className="border p-2 font-medium">Reporting Name</td>
+                <td className="border p-2">{data?.reportingtoName}</td>
+              </tr>
+              <tr>
+                <td className="border p-2 font-medium">Status</td>
+                <td className="border p-2">{data?.status || "-"}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* FOOTER */}
+          <div className="flex justify-center gap-3 mt-4">
+            <button onClick={() => approveMtp(data?.mtpID)} className="bg-themeblue text-white px-4 py-1.5 rounded">
+              Approved
+            </button>
+            <button onClick={() => rejectMtp(data?.mtpID)} className="bg-red-500 text-white px-4 py-1.5 rounded">
+              Reject
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
   /* ---------------- OLD STYLE CARD ---------------- */
-  const Card = ({ item }) => (
+  const MtpCard = ({ item }) => (
     <div className="bg-white p-4 rounded-md shadow-sm flex flex-col gap-3">
       <div className="bg-neutral-300 p-2 rounded-md">
-        <p className="font-semibold text-lg">{item?.stpName}</p>
+        <p className="font-bold text-sm text-lg line-clamp-1">{item?.stpName}</p>
         <p className="text-sm">
           STP ID: {item?.stpID} · MTP ID: {item?.mtpID}
         </p>
@@ -520,7 +594,7 @@ const PendingMtp = () => {
         <div className="bg-slate-100 p-2 rounded-md">
           <p className="font-medium text-sm mb-1">MTP Details</p>
           <p className="text-sm flex items-center gap-1">
-            <CalendarCheck2 size={14} />
+            <CalendarCheck size={14} />
             {formatLongDate(item?.mtpDate)}
           </p>
           <p className="text-sm">Active: {item?.isActive ? "Yes" : "No"}</p>
@@ -537,23 +611,40 @@ const PendingMtp = () => {
         Reporting To: {item?.reportingtoName}
       </div>
 
-      {status === "Pending" && (
-        <div className="flex gap-2 justify-center">
-          <button
-            onClick={() => approveMtp(item?.mtpID)}
-            className="bg-themeblue w-28 text-white p-1.5 rounded-md"
-          >
-            Approve
-          </button>
-          <button
-            onClick={() => rejectMtp(item?.mtpID)}
-            className="bg-red-500 w-28 text-white p-1.5 rounded-md"
-          >
-            Reject
-          </button>
-        </div>
-      )}
-    </div>
+      {
+        status === "Pending" && (
+          <div className="flex gap-2 justify-center">
+            <button
+              onClick={() => approveMtp(item?.mtpID)}
+              className="bg-themeblue w-28 text-white p-1.5 rounded-md"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => rejectMtp(item?.mtpID)}
+              className="bg-red-500 w-28 text-white p-1.5 rounded-md"
+            >
+              Reject
+            </button>
+            <button
+              onClick={() => {
+                setSelectedMtp(item);
+                setOpenModal(true);
+              }}
+              className="bg-gray-600 w-24 text-white p-1.5 rounded-md"
+            >
+              View
+            </button>
+            <button
+              disabled
+              className="bg-gray-300 w-24 text-gray-500 p-1.5 rounded-md cursor-not-allowed"
+            >
+              Delete
+            </button>
+          </div>
+        )
+      }
+    </div >
   );
 
   /* ---------------- TABLE ---------------- */
@@ -576,9 +667,47 @@ const PendingMtp = () => {
             <td className="border p-2">{item?.reportingtoName}</td>
             <td className="border p-2">{item?.status}</td>
             {status === "Pending" && (
-              <td className="border p-2 flex gap-2">
-                <button onClick={() => approveMtp(item?.mtpID)}>✔</button>
-                <button onClick={() => rejectMtp(item?.mtpID)}>✖</button>
+              <td className="border p-2">
+                <div className="flex items-center gap-3">
+                  {/* APPROVE */}
+                  <button
+                    onClick={() => approveMtp(item?.mtpID)}
+                    className="border px-3 py-1 rounded hover:bg-green-100"
+                    title="Approve"
+                  >
+                    ✔
+                  </button>
+
+                  {/* REJECT */}
+                  <button
+                    onClick={() => rejectMtp(item?.mtpID)}
+                    className="border px-3 py-1 rounded hover:bg-red-100"
+                    title="Reject"
+                  >
+                    ✖
+                  </button>
+
+                  {/* VIEW */}
+                  <button
+                    onClick={() => {
+                      setSelectedMtp(item);
+                      setOpenModal(true);
+                    }}
+                    className="border px-3 py-1 rounded hover:bg-blue-100"
+                    title="View"
+                  >
+                    👁
+                  </button>
+
+                  {/* DELETE (DISABLED) */}
+                  <button
+                    disabled
+                    title="Delete disabled"
+                    className="border px-3 py-1 rounded text-gray-400 cursor-not-allowed bg-gray-100"
+                  >
+                    🗑
+                  </button>
+                </div>
               </td>
             )}
           </tr>
@@ -628,9 +757,9 @@ const PendingMtp = () => {
             Table
           </label>
 
-          <div className="relative">
+          {/* <div className="relative">
             <span
-              // onClick={() => setOpenDate(!openDate)}
+              onClick={() => setOpenDate(!openDate)}
               className="border px-2 py-1 cursor-pointer"
             >
               {shortDate(date)}
@@ -638,6 +767,19 @@ const PendingMtp = () => {
             {openDate && (
               <div className="absolute right-0 top-10 z-10 bg-white shadow">
                 <Calendar onChange={setDate} value={date} />
+              </div>
+            )}
+          </div> */}
+          <div className="relative">
+            <span
+              onClick={() => setOpenDate((prev) => !prev)}
+              className="border px-2 py-1 cursor-pointer"
+            >
+              {shortDate(date)}
+            </span>
+            {openDate && (
+              <div className="absolute right-0 top-10 z-10 bg-white shadow">
+                <Calendar onChange={(d) => { setDate(d); setOpenDate(false); }} value={date} />
               </div>
             )}
           </div>
@@ -656,13 +798,18 @@ const PendingMtp = () => {
         </div>
       ) : view === "card" ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {filteredData.map((item) => (
-            <Card key={item?.mtpID} item={item} />
+          {filteredData?.map((item) => (
+            <MtpCard key={item?.mtpID} item={item} />
           ))}
         </div>
       ) : (
         <Table />
       )}
+      <MtpViewModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        data={selectedMtp}
+      />
     </div>
   );
 };

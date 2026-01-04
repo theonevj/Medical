@@ -834,48 +834,119 @@ function AddStourPlan() {
     return Object.keys(newErrors).length === 0
   }
 
+  // const addTourPlan = async () => {
+  //   if (!validateData()) return
+
+  //   try {
+  //     setLoading(true)
+  //     const locations = places.map((p, index) => ({
+  //       tourLocationID: 0,
+  //       locationName: `${p.fromName} → ${p.toName}${p.viaName ? ` → ${p.viaName}` : ''}`,
+  //       locationSequence: index
+  //     }))
+
+  //     const obj = {
+  //       tourId: 0,
+  //       tourName: tourPlanName,
+  //       headQuarter: Number(selectedHeadQuater),
+  //       tourType: tourType,
+  //       perKm: perKm,
+  //       lstAllowance: selectedAllowance,
+  //       tourLocations: locations,
+  //       km: km,
+  //       headQuarterRoute: places
+  //     }
+
+  //     await api.post('STPMTP', obj)
+  //     toast.success('Tour plan added successfully.')
+  //     setTourPlanName('')
+  //     setPlaces([])
+  //     setFromHQ('')
+  //     setToHQ('')
+  //     setViaHQ('')
+  //     setKm('')
+  //     setPerKm(null)
+  //     setSelectedAllowanace([])
+  //     setSelectedHeadquater('')
+  //   } catch (err) {
+  //     console.log(err)
+  //     toast.error('Something went wrong.')
+  //   }
+  //   finally {
+  //     setLoading(false)
+  //   }
+  // }
+
+
+  const buildTourLocations = (places) => {
+    const result = []
+
+    places.forEach((p) => {
+      result.push(p.fromName)
+      result.push(p.toName)
+      if (p.viaName) result.push(p.viaName)
+    })
+
+    return result.map((name, index) => ({
+      tourLocationID: 0,
+      locationName: name,
+      locationSequence: index + 1
+    }))
+  }
+
+  const mappedAllowance = selectedAllowance.map(a => ({
+    tourID: 0,
+    allowanceID: a.allowanceID,
+    allowanceName: a.allowanceName,
+    allowanceAmount: a.allowanceAmount
+  }))
+
+
+  console.log("MAPPED ALLOWANCE", mappedAllowance)
+  console.log("PLACES", buildTourLocations(places))
+
   const addTourPlan = async () => {
     if (!validateData()) return
 
     try {
       setLoading(true)
-      const locations = places.map((p, index) => ({
-        tourLocationID: 0,
-        locationName: `${p.fromName} → ${p.toName}${p.viaName ? ` → ${p.viaName}` : ''}`,
-        locationSequence: index
-      }))
 
-      const obj = {
-        tourId: 0,
-        tourName: tourPlanName,
+      const payload = {
+        tourID: 0,
         headQuarter: Number(selectedHeadQuater),
-        tourType: tourType,
-        perKm: perKm,
-        lstAllowance: selectedAllowance,
-        tourLocations: locations,
-        km: km,
-        headQuarterRoute: places
+        tourName: tourPlanName, // UI purpose
+        tourType: Number(tourType),
+        perKm: Number(perKm),
+        km: Number(km),
+        lstAllowance: mappedAllowance,
+        tourLocations: buildTourLocations(places)
       }
 
-      await api.post('STPMTP', obj)
-      toast.success('Tour plan added successfully.')
+      console.log("FINAL PAYLOAD", payload)
+
+      await api.post('STPMTP', payload)
+
+      toast.success('Tour plan added successfully')
+
+      // RESET
       setTourPlanName('')
       setPlaces([])
       setFromHQ('')
       setToHQ('')
       setViaHQ('')
       setKm('')
-      setPerKm(null)
+      setPerKm('')
       setSelectedAllowanace([])
       setSelectedHeadquater('')
+
     } catch (err) {
-      console.log(err)
-      toast.error('Something went wrong.')
-    }
-    finally {
+      console.error(err)
+      toast.error('Something went wrong')
+    } finally {
       setLoading(false)
     }
   }
+
 
   return (
     <div className='flex h-full flex-col gap-3 md:gap-4'>

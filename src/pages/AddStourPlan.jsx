@@ -712,15 +712,17 @@ function AddStourPlan() {
   const [open, setOpen] = useState(false)
   const [selectedAllowance, setSelectedAllowanace] = useState([])
   const [headQuater, setHeadQuater] = useState([])
+  const [headQuterLocation, setHeadQuterLocation] = useState([])
   const [selectedHeadQuater, setSelectedHeadquater] = useState('')
   const [fromHQ, setFromHQ] = useState('')
   const [toHQ, setToHQ] = useState('')
   const [viaHQ, setViaHQ] = useState('')
   const [loading, setLoading] = useState(false)
 
+
   // --- HELPERS ---
   const getHQName = (id) => {
-    const hq = headQuater.find((h) => h.hqid === Number(id))
+    const hq = headQuterLocation.find((h) => h.hqid === Number(id))
     return hq ? hq.hqName : ''
   }
 
@@ -731,8 +733,8 @@ function AddStourPlan() {
       const toName = getHQName(toHQ)
       const viaName = viaHQ ? getHQName(viaHQ) : ''
 
-      let name = `${fromName} → ${toName}`
-      if (viaName) name += ` → ${viaName}`
+      let name = `${fromName} - ${toName}`
+      if (viaName) name += ` - ${viaName}`
 
       setTourPlanName(name)
     }
@@ -760,9 +762,21 @@ function AddStourPlan() {
     }
   }
 
+  // --- FETCH HEADQUARTERS ---
+  const fetchGetAllLocations = async () => {
+    try {
+      const response = await api.get('/Headquarters/GetAllLocations')
+      setHeadQuterLocation(response.data)
+    } catch (err) {
+      console.log(err)
+      toast.error(err?.response?.data?.message || 'Something went wrong.')
+    }
+  }
+
   useEffect(() => {
     getAllowance()
     fetchHeadquater()
+    fetchGetAllLocations()
   }, [])
 
   // --- SELECT / DESELECT ALLOWANCE ---
@@ -781,19 +795,37 @@ function AddStourPlan() {
       toast.error('Please select From & To Headquarters')
       return
     }
-
-    if (fromHQ === toHQ) {
-      toast.error('From & To cannot be same')
-      return
-    }
+    // const newObj = {
+    //   fromHQ: Number(fromHQ),
+    //   toHQ: Number(toHQ),
+    //   viaHQ: viaHQ ? Number(viaHQ) : null,
+    //   fromName: getHQName(fromHQ),
+    //   toName: getHQName(toHQ),
+    //   viaName: viaHQ ? getHQName(viaHQ) : '',
+    //   locationID: [
+    //     Number(fromHQ),
+    //     ...(viaHQ ? [Number(viaHQ)] : []),
+    //     Number(toHQ),
+    //   ],
+    //   // locationID:
+    // }
 
     const newObj = {
       fromHQ: Number(fromHQ),
       toHQ: Number(toHQ),
       viaHQ: viaHQ ? Number(viaHQ) : null,
-      fromName: getHQName(fromHQ),
-      toName: getHQName(toHQ),
-      viaName: viaHQ ? getHQName(viaHQ) : ''
+
+      locationID: [
+        Number(fromHQ),
+        ...(viaHQ ? [Number(viaHQ)] : []),
+        Number(toHQ),
+      ],
+
+      locationName: [
+        getHQName(fromHQ),
+        ...(viaHQ ? [getHQName(viaHQ)] : []),
+        getHQName(toHQ),
+      ]
     }
 
     const duplicate = places.some(
@@ -878,20 +910,34 @@ function AddStourPlan() {
   // }
 
 
+  // const buildTourLocations = (places) => {
+  //   console.log("places", places)
+  //   const result = []
+
+  //   places.forEach((p) => {
+  //     result.push(p.fromName)
+  //     result.push(p.toName)
+  //     if (p.viaName) result.push(p.viaName)
+  //   })
+
+  //   return result.map((name, index) => ({
+  //     tourLocationID: 0,
+  //     locationName: name,
+  //     locationSequence: index + 1,
+  //   }))
+  // }
+
   const buildTourLocations = (places) => {
-    const result = []
+    let sequence = 1
 
-    places.forEach((p) => {
-      result.push(p.fromName)
-      result.push(p.toName)
-      if (p.viaName) result.push(p.viaName)
-    })
-
-    return result.map((name, index) => ({
-      tourLocationID: 0,
-      locationName: name,
-      locationSequence: index + 1
-    }))
+    return places.flatMap((p) =>
+      p.locationID.map((id, index) => ({
+        tourLocationID: id,
+        locationID: 0,                       // ✅ ID
+        locationName: p.locationName[index], // ✅ NAME
+        locationSequence: sequence++
+      }))
+    )
   }
 
   const mappedAllowance = selectedAllowance.map(a => ({
@@ -900,10 +946,6 @@ function AddStourPlan() {
     allowanceName: a.allowanceName,
     allowanceAmount: a.allowanceAmount
   }))
-
-
-  console.log("MAPPED ALLOWANCE", mappedAllowance)
-  console.log("PLACES", buildTourLocations(places))
 
   const addTourPlan = async () => {
     if (!validateData()) return
@@ -1034,7 +1076,7 @@ function AddStourPlan() {
             <label>HeadQuaters <span className='text-sm text-red-500'>*</span></label>
             <select value={selectedHeadQuater} onChange={e => setSelectedHeadquater(e.target.value)} className='p-2 border'>
               <option value=''>--- Select Headquarters ---</option>
-              {headQuater.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
+              {headQuater?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
             </select>
             {errors.headQuater && <span className='text-sm text-red-500'>{errors.headQuater}</span>}
           </div>
@@ -1046,21 +1088,21 @@ function AddStourPlan() {
             <label>From HeadQuaters *</label>
             <select value={fromHQ} onChange={e => setFromHQ(e.target.value)} className='p-2 border'>
               <option value=''>--- From Headquarters ---</option>
-              {headQuater.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
+              {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
             </select>
           </div>
           <div className='flex w-52 flex-col gap-2'>
             <label>To HeadQuaters *</label>
             <select value={toHQ} onChange={e => setToHQ(e.target.value)} className='p-2 border'>
               <option value=''>--- To Headquarters ---</option>
-              {headQuater.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
+              {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
             </select>
           </div>
           <div className='flex w-52 flex-col gap-2'>
             <label>Via HeadQuaters</label>
             <select value={viaHQ} onChange={e => setViaHQ(e.target.value)} className='p-2 border'>
               <option value=''>--- Via Headquarters ---</option>
-              {headQuater.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
+              {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
             </select>
           </div>
           <button onClick={addNewPlace} className='h-10 px-4 flex items-center justify-center gap-2 text-white bg-themeblue rounded-md font-medium'>
@@ -1082,9 +1124,9 @@ function AddStourPlan() {
             <tbody>
               {places.map((p, i) => (
                 <tr key={i}>
-                  <td className='border p-2'>{p.fromName}</td>
-                  <td className='border p-2'>{p.toName}</td>
-                  <td className='border p-2'>{p.viaName || '-'}</td>
+                  <td className='border p-2'>{p.locationName[0]}</td>
+                  <td className='border p-2'>{p.locationName[1]}</td>
+                  <td className='border p-2'>{p.locationName[2] || '-'}</td>
                   <td className='border p-2 text-center'>
                     <button onClick={() => removePlace(i)} className='text-red-500'>Delete</button>
                   </td>

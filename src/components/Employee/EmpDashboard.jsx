@@ -583,7 +583,7 @@ export default function EmpDashboard() {
             </div>
           )}
 
-          <div
+          {/* <div
             onClick={() => handleNavigate("expensereport")}
             className={`group flex ${isActive("expensereport") && "bg-blue-50 border-r-2 border-themeblue"
               } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
@@ -606,7 +606,7 @@ export default function EmpDashboard() {
                 Expenses Report
               </span>
             )}
-          </div>
+          </div> */}
 
           {/* <div
             onClick={() => handleNavigate("errorlogs")}

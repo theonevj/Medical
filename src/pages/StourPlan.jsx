@@ -653,14 +653,15 @@ function StourPlan() {
   // );
 
   const CardView = (
-    <div className="h-full gap-6 w-full grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 items-start">
+    <div className="gap-6 w-full grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 items-stretch">
       {[...stpPlan]?.reverse().map((stp, index) => (
         <div
           key={index}
           onClick={() => modalShow(stp.tourID)}
-          className="cursor-pointer"
+          className="cursor-pointer h-full"
         >
-          <div className="flex bg-white rounded-lg shadow hover:shadow-md transition flex-col">
+          {/* CARD */}
+          <div className="flex bg-white rounded-lg shadow hover:shadow-md transition flex-col h-full">
 
             {/* HEADER */}
             <div className="flex justify-between items-center rounded-t-lg bg-gradient-to-r from-blue-50 to-blue-100 p-4">
@@ -679,14 +680,13 @@ function StourPlan() {
 
               <span
                 className={`px-3 py-1 rounded-full text-sm font-medium border
-                ${stp.tourType === 0
+              ${stp.tourType === 0
                     ? "bg-emerald-100 text-emerald-700 border-emerald-300"
                     : stp.tourType === 1
                       ? "bg-indigo-100 text-indigo-700 border-indigo-300"
                       : "bg-sky-100 text-sky-700 border-sky-300"
                   }`}
               >
-                {/* <Car className="w-4 h-4 inline mr-1" /> */}
                 {stp.tourType === 0
                   ? "Local"
                   : stp.tourType === 1
@@ -696,7 +696,7 @@ function StourPlan() {
             </div>
 
             {/* BODY */}
-            <div className="flex gap-4 flex-col p-4">
+            <div className="flex flex-col gap-4 p-4 flex-1">
 
               {/* LOCATION + DATE */}
               <div className="flex flex-col gap-4">
@@ -739,40 +739,41 @@ function StourPlan() {
                   </p>
                 </div>
               </div>
-
-              {/* FOOTER */}
-              <div className="border-t pt-3 flex justify-between items-center">
-
-                {stp?.tourAllowance && (
-                  <div className="flex items-center gap-2">
-                    <IndianRupee className="w-4 h-4 text-gray-500" />
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase">Allowance</p>
-                      <p className="text-sm font-medium">{stp.perKm}</p>
-                    </div>
-                  </div>
-                )}
-
-                {stp?.status && (
-                  <div className="flex items-center gap-2">
-                    {stp.status === "Approved" ? (
-                      <CircleCheck className="w-4 h-4 text-green-500" />
-                    ) : stp.status === "Pending" ? (
-                      <Clock className="w-4 h-4 text-yellow-500" />
-                    ) : (
-                      <CircleX className="w-4 h-4 text-red-500" />
-                    )}
-                    <span className="text-sm font-medium">{stp.status}</span>
-                  </div>
-                )}
-              </div>
-
             </div>
+
+            {/* FOOTER */}
+            <div className="border-t p-4 flex justify-between items-center">
+
+              {stp?.tourAllowance && (
+                <div className="flex items-center gap-2">
+                  <IndianRupee className="w-4 h-4 text-gray-500" />
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase">Allowance</p>
+                    <p className="text-sm font-medium">{stp.perKm}</p>
+                  </div>
+                </div>
+              )}
+
+              {stp?.status && (
+                <div className="flex items-center gap-2">
+                  {stp.status === "Approved" ? (
+                    <CircleCheck className="w-4 h-4 text-green-500" />
+                  ) : stp.status === "Pending" ? (
+                    <Clock className="w-4 h-4 text-yellow-500" />
+                  ) : (
+                    <CircleX className="w-4 h-4 text-red-500" />
+                  )}
+                  <span className="text-sm font-medium">{stp.status}</span>
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
       ))}
     </div>
   );
+
 
   /* ================= TABLE VIEW ================= */
 
@@ -921,7 +922,7 @@ function StourPlan() {
                   </th>
                   <td className="border border-neutral-300 px-4 py-3 text-sm uppercase text-neutral-600">
                     {stpIdDetail.tourLocations
-                      ?.map((loc) => loc.locationName)
+                      ?.map((loc) => loc?.locationName)
                       .join(", ")}
                   </td>
                 </tr>

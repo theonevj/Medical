@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
@@ -44,6 +44,7 @@ function AddMtp() {
   const userdropdownref = useRef(null);
   const productdropdownref = useRef(null);
   let docchem = [...doctors, ...chemist];
+  const navigate = useNavigate()
 
   const handleClickOutside = (event) => {
     if (
@@ -395,13 +396,19 @@ function AddMtp() {
     <div className="flex h-full flex-col gap-3 md:gap-4">
       <div className="bg-white custom-shadow rounded-md md:py-4 py-3 px-3 md:px-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link to={user.isAdmin ? "/admin/mtpplan" : "/employee/mtpplan"}>
+          {/* <Link to={user.isAdmin ? "/admin/mtpplan" : "/employee/mtpplan"}>
             <span className="text-gray-600 cursor-pointer">
               <ArrowBackIosIcon
                 style={{ fontSize: "1.4rem" }}
               ></ArrowBackIosIcon>
             </span>
-          </Link>
+          </Link> */}
+          <span
+            className="text-gray-600 cursor-pointer"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowBackIosIcon style={{ fontSize: "1.4rem" }} />
+          </span>
           <h1 className="text-gray-800 text-base md:text-lg font-medium">
             Add Monthly Tour Plan
           </h1>

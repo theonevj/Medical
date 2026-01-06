@@ -795,21 +795,6 @@ function AddStourPlan() {
       toast.error('Please select From & To Headquarters')
       return
     }
-    // const newObj = {
-    //   fromHQ: Number(fromHQ),
-    //   toHQ: Number(toHQ),
-    //   viaHQ: viaHQ ? Number(viaHQ) : null,
-    //   fromName: getHQName(fromHQ),
-    //   toName: getHQName(toHQ),
-    //   viaName: viaHQ ? getHQName(viaHQ) : '',
-    //   locationID: [
-    //     Number(fromHQ),
-    //     ...(viaHQ ? [Number(viaHQ)] : []),
-    //     Number(toHQ),
-    //   ],
-    //   // locationID:
-    // }
-
     const newObj = {
       fromHQ: Number(fromHQ),
       toHQ: Number(toHQ),
@@ -1125,8 +1110,8 @@ function AddStourPlan() {
               {places.map((p, i) => (
                 <tr key={i}>
                   <td className='border p-2'>{p.locationName[0]}</td>
-                  <td className='border p-2'>{p.locationName[1]}</td>
-                  <td className='border p-2'>{p.locationName[2] || '-'}</td>
+                  <td className='border p-2'>{p.locationName[2]}</td>
+                  <td className='border p-2'>{p.locationName[1] || '-'}</td>
                   <td className='border p-2 text-center'>
                     <button onClick={() => removePlace(i)} className='text-red-500'>Delete</button>
                   </td>

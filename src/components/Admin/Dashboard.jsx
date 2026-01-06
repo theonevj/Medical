@@ -34,6 +34,7 @@ import { Beaker } from "lucide-react";
 import { ChartColumnBig } from "lucide-react";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Package } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useSelector((state) => state.auth);
@@ -761,6 +762,31 @@ export default function Dashboard() {
               </span>
             )}
           </div>
+
+          <div
+            onClick={() => handleNavigate("AreaMaster")}
+            className={`group flex ${isActive("AreaMaster") && "bg-blue-50 border-r-2 border-themeblue"
+              } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
+          >
+            <span
+              className={`${isActive("AreaMaster")
+                ? "text-themeblue"
+                : "text-gray-700 group-hover:text-themeblue"
+                } `}
+            >
+              <MapPin size={22} />
+            </span>
+            {isMenuOpen && (
+              <span
+                className={`${isActive("AreaMaster") && "text-themeblue"
+                  } group-hover:text-themeblue font-medium text-lg`}
+              >
+                AreaMaster
+              </span>
+            )}
+          </div>
+
+          {/* AddAreaMaster */}
           {/* <div
             onClick={() => handleNavigate("errorlogs")}
             className={`group flex ${isActive("errorlogs") && "bg-blue-50 border-r-2 border-themeblue"

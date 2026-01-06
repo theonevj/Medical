@@ -32,6 +32,8 @@ import PresentationDetails from "./pages/PresentationDetails";
 import EmployeeTreeScreen from "./pages/EmployeeTreeScreen";
 import MessageInfo from "./pages/MessageInfo";
 import ReportingPlan from "./pages/ReportingPlan";
+import AreaMaster from "./pages/AreaMaster";
+import AddAreaMaster from "./pages/AddAreaMaster";
 const PendingLeaves = lazy(() => import("./pages/PendingLeaves"));
 const MyTeam = lazy(() => import("./pages/MyTeam"));
 const StourPlan = lazy(() => import("./pages/StourPlan"));
@@ -500,7 +502,27 @@ function App() {
             </ProtectedRoute>
           ),
         },
-        // MessageInfo
+        {
+          path: "AreaMaster",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <AreaMaster></AreaMaster>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "AreaMaster/AddAreaMaster",
+          element: (
+            <ProtectedRoute requiredRole="admin">
+              <Suspense fallback={<div>Loading...</div>}>
+                <AddAreaMaster></AddAreaMaster>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        // AddAreaMaster
         {
           path: "MyTeam/employeeTreeScreen",
           element: (

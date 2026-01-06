@@ -446,7 +446,7 @@ export default function Dashboard() {
             </div>
 
             <div
-              className={`px-2 flex flex-col ${openPlan ? "h-36" : "h-0"
+              className={`px-2 flex flex-col ${openPlan ? "h-46" : "h-0"
                 } transition-all ml-6 duration-300 overflow-hidden`}
             >
               <div
@@ -474,12 +474,12 @@ export default function Dashboard() {
                 )}
               </div>
               <div
-                onClick={() => handleNavigate("mtpplan")}
-                className={`group flex ${isActive("mtpplan") && "text-blue-600"
+                onClick={() => handleNavigate("Reporting")}
+                className={`group flex ${isActive("Reporting") && "text-blue-600"
                   } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
               >
                 <span
-                  className={`${isActive("mtpplan")
+                  className={`${isActive("Reporting")
                     ? "text-themeblue"
                     : "text-gray-700 group-hover:text-themeblue"
                     } `}
@@ -490,10 +490,34 @@ export default function Dashboard() {
                 </span>
                 {isMenuOpen && (
                   <span
-                    className={`${isActive("mtpplan") && "text-themeblue"
+                    className={`${isActive("Reporting") && "text-themeblue"
                       } group-hover:text-themeblue font-medium`}
                   >
-                    Reporting and Plan
+                    Reporting
+                  </span>
+                )}
+              </div>
+              <div
+                onClick={() => handleNavigate("Planing")}
+                className={`group flex ${isActive("Planing") && "text-blue-600"
+                  } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+              >
+                <span
+                  className={`${isActive("Planing")
+                    ? "text-themeblue"
+                    : "text-gray-700 group-hover:text-themeblue"
+                    } `}
+                >
+                  <HorizontalRuleIcon
+                    style={{ fontSize: "1rem" }}
+                  ></HorizontalRuleIcon>
+                </span>
+                {isMenuOpen && (
+                  <span
+                    className={`${isActive("Planing") && "text-themeblue"
+                      } group-hover:text-themeblue font-medium`}
+                  >
+                    Planing
                   </span>
                 )}
               </div>

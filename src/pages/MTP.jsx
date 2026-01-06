@@ -340,7 +340,7 @@ function MTP() {
   const [loading, setLoading] = useState(false)
   const [openDate, setOpenDate] = useState(false)
 
-  const [mtpType, setMtpType] = useState(0)
+  const [mtpType, setMtpType] = useState(1)
 
   const [date, setDate] = useState(new Date())
   const [viewMode, setViewMode] = useState("card");
@@ -374,7 +374,7 @@ function MTP() {
           mtpDate: date
         })
 
-      console.log(response.data)
+      console.log("response.data Mtp", response.data)
       setUserDetails(response.data?.data?.userDetails)
       setMtpPlan(response.data?.data?.mtpdetails)
 
@@ -491,14 +491,14 @@ function MTP() {
               <div className='flex items-center gap-2 '>
                 <span className='font-medium'>MTP:</span>
                 <div className='flex items-center gap-2'>
-                  <div className='flex items-center gap-1'>
+                  {/* <div className='flex items-center gap-1'>
                     <input
                       onChange={() => setMtpType(0)}
                       checked={mtpType === 0}
                       type='radio'
                     />
                     <span className='text-sm'>Planned</span>
-                  </div>
+                  </div> */}
                   <div className='flex items-center gap-1'>
                     <input
                       onChange={() => setMtpType(1)}
@@ -527,15 +527,11 @@ function MTP() {
               )}
             </div>
 
-            <Link to={user.isAdmin ? "/admin/mtpplan/add" : "/employee/mtpplan/add"}>
-              <button
-                className={`md:p-2 p-1.5 md:text-base text-sm text-white rounded-md flex items-center gap-2
-          ${mtpType === 0 ? "bg-green-600" : "bg-gray-500"}`}
-              >
+            <Link
+              to={user.isAdmin ? "/admin/mtpplan/add" : "/employee/mtpplan/add"}
+            >
+              <button className="md:p-2 p-1.5 bg-themeblue md:text-base text-sm text-white rounded-md">
                 Add Tour Plan
-                <span className="text-xs bg-white text-black px-1.5 py-0.5 rounded-full">
-                  {mtpType === 0 ? "Planned" : "Reporting"}
-                </span>
               </button>
             </Link>
           </>
@@ -645,7 +641,8 @@ function MTP() {
               </div>
             )}
 
-            {viewMode === "table" && (
+
+            {viewMode === "table" && filterMtpPlan?.length > 0 ? (
               <div className="bg-white rounded shadow overflow-x-auto">
                 <table className="min-w-full">
                   <thead className="bg-blue-50 text-black p-2 text-center text-sm font-semibold">
@@ -659,7 +656,7 @@ function MTP() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterMtpPlan.map((mtp) => (
+                    {filterMtpPlan?.map((mtp) => (
                       <tr
                         key={mtp.mtpid}
                         onClick={() => fetchMTPDetails(mtp.mtpid)}
@@ -676,7 +673,13 @@ function MTP() {
                   </tbody>
                 </table>
               </div>
-            )}
+            ) :
+              <div className="flex items-center justify-center h-full min-h-[300px]">
+                <h1 className="text-lg font-semibold text-gray-500">
+                  No Reporting Found
+                </h1>
+              </div>
+            }
           </>
         )}
       </div>

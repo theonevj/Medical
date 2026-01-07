@@ -15,7 +15,6 @@ const AreaMaster = () => {
         areaName: "",
         hqId: "",
         inOut: 1,
-        isActive: 1,
     });
     const navigate = useNavigate()
 
@@ -89,14 +88,12 @@ const AreaMaster = () => {
             setLoader(true);
 
             const payload = {
-                areaName: editForm.areaName,
+                areaName: editForm?.areaName,
                 hqId: Number(editForm.hqId),
                 inOut: Number(editForm.inOut),
-                isActive: Number(editForm.isActive),
             };
-
-            await api.put(`/areas/${editForm.areaId}`, payload);
-
+            console.log("payload", payload)
+            await api.post(`/areas/Update`, payload);
             setIsEditOpen(false);
             getAreas();
         } catch (err) {
@@ -160,7 +157,7 @@ const AreaMaster = () => {
                                                 areaName: a.areaName,
                                                 hqId: a.hqId,
                                                 inOut: a.inOut,
-                                                isActive: a.isActive ?? 1,
+                                                isActive: a.isActive ?? true,
                                             });
                                             setIsEditOpen(true);
                                         }}

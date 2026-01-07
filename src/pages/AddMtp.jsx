@@ -89,11 +89,11 @@ function AddMtp() {
       };
 
       try {
-        const response = await api.post("/STPMTP/GetAll", stpObj);
+        const response = await api.post("/STPMTP/GetAllTourUserHQWise", stpObj);
         setStp(response.data.data);
       } catch (err) {
         console.error("Failed to fetch STPs:", err);
-        toast.error("Failed to fetch STPs.");
+        // toast.error("Failed to fetch STPs.");
       }
     };
 

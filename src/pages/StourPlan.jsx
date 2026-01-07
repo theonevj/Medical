@@ -628,6 +628,7 @@ function StourPlan() {
               </div>
 
               {/* DISTANCE */}
+              {console.log("stp?.tourAllowance", stp)}
               <div className="flex items-start gap-3">
                 <Navigation className="w-5 h-5 text-gray-500 mt-0.5" />
                 <div>
@@ -642,7 +643,7 @@ function StourPlan() {
             {/* FOOTER */}
             <div className="border-t p-4 flex justify-between items-center">
 
-              {stp?.tourAllowance && (
+              {stp?.status && (
                 <div className="flex items-center gap-2">
                   <IndianRupee className="w-4 h-4 text-gray-500" />
                   <div>

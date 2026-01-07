@@ -834,6 +834,9 @@ function AddStourPlan() {
   // --- REMOVE PLACE ---
   const removePlace = (index) => {
     setPlaces((prev) => prev.filter((_, i) => i !== index))
+    setFromHQ('')
+    setToHQ('')
+    setViaHQ('')
   }
 
   // --- VALIDATE & SUBMIT ---
@@ -1071,26 +1074,26 @@ function AddStourPlan() {
         <div className='flex gap-6 mt-5 items-end'>
           <div className='flex w-52 flex-col gap-2'>
             <label>From HeadQuaters *</label>
-            <select value={fromHQ} onChange={e => setFromHQ(e.target.value)} className='p-2 border'>
+            <select disabled={fromHQ} value={fromHQ} onChange={e => setFromHQ(e.target.value)} className='p-2 border'>
               <option value=''>--- From Headquarters ---</option>
               {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
             </select>
           </div>
           <div className='flex w-52 flex-col gap-2'>
             <label>To HeadQuaters *</label>
-            <select value={toHQ} onChange={e => setToHQ(e.target.value)} className='p-2 border'>
+            <select disabled={toHQ} value={toHQ} onChange={e => setToHQ(e.target.value)} className='p-2 border'>
               <option value=''>--- To Headquarters ---</option>
               {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
             </select>
           </div>
           <div className='flex w-52 flex-col gap-2'>
             <label>Via HeadQuaters</label>
-            <select value={viaHQ} onChange={e => setViaHQ(e.target.value)} className='p-2 border'>
+            <select disabled={viaHQ} value={viaHQ} onChange={e => setViaHQ(e.target.value)} className='p-2 border'>
               <option value=''>--- Via Headquarters ---</option>
               {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
             </select>
           </div>
-          <button onClick={addNewPlace} className='h-10 px-4 flex items-center justify-center gap-2 text-white bg-themeblue rounded-md font-medium'>
+          <button disabled={places?.length} onClick={() => addNewPlace()} className=' h-10 px-4 flex items-center justify-center gap-2 text-white bg-themeblue rounded-md font-medium'>
             <AddOutlinedIcon /> Add Place
           </button>
         </div>

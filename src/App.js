@@ -712,12 +712,42 @@ function App() {
             </ProtectedRoute>
           ),
         },
+        // {
+        //   path: "mtpplan",
+        //   element: (
+        //     <ProtectedRoute requiredRole="employee">
+        //       <Suspense fallback={<div>Loading...</div>}>
+        //         <MTP></MTP>
+        //       </Suspense>
+        //     </ProtectedRoute>
+        //   ),
+        // },
+        // {
+        //   path: "mtpplan/add",
+        //   element: (
+        //     <ProtectedRoute requiredRole="employee">
+        //       <Suspense fallback={<div>Loading...</div>}>
+        //         <AddMtp></AddMtp>
+        //       </Suspense>
+        //     </ProtectedRoute>
+        //   ),
+        // },
         {
-          path: "mtpplan",
+          path: "Reporting",
           element: (
             <ProtectedRoute requiredRole="employee">
               <Suspense fallback={<div>Loading...</div>}>
                 <MTP></MTP>
+              </Suspense>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "Planing",
+          element: (
+            <ProtectedRoute requiredRole="employee">
+              <Suspense fallback={<div>Loading...</div>}>
+                <ReportingPlan></ReportingPlan>
               </Suspense>
             </ProtectedRoute>
           ),

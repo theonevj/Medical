@@ -87,7 +87,7 @@ export default function EmpDashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-lightgray">
+    <div className="flex h-full bg-lightgray">
       <div className="fixed bg-white z-40 top-0 right-0 left-0 md:h-24 h-20 flex items-center">
         <div
           className={`${isMenuOpen ? "md:w-72" : "md:w-28"
@@ -483,7 +483,7 @@ export default function EmpDashboard() {
                 className={`px-2 flex flex-col ${openPlan ? "h-30" : "h-0"
                   } transition-all duration-300 overflow-hidden`}
               >
-                <div
+                {/* <div
                   onClick={() => handleNavigate("mtpplan")}
                   className={`group flex ${isActive("mtpplan") && "text-blue-600"
                     } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
@@ -504,6 +504,54 @@ export default function EmpDashboard() {
                         } group-hover:text-themeblue font-medium`}
                     >
                       Reporting and Plan
+                    </span>
+                  )}
+                </div> */}
+                <div
+                  onClick={() => handleNavigate("Reporting")}
+                  className={`group flex ${isActive("Reporting") && "text-blue-600"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                >
+                  <span
+                    className={`${isActive("Reporting")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
+                  >
+                    <HorizontalRuleIcon
+                      style={{ fontSize: "1rem" }}
+                    ></HorizontalRuleIcon>
+                  </span>
+                  {isMenuOpen && (
+                    <span
+                      className={`${isActive("Reporting") && "text-themeblue"
+                        } group-hover:text-themeblue font-medium`}
+                    >
+                      Reporting
+                    </span>
+                  )}
+                </div>
+                <div
+                  onClick={() => handleNavigate("Planing")}
+                  className={`group flex ${isActive("Planing") && "text-blue-600"
+                    } hover:bg-blue-50 py-2 cursor-pointer px-8 items-center gap-2`}
+                >
+                  <span
+                    className={`${isActive("Planing")
+                      ? "text-themeblue"
+                      : "text-gray-700 group-hover:text-themeblue"
+                      } `}
+                  >
+                    <HorizontalRuleIcon
+                      style={{ fontSize: "1rem" }}
+                    ></HorizontalRuleIcon>
+                  </span>
+                  {isMenuOpen && (
+                    <span
+                      className={`${isActive("Planing") && "text-themeblue"
+                        } group-hover:text-themeblue font-medium`}
+                    >
+                      Planing
                     </span>
                   )}
                 </div>
@@ -535,12 +583,12 @@ export default function EmpDashboard() {
             </div>
           ) : (
             <div
-              onClick={() => handleNavigate("mtpplan")}
-              className={`group flex ${isActive("mtpplan") && "bg-blue-50 border-r-2 border-themeblue"
+              onClick={() => handleNavigate("Reporting")}
+              className={`group flex ${isActive("Reporting") && "bg-blue-50 border-r-2 border-themeblue"
                 } hover:bg-blue-50 py-4 cursor-pointer px-8 items-center gap-2`}
             >
               <span
-                className={`${isActive("mtpplan")
+                className={`${isActive("Reporting")
                   ? "text-themeblue"
                   : "text-gray-700 group-hover:text-themeblue"
                   } `}

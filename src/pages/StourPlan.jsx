@@ -468,14 +468,16 @@ function StourPlan() {
   const getAllTourPlan = async () => {
     try {
       setLoading(true);
-      const res = await api.post(`/STPMTP/GetAll`, {
+      const payload = {
         pageNumber: 0,
         pageSize: 0,
         criteria: "string",
         headquarter: Number(searchQuery),
         reportingTo: 0,
         tourType: 0,
-      });
+      }
+      console.log("payload", payload)
+      const res = await api.post(`/STPMTP/GetAll`, payload);
       setStpPlan(res.data.data);
     } catch {
       toast.error("Something went wrong.");
@@ -485,7 +487,6 @@ function StourPlan() {
   };
 
   useEffect(() => {
-    setCurrentPage(1);
     getAllTourPlan();
   }, [searchQuery]);
 
@@ -628,13 +629,12 @@ function StourPlan() {
               </div>
 
               {/* DISTANCE */}
-              {console.log("stp?.tourAllowance", stp)}
-              <div className="flex items-start gap-3">
+              <div className="flex items-start  gap-3">
                 <Navigation className="w-5 h-5 text-gray-500 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-gray-900">Distance</p>
                   <p className="text-sm text-gray-500 line-clamp-1">
-                    {stp?.tourAllowance?.split(",").join(", ")}
+                    {stp?.km}
                   </p>
                 </div>
               </div>
@@ -752,10 +752,14 @@ function StourPlan() {
 
           <select
             className="border p-1"
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(Number(e.target.value))
+              setCurrentPage(1);
+            }}
           >
             <option value={0}>Select HQ</option>
-            {headQuater.map((hq) => (
+            {headQuater?.map((hq) => (
               <option key={hq.hqid} value={hq.hqid}>
                 {hq.hqName}
               </option>

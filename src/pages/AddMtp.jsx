@@ -45,6 +45,12 @@ function AddMtp() {
   const productdropdownref = useRef(null);
   let docchem = [...doctors, ...chemist];
   const navigate = useNavigate()
+  const [headQuarter, setHeadQuarter] = useState([])
+  const [selectHeadQuarter, setSelectHeadQuarter] = useState('')
+  const [selectedHQObj, setSelectedHQObj] = useState(null);
+  const [selectedHQId, setSelectedHQId] = useState("");
+
+  console.log("selectedHQId", selectedHQId)
 
   const handleClickOutside = (event) => {
     if (
@@ -86,19 +92,24 @@ function AddMtp() {
         criteria: "string",
         reportingTo: 0,
         tourType: 0,
+        headquarter: selectedHQId?.codeID
       };
 
       try {
+        setLoading(true)
         const response = await api.post("/STPMTP/GetAllTourUserHQWise", stpObj);
+        console.log("response.data.data", response.data.data)
         setStp(response.data.data);
       } catch (err) {
         console.error("Failed to fetch STPs:", err);
-        // toast.error("Failed to fetch STPs.");
+      }
+      finally {
+        setLoading(false)
       }
     };
 
     fetchStps();
-  }, [users]);
+  }, [selectedHQId]);
 
   useEffect(() => {
     if (user?.headQuater !== null) {
@@ -140,17 +151,15 @@ function AddMtp() {
 
     const fetchDoctorsChemists = async () => {
       const objReq = {
-        hqid: parseInt(headQuarterId) || 1,
+        hqid: parseInt(selectedHQId?.codeID) || 1,
       };
 
       try {
         const [doctors] = await Promise.all([
           api.post("/Doctor/GetAllDocChemByHdID", objReq),
-          // api.get("/Chemist/GetAllChemist"),
         ]);
 
         setDoctors(doctors.data.data);
-        // setChemist(chemists.data.data);
       } catch (err) {
         console.error(err);
         toast.error("Failed to fetch doctors/chemists.");
@@ -158,7 +167,7 @@ function AddMtp() {
     };
 
     fetchDoctorsChemists();
-  }, [headQuarterId]);
+  }, [headQuarterId, selectedHQId?.codeID]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -210,51 +219,139 @@ function AddMtp() {
   //   fetchData();
   // }, []);
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   if (name === "user" || name === "stp" || name === "doctor") {
+  //     if (value) {
+  //       let parsedValue = JSON.parse(value);
+  //       if (name === "stp") {
+  //         const newHeadQuarter = parsedValue.headQuarter;
+
+  //         if (mtpRow.length > 0 && newHeadQuarter !== initialHeadQuarterId) {
+  //           setShowResetModal(true);
+  //           if (pendingStpChange) {
+  //             setFormData({
+  //               user: [],
+  //               doctor: null,
+  //               description: "",
+  //               headQuarterId: newHeadQuarter,
+  //               modeOfWork: "",
+  //               product: [],
+  //             });
+  //             setInitialHeadQuarterId(newHeadQuarter);
+  //             setSelectedStp(parsedValue);
+  //             setHeadQuarterId(newHeadQuarter);
+  //           }
+  //           return;
+  //         }
+
+  //         setSelectedStp(parsedValue);
+  //         setHeadQuarterId(newHeadQuarter);
+  //         setFormData((prev) => ({
+  //           ...prev,
+  //           stp: parsedValue,
+  //           headQuarterId: newHeadQuarter,
+  //         }));
+  //         return;
+  //       }
+
+  //       if (name === "headQuarter") {
+  //         setSelectHeadQuarter(value);
+
+  //         const selectedHQ = headQuarter.find(
+  //           (hq) => String(hq.hqid || hq.id) === value
+  //         );
+
+  //         setSelectedHQObj(selectedHQ);
+
+  //         setHeadQuarterId(Number(value));
+  //         setFormData((prev) => ({
+  //           ...prev,
+  //           headQuarterId: Number(value),
+  //         }));
+
+  //         return;
+  //       }
+
+  //       setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
+  //     } else {
+  //       setFormData((prevData) => ({ ...prevData, [name]: null }));
+  //     }
+  //   } else {
+  //     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  //   }
+  // };
+
+  const handleHQChange = (e) => {
+    const hqId = e.target.value;
+    setSelectedHQId(hqId);
+
+    const selectedHQ = headQuarter.find(
+      (hq) => String(hq.id || hq.hqid) === hqId
+    );
+
+    setSelectedHQObj(selectedHQ);
+
+    setFormData((prev) => ({
+      ...prev,
+      headQuarterId: Number(hqId),
+    }));
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "user" || name === "stp" || name === "doctor") {
-      if (value) {
-        let parsedValue = JSON.parse(value);
-        if (name === "stp") {
-          const newHeadQuarter = parsedValue.headQuarter;
+    if (name === "headQuarter") {
+      setSelectHeadQuarter(value);
 
-          if (mtpRow.length > 0 && newHeadQuarter !== initialHeadQuarterId) {
-            setShowResetModal(true);
-            if (pendingStpChange) {
-              setFormData({
-                user: [],
-                doctor: null,
-                description: "",
-                headQuarterId: newHeadQuarter,
-                modeOfWork: "",
-                product: [],
-              });
-              setInitialHeadQuarterId(newHeadQuarter);
-              setSelectedStp(parsedValue);
-              setHeadQuarterId(newHeadQuarter);
-            }
-            return;
-          }
+      const selectedHQ = headQuarter.find(
+        (hq) => String(hq.hqid || hq.id) === value
+      );
 
-          setSelectedStp(parsedValue);
-          setHeadQuarterId(newHeadQuarter);
-          setFormData((prev) => ({
-            ...prev,
-            stp: parsedValue,
-            headQuarterId: newHeadQuarter,
-          }));
-          return;
-        }
+      setSelectedHQObj(selectedHQ || null);
 
-        setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
-      } else {
-        setFormData((prevData) => ({ ...prevData, [name]: null }));
-      }
-    } else {
-      setFormData((prevData) => ({ ...prevData, [name]: value }));
+      setHeadQuarterId(Number(value));
+
+      setFormData((prev) => ({
+        ...prev,
+        headQuarterId: Number(value),
+      }));
+
+      return;
     }
+
+    // ✅ STP / USER / DOCTOR
+    if (name === "user" || name === "stp" || name === "doctor") {
+      if (!value) {
+        setFormData((prev) => ({ ...prev, [name]: null }));
+        return;
+      }
+
+      const parsedValue = JSON.parse(value);
+
+      if (name === "stp") {
+        const newHeadQuarter = parsedValue.headQuarter;
+
+        setSelectedStp(parsedValue);
+        setHeadQuarterId(newHeadQuarter);
+
+        setFormData((prev) => ({
+          ...prev,
+          stp: parsedValue,
+          headQuarterId: newHeadQuarter,
+        }));
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, [name]: parsedValue }));
+      return;
+    }
+
+    // ✅ NORMAL INPUTS
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
 
   const validateData = () => {
     let newErrors = {};
@@ -373,10 +470,14 @@ function AddMtp() {
       let filterUser = formData.user.filter((u) => u.codeID !== item.codeID);
       setFormData((prevData) => ({ ...prevData, user: filterUser }));
     } else {
-      if (formData.user.length >= 1)
-        return toast.warning("Maximum 1 user are allow to work with you.");
-      let addUser = [...formData.user, item];
-      setFormData((prev) => ({ ...prev, user: addUser }));
+      // if (formData.user.length >= 1)
+      //   return toast.warning("Maximum 1 user are allow to work with you.");
+      // let addUser = [...formData.user, item];
+      // setFormData((prev) => ({ ...prev, user: addUser }));
+      setFormData((prev) => ({
+        ...prev,
+        user: [...prev.user, item],
+      }));
     }
   };
 
@@ -391,6 +492,22 @@ function AddMtp() {
   const filteredUsers = users.filter((name) =>
     name?.codeName?.toLowerCase().includes(userSearchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    fetchHeadquater()
+  }, [])
+
+  const fetchHeadquater = async () => {
+    try {
+      const response = await api.get("/User/GetAllHQByUser", { params: { userID: user?.id } });
+      console.log("response.data?.data", response.data?.data)
+      setHeadQuarter(response.data?.data);
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.response?.data?.message || "Something went wrong.");
+    }
+  };
+
 
   return (
     <div className="flex h-full flex-col gap-3 md:gap-4">
@@ -414,14 +531,41 @@ function AddMtp() {
           </h1>
         </div>
       </div>
+      {/* headQuarter */}
+
       <div className="bg-white h-full custom-shadow flex flex-col gap-4 rounded-md md:py-4 py-3 px-3 md:px-4">
         <div className="grid md:grid-cols-2 gap-4 grid-cols-1 mb-2 items-center">
+          <div className="flex flex-col gap-2">
+            <label className="font-medium text-gray-700">
+              Select HeadQuater <span className="text-sm text-red-500">*</span>
+            </label>
+            <select
+              name="headQuarter"
+              value={selectedHQId}
+              onChange={handleHQChange}
+              className="p-2 border border-gray-200 outline-none"
+            >
+              <option value="">-- Select HeadQuarter --</option>
+              {headQuarter.map((item) => (
+                <option value={JSON.stringify(item)} key={item.codeID}>
+                  {item.codeName}
+                </option>
+              ))}
+            </select>
+
+
+            {errors.headQuarter && (
+              <span className="text-sm text-red-500">{errors.headQuarter}</span>
+            )}
+
+          </div>
           <div className="flex flex-col gap-2">
             <label className="font-medium text-gray-700">
               Select STP <span className="text-sm text-red-500">*</span>
             </label>
             <select
               name="stp"
+              disabled={!selectedHQId}
               value={JSON.stringify(selectedStp)}
               onChange={handleChange}
               className="p-2 border border-gray-200 outline-none"
@@ -433,6 +577,7 @@ function AddMtp() {
                 </option>
               ))}
             </select>
+
             {errors.stp && (
               <span className="text-sm text-red-500">{errors.stp}</span>
             )}
@@ -522,7 +667,7 @@ function AddMtp() {
               <div className="relative w-full">
                 <div
                   onClick={() => setOpenUser((prev) => !prev)}
-                  className="p-1.5 cursor-pointer border flex gap-2 justify-between items-center  "
+                  className="p-1.5 cursor-pointer border flex gap-2 justify-between items-center"
                 >
                   <input
                     type="text"
@@ -534,7 +679,7 @@ function AddMtp() {
                     }
                     onChange={(e) => setUserSearchTerm(e.target.value)}
                     placeholder="Search..."
-                    className="px-4 border-none rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400  "
+                    className=" px-2 w-[90%] border-none rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400  "
                   />
 
                   <span>

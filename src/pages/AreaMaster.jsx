@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const AreaMaster = () => {
     const [areas, setAreas] = useState([]);
@@ -69,11 +70,11 @@ const AreaMaster = () => {
     );
 
     const handleDelete = async (areaId) => {
-        console.log("areaId", areaId)
         if (window.confirm("Are you sure you want to delete this area?")) {
             try {
                 setLoader(true);
-                await api.delete(`/areas/${areaId}`);
+                await api.post(`/areas/${areaId}/delete`);
+                toast.success("Area Delete Successfully")
                 getAreas();
             } catch (err) {
                 console.error("Delete Error", err);
@@ -92,8 +93,8 @@ const AreaMaster = () => {
                 hqId: Number(editForm.hqId),
                 inOut: Number(editForm.inOut),
             };
-            console.log("payload", payload)
             await api.post(`/areas/Update`, payload);
+            toast.success("Areas Update Successfully")
             setIsEditOpen(false);
             getAreas();
         } catch (err) {

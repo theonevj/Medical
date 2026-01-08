@@ -50,6 +50,8 @@ function AddMtp() {
   const [selectedHQObj, setSelectedHQObj] = useState(null);
   const [selectedHQId, setSelectedHQId] = useState("");
 
+  console.log("selectedHQId", selectedHQId)
+
   const handleClickOutside = (event) => {
     if (
       userdropdownref.current &&
@@ -94,10 +96,15 @@ function AddMtp() {
       };
 
       try {
+        setLoading(true)
         const response = await api.post("/STPMTP/GetAllTourUserHQWise", stpObj);
+        console.log("response.data.data", response.data.data)
         setStp(response.data.data);
       } catch (err) {
         console.error("Failed to fetch STPs:", err);
+      }
+      finally {
+        setLoading(false)
       }
     };
 
@@ -463,10 +470,14 @@ function AddMtp() {
       let filterUser = formData.user.filter((u) => u.codeID !== item.codeID);
       setFormData((prevData) => ({ ...prevData, user: filterUser }));
     } else {
-      if (formData.user.length >= 1)
-        return toast.warning("Maximum 1 user are allow to work with you.");
-      let addUser = [...formData.user, item];
-      setFormData((prev) => ({ ...prev, user: addUser }));
+      // if (formData.user.length >= 1)
+      //   return toast.warning("Maximum 1 user are allow to work with you.");
+      // let addUser = [...formData.user, item];
+      // setFormData((prev) => ({ ...prev, user: addUser }));
+      setFormData((prev) => ({
+        ...prev,
+        user: [...prev.user, item],
+      }));
     }
   };
 
@@ -554,6 +565,7 @@ function AddMtp() {
             </label>
             <select
               name="stp"
+              disabled={!selectedHQId}
               value={JSON.stringify(selectedStp)}
               onChange={handleChange}
               className="p-2 border border-gray-200 outline-none"
@@ -565,6 +577,7 @@ function AddMtp() {
                 </option>
               ))}
             </select>
+
             {errors.stp && (
               <span className="text-sm text-red-500">{errors.stp}</span>
             )}
@@ -654,7 +667,7 @@ function AddMtp() {
               <div className="relative w-full">
                 <div
                   onClick={() => setOpenUser((prev) => !prev)}
-                  className="p-1.5 cursor-pointer border flex gap-2 justify-between items-center  "
+                  className="p-1.5 cursor-pointer border flex gap-2 justify-between items-center"
                 >
                   <input
                     type="text"
@@ -666,7 +679,7 @@ function AddMtp() {
                     }
                     onChange={(e) => setUserSearchTerm(e.target.value)}
                     placeholder="Search..."
-                    className="px-4 border-none rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400  "
+                    className=" px-2 w-[90%] border-none rounded-md focus:outline-none focus:ring-none  placeholder-neutral-400  "
                   />
 
                   <span>

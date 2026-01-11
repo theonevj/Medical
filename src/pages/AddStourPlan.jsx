@@ -727,18 +727,36 @@ function AddStourPlan() {
   }
 
   // --- AUTO TOUR PLAN NAME ---
+  // useEffect(() => {
+  //   if (fromHQ && toHQ) {
+  //     const fromName = getHQName(fromHQ)
+  //     const viaName = viaHQ ? getHQName(viaHQ) : ''
+  //     const toName = getHQName(toHQ)
+
+  //     let name = `${fromName}` - `if (viaName) name += ` - `${viaName} - ${toName}`
+
+  //     setTourPlanName(name)
+  //   }
+  // }, [fromHQ, toHQ, viaHQ, headQuater])
+
   useEffect(() => {
     if (fromHQ && toHQ) {
       const fromName = getHQName(fromHQ)
-      const toName = getHQName(toHQ)
       const viaName = viaHQ ? getHQName(viaHQ) : ''
+      const toName = getHQName(toHQ)
 
-      let name = `${fromName} - ${toName}`
-      if (viaName) name += ` - ${viaName}`
+      let name = fromName
+
+      if (viaName) {
+        name += ` - ${viaName}`
+      }
+
+      name += ` - ${toName}`
 
       setTourPlanName(name)
     }
   }, [fromHQ, toHQ, viaHQ, headQuater])
+
 
   // --- FETCH ALLOWANCE ---
   const getAllowance = async () => {
@@ -816,8 +834,8 @@ function AddStourPlan() {
     const duplicate = places.some(
       (p) =>
         p.fromHQ === newObj.fromHQ &&
-        p.toHQ === newObj.toHQ &&
-        p.viaHQ === newObj.viaHQ
+        p.viaHQ === newObj.viaHQ &&
+        p.toHQ === newObj.toHQ
     )
 
     if (duplicate) {
@@ -921,8 +939,8 @@ function AddStourPlan() {
     return places.flatMap((p) =>
       p.locationID.map((id, index) => ({
         tourLocationID: id,
-        locationID: 0,                       // ✅ ID
-        locationName: p.locationName[index], // ✅ NAME
+        locationID: p.locationID[index],
+        locationName: p.locationName[index],
         locationSequence: sequence++
       }))
     )
@@ -934,6 +952,8 @@ function AddStourPlan() {
     allowanceName: a.allowanceName,
     allowanceAmount: a.allowanceAmount
   }))
+
+  console.log("places", places)
 
   const addTourPlan = async () => {
     if (!validateData()) return
@@ -1080,19 +1100,20 @@ function AddStourPlan() {
             </select>
           </div>
           <div className='flex w-52 flex-col gap-2'>
-            <label>To HeadQuaters *</label>
-            <select disabled={toHQ} value={toHQ} onChange={e => setToHQ(e.target.value)} className='p-2 border'>
-              <option value=''>--- To Headquarters ---</option>
-              {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
-            </select>
-          </div>
-          <div className='flex w-52 flex-col gap-2'>
             <label>Via HeadQuaters</label>
             <select disabled={viaHQ} value={viaHQ} onChange={e => setViaHQ(e.target.value)} className='p-2 border'>
               <option value=''>--- Via Headquarters ---</option>
               {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
             </select>
           </div>
+          <div className='flex w-52 flex-col gap-2'>
+            <label>To HeadQuaters *</label>
+            <select disabled={toHQ} value={toHQ} onChange={e => setToHQ(e.target.value)} className='p-2 border'>
+              <option value=''>--- To Headquarters ---</option>
+              {headQuterLocation?.map(h => <option key={h.hqid} value={h.hqid}>{h.hqName}</option>)}
+            </select>
+          </div>
+
           <button disabled={places?.length} onClick={() => addNewPlace()} className=' h-10 px-4 flex items-center justify-center gap-2 text-white bg-themeblue rounded-md font-medium'>
             <AddOutlinedIcon /> Add Place
           </button>
@@ -1113,8 +1134,8 @@ function AddStourPlan() {
               {places.map((p, i) => (
                 <tr key={i}>
                   <td className='border p-2'>{p.locationName[0]}</td>
-                  <td className='border p-2'>{p.locationName[2]}</td>
-                  <td className='border p-2'>{p.locationName[1] || '-'}</td>
+                  <td className='border p-2'>{p.locationName[1]}</td>
+                  <td className='border p-2'>{p.locationName[2] || '-'}</td>
                   <td className='border p-2 text-center'>
                     <button onClick={() => removePlace(i)} className='text-red-500'>Delete</button>
                   </td>

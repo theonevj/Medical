@@ -18,6 +18,7 @@ const AttendanceReport = () => {
     const [loading, setLoading] = useState(false);
     const { user } = useSelector((state) => state.auth);
     const [selectedYear, setSelectedYear] = useState("");
+    const [userDetails, setUserDetails] = useState('')
 
     useEffect(() => {
         loadUsers();
@@ -27,7 +28,6 @@ const AttendanceReport = () => {
     const loadUsers = async () => {
         try {
             const res = await api.get("/User/GetAllUsers");
-            console.log("Expense user: ", res?.data);
             setUsers(res?.data?.data);
         } catch (err) {
             console.error(err);
@@ -69,6 +69,7 @@ const AttendanceReport = () => {
                     : null
             };
             const res = await api.post("/ExpenseMaster/GetExpense", body);
+            setUserDetails(res?.data?.userDetails)
             setOtherExpenses(res.data.expenseData || []);
             setFilteredData(res.data.workExpenseReport || []);
         } catch (err) {
@@ -248,7 +249,7 @@ const AttendanceReport = () => {
         // -----------------------------------
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Report");
-        XLSX.writeFile(wb, "ExpenseReport.xlsx");
+        XLSX.writeFile(wb, `${userDetails?.FullName} - ${userDetails?.HQName} - ${userDetails?.Designation} - ${selectedMonth}.xlsx`);
     };
 
     const handleRefresh = () => {
@@ -347,12 +348,18 @@ const AttendanceReport = () => {
 
             {filteredData?.length > 0 ? (
                 <div style={card}>
+                    <div className="gap:2 mb-2">
+                        <span><strong>{userDetails?.FullName} - </strong></span>
+                        <span><strong>{userDetails?.HQName} - </strong></span>
+                        <span><strong>{userDetails?.Designation}</strong></span>
+                    </div>
                     <table style={tableStyle}>
                         <thead>
                             <tr style={headerStyle}>
                                 <th>Date</th>
                                 <th>Day</th>
                                 <th>Place</th>
+                                <th>Tour Type</th>
                                 <th>Doctor Calls</th>
                                 <th>Chemist Calls</th>
                                 {/* <th>KMs</th> */}
@@ -378,6 +385,7 @@ const AttendanceReport = () => {
                                     <td style={cell}>{r?.date?.split("T")[0]}</td>
                                     <td style={cell}>{r?.day}</td>
                                     <td style={cell}>{r?.placeOfWork}</td>
+                                    <td style={cell}>{r?.tourtypename}</td>
                                     <td style={cell}>{r?.numberOfDoctorCalls}</td>
                                     <td style={cell}>{r?.numberOfChemistCalls}</td>
                                     {/* <td style={cell}>{r?.kilometers}</td> */}
@@ -387,7 +395,7 @@ const AttendanceReport = () => {
                                 </tr>
                             ))}
                             <tr style={{ background: "#e1f0ff", fontWeight: "bold" }}>
-                                <td style={cell1} colSpan={7}>TOTAL</td>
+                                <td style={cell1} colSpan={8}>TOTAL</td>
                                 <td style={cell}>{workTotal}</td>
                             </tr>
                         </tbody>

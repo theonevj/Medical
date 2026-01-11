@@ -37,6 +37,7 @@ const GetExpense = () => {
         try {
             setLoader(true);
             const res = await api.get("/UserExpense");
+            console.log("res?.data", res?.data)
             setExpenseList(res.data);
         } catch (err) {
             console.error(err);
@@ -86,7 +87,6 @@ const GetExpense = () => {
         fetchExpenses();
     };
 
-    // Filter & search
     const filteredData = expenseList
         .filter((exp) => !selectedUser || exp.userName === selectedUser)
         .filter((exp) => !statusFilter || exp.status === statusFilter)

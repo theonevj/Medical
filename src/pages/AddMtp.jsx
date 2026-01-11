@@ -48,9 +48,7 @@ function AddMtp() {
   const [headQuarter, setHeadQuarter] = useState([])
   const [selectHeadQuarter, setSelectHeadQuarter] = useState('')
   const [selectedHQObj, setSelectedHQObj] = useState(null);
-  const [selectedHQId, setSelectedHQId] = useState("");
-
-  console.log("selectedHQId", selectedHQId)
+  const [selectedHQId, setSelectedHQId] = useState('');
 
   const handleClickOutside = (event) => {
     if (
@@ -85,31 +83,31 @@ function AddMtp() {
   });
 
   useEffect(() => {
-    const fetchStps = async () => {
-      const stpObj = {
-        pageNumber: 0,
-        pageSize: 0,
-        criteria: "string",
-        reportingTo: 0,
-        tourType: 0,
-        headquarter: selectedHQId?.codeID
-      };
-
-      try {
-        setLoading(true)
-        const response = await api.post("/STPMTP/GetAllTourUserHQWise", stpObj);
-        console.log("response.data.data", response.data.data)
-        setStp(response.data.data);
-      } catch (err) {
-        console.error("Failed to fetch STPs:", err);
-      }
-      finally {
-        setLoading(false)
-      }
-    };
-
     fetchStps();
-  }, [selectedHQId]);
+  }, [headQuarterId, selectedHQId]);
+
+  const fetchStps = async () => {
+    const stpObj = {
+      pageNumber: 0,
+      pageSize: 0,
+      criteria: "string",
+      reportingTo: 0,
+      tourType: 0,
+      headquarter: selectedHQObj?.codeID
+    };
+    console.log("testinggg", selectedHQObj?.codeID)
+    try {
+      setLoading(true)
+      const response = await api.post("/STPMTP/GetAllTourUserHQWise", stpObj);
+      console.log("response.data.data", response.data.data)
+      setStp(response.data.data);
+    } catch (err) {
+      console.error("Failed to fetch STPs:", err);
+    }
+    finally {
+      setLoading(false)
+    }
+  };
 
   useEffect(() => {
     if (user?.headQuater !== null) {
@@ -151,14 +149,13 @@ function AddMtp() {
 
     const fetchDoctorsChemists = async () => {
       const objReq = {
-        hqid: parseInt(selectedHQId?.codeID) || 1,
+        hqid: selectedHQObj?.codeID || 1,
       };
 
       try {
         const [doctors] = await Promise.all([
           api.post("/Doctor/GetAllDocChemByHdID", objReq),
         ]);
-
         setDoctors(doctors.data.data);
       } catch (err) {
         console.error(err);
@@ -167,7 +164,7 @@ function AddMtp() {
     };
 
     fetchDoctorsChemists();
-  }, [headQuarterId, selectedHQId?.codeID]);
+  }, [headQuarterId, selectedHQObj?.codeID]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -283,15 +280,37 @@ function AddMtp() {
   //   }
   // };
 
+  // const handleHQChange = (e) => {
+  //   const hqId = e.target.value;
+  //   setSelectedHQId(hqId);
+
+  //   console.log("headQuarter", headQuarter)
+
+  //   const selectedHQ = headQuarter.find(
+  //     (hq) => String(hq.id || hq.hqid) === hqId
+  //   );
+
+  //   setSelectedHQObj(selectedHQ);
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     headQuarterId: Number(hqId),
+  //   }));
+  // };
+
   const handleHQChange = (e) => {
     const hqId = e.target.value;
+
+    // ✅ ID only
     setSelectedHQId(hqId);
 
-    const selectedHQ = headQuarter.find(
-      (hq) => String(hq.id || hq.hqid) === hqId
+    // ✅ find object
+    const hqObj = headQuarter.find(
+      (hq) => String(hq.codeID) === hqId
     );
 
-    setSelectedHQObj(selectedHQ);
+    // ✅ object only
+    setSelectedHQObj(hqObj);
 
     setFormData((prev) => ({
       ...prev,
@@ -299,20 +318,17 @@ function AddMtp() {
     }));
   };
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "headQuarter") {
       setSelectHeadQuarter(value);
-
       const selectedHQ = headQuarter.find(
         (hq) => String(hq.hqid || hq.id) === value
       );
-
       setSelectedHQObj(selectedHQ || null);
-
       setHeadQuarterId(Number(value));
-
       setFormData((prev) => ({
         ...prev,
         headQuarterId: Number(value),
@@ -397,9 +413,6 @@ function AddMtp() {
             description: mtp.description,
           })),
         };
-
-        console.log("Submitting MTP:", obj);
-
         const response = await api.post("/STPMTP/addMTP", obj);
 
         if (response.data.statusCode === 500) {
@@ -423,7 +436,6 @@ function AddMtp() {
   };
 
   const handleAdd = () => {
-    console.log("Add clicked");
     if (validateData()) {
       if (!initialHeadQuarterId) {
         setInitialHeadQuarterId(formData.headQuarterId);
@@ -547,7 +559,7 @@ function AddMtp() {
             >
               <option value="">-- Select HeadQuarter --</option>
               {headQuarter.map((item) => (
-                <option value={JSON.stringify(item)} key={item.codeID}>
+                <option value={item.codeID} key={item.codeID}>
                   {item.codeName}
                 </option>
               ))}

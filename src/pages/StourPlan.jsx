@@ -476,8 +476,8 @@ function StourPlan() {
         reportingTo: 0,
         tourType: 0,
       }
-      console.log("payload", payload)
       const res = await api.post(`/STPMTP/GetAll`, payload);
+      console.log("res.data.data", res.data.data)
       setStpPlan(res.data.data);
     } catch {
       toast.error("Something went wrong.");
@@ -638,6 +638,16 @@ function StourPlan() {
                   </p>
                 </div>
               </div>
+              <div className="flex items-start  gap-3">
+                <Navigation className="w-5 h-5 text-gray-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Tour Name</p>
+                  <p className="text-sm text-gray-500 line-clamp-1">
+                    {stp?.tourName}
+                  </p>
+                </div>
+              </div>
+              {/* tourName*/}
             </div>
 
             {/* FOOTER */}
@@ -681,7 +691,6 @@ function StourPlan() {
       <table className="w-full border-collapse text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="border px-3 py-2">Date</th>
             <th className="border px-3 py-2">Location</th>
             <th className="border px-3 py-2">Headquarter</th>
             <th className="border px-3 py-2">KM</th>
@@ -697,7 +706,6 @@ function StourPlan() {
               onClick={() => modalShow(stp.tourID)}
               className="cursor-pointer hover:bg-gray-50"
             >
-              <td className="border px-3 py-2">{getDate(stp.addedDate)}</td>
               <td className="border px-3 py-2">{stp.tourName}</td>
               <td className="border px-3 py-2">{stp.hqName}</td>
               <td className="border px-3 py-2">{stp?.km}</td>

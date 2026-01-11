@@ -95,11 +95,9 @@ function AddMtp() {
       tourType: 0,
       headquarter: selectedHQObj?.codeID
     };
-    console.log("testinggg", selectedHQObj?.codeID)
     try {
       setLoading(true)
       const response = await api.post("/STPMTP/GetAllTourUserHQWise", stpObj);
-      console.log("response.data.data", response.data.data)
       setStp(response.data.data);
     } catch (err) {
       console.error("Failed to fetch STPs:", err);
@@ -129,11 +127,13 @@ function AddMtp() {
   // useEffect(() => {
   //   const fetchDoctorsChemists = async () => {
   //     try {
+  //       const objReq = {
+  //         hqid: selectedHQObj?.codeID,
+  //       };
   //       const [doctors, chemists] = await Promise.all([
-  //         api.get("/Doctor/GetAllDoctor"),
-  //         api.get("/Chemist/GetAllChemist"),
+  //         api.get("/Doctor/GetAllDoctor", objReq),
+  //         api.get("/Chemist/GetAllChemist", objReq),
   //       ]);
-
   //       setDoctors(doctors.data.data);
   //       setChemist(chemists.data.data);
   //     } catch (err) {
@@ -142,21 +142,24 @@ function AddMtp() {
   //     }
   //   };
   //   fetchDoctorsChemists();
-  // }, []);
+  // }, [headQuarterId, selectedHQObj]);
 
   useEffect(() => {
-    if (!headQuarterId) return;
+    if (!selectedHQObj) return;
 
     const fetchDoctorsChemists = async () => {
       const objReq = {
-        hqid: selectedHQObj?.codeID || 1,
+        hqid: selectedHQObj?.codeID,
       };
+
+      console.log("objReq", selectedHQObj?.codeID)
 
       try {
         const [doctors] = await Promise.all([
           api.post("/Doctor/GetAllDocChemByHdID", objReq),
         ]);
-        setDoctors(doctors.data.data);
+        console.log("doctors---", doctors?.data)
+        setDoctors(doctors.data?.data);
       } catch (err) {
         console.error(err);
         toast.error("Failed to fetch doctors/chemists.");
@@ -164,13 +167,12 @@ function AddMtp() {
     };
 
     fetchDoctorsChemists();
-  }, [headQuarterId, selectedHQObj?.codeID]);
+  }, [headQuarterId, selectedHQObj]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await api.get("/Product");
-        setProduct(response.data.data);
       } catch (err) {
         console.error("Failed to fetch products:", err);
         toast.error("Failed to fetch products.");
@@ -301,17 +303,11 @@ function AddMtp() {
   const handleHQChange = (e) => {
     const hqId = e.target.value;
 
-    // ✅ ID only
     setSelectedHQId(hqId);
-
-    // ✅ find object
     const hqObj = headQuarter.find(
       (hq) => String(hq.codeID) === hqId
     );
-
-    // ✅ object only
     setSelectedHQObj(hqObj);
-
     setFormData((prev) => ({
       ...prev,
       headQuarterId: Number(hqId),
@@ -512,7 +508,6 @@ function AddMtp() {
   const fetchHeadquater = async () => {
     try {
       const response = await api.get("/User/GetAllHQByUser", { params: { userID: user?.id } });
-      console.log("response.data?.data", response.data?.data)
       setHeadQuarter(response.data?.data);
     } catch (err) {
       console.log(err);

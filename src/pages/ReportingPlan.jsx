@@ -288,7 +288,6 @@ function ReportingPlan() {
                                                         Class {mtp?.className}
                                                     </span>
                                                 </div>
-                                                {console.log("itemmmmmm", mtp)}
                                                 <div className='flex items-center gap-2'>
                                                     <span className='p-1 text-center text-xs bg-green-200 rounded-md text-green-600 w-20'>
                                                         {mtp?.speciality}

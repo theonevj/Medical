@@ -5,7 +5,6 @@ import { logout } from "../../redux/actions/authActions";
 import { BiTrip } from "react-icons/bi";
 import NotificationBar from "../NotificationBar";
 
-//importing images
 import LOGO from "../../assets/ELVIRA LOGO.png";
 import PERSON from "../../assets/asset4.jpg";
 
